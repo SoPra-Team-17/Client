@@ -9,8 +9,7 @@ import sys
 # https://python-forum.io/Thread-PyGame-Simple-code-for-isometric-2D-games
 
 WINDOW_SIZE = (660, 660)
-TILEWIDTH = 32
-TILEHEIGHT = 32
+
 
 FPS = 60.0
 
@@ -28,20 +27,21 @@ map_data = [
 ]
 
 class Block:
-    def __init__(self,x,y):
+    def __init__(self,x,y,z):
         self.block = pygame.image.load("block.png")
         self.base = pygame.image.load("base.png")
         self.x = x
         self.y = y
+        self.z = z
+        self.__TILEWIDTH = 32
+        self.__TILEHEIGHT = 32
 
     def draw_block(self,screen,tileImage):
-        world_x = self.x * TILEWIDTH/2
-        world_y = self.y * TILEHEIGHT/2
-        iso_x = (world_x - world_y)
-        iso_y = (world_x + world_y) / 2
-        centered_x = screen.get_rect().centerx + iso_x
-        centered_y = screen.get_rect().centery /2 + iso_y
-        screen.blit(tileImage,(centered_x,centered_y))
+        m_x = screen.get_rect().centerx
+        m_y = screen.get_rect().centery
+        v_x = self.x * self.__TILEWIDTH / 2 - self.y * self.__TILEHEIGHT / 2 + m_x
+        v_y = self.x * self.__TILEWIDTH / 4 + self.y * self.__TILEHEIGHT / 4 - self.z * self.__TILEHEIGHT / 2 + m_y / 2
+        screen.blit(tileImage,(v_x,v_y))
 
 
 class BlockGroup:
@@ -61,27 +61,12 @@ class BlockGroup:
             block.draw_block(screen,block.block)
 
 
-def draw_floor(screen):
-    for row_nb, row in enumerate(map_data):
-        for col_nb, tile in enumerate(row):
-            # checken ob da ne Wand steht
-            if tile == 1:
-                tileImage = block
-            else:
-                tileImage = base
-            world_x = row_nb * TILEWIDTH / 2
-            world_y = col_nb * TILEHEIGHT / 2
-            iso_x = (world_x - world_y)
-            iso_y = (world_x + world_y) / 2
-            centered_x = screen.get_rect().centerx + iso_x
-            centered_y = screen.get_rect().centery / 2 + iso_y
-            screen.blit(tileImage, (centered_x, centered_y))
 
 
 
 class Camera:
 
-    def __init__(self,camera_speed=1,x_factor=.5,y_factor=1):
+    def __init__(self,camera_speed=1.0,x_factor=.5,y_factor=1):
         self.__xTrans__ = 0
         self.__yTrans__ = 0
         self.__xFactor__ = x_factor
@@ -116,6 +101,22 @@ class Camera:
         self.__yTrans__ = 0
 
 
+def getPlayingField(group):
+    for i in range(0,10,1):
+        for j in range(0,10,1):
+            group.add(Block(i,j,0))
+    for i in range(0,10,1):
+        for j in range(0,10,1):
+            group.add(Block(i,j,1))
+
+    for i in range(2,6,1):
+        group.add(Block(0,0,i))
+        group.add(Block(9, 0, i))
+        group.add(Block(0, 9, i))
+        group.add(Block(9, 9, i))
+
+
+
 def main():
     pygame.init()
 
@@ -125,10 +126,7 @@ def main():
     clock = pygame.time.Clock()
 
     blockGroup = BlockGroup()
-    blockGroup.add(Block(25,25))
-    blockGroup.add(Block(24, 26))
-    blockGroup.add(Block(25, 26))
-    blockGroup.add(Block(24, 25))
+    getPlayingField(blockGroup)
 
     cam = Camera(camera_speed=.5)
 
