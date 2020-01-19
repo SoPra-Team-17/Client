@@ -1,6 +1,9 @@
 import unittest
 from controller.Controller import Controller
 
+"""
+Naming scheme for tests: test*.py
+"""
 
 class TestStringMethods(unittest.TestCase):
 
