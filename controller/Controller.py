@@ -1,5 +1,5 @@
 import time
-
+import logging
 
 
 
@@ -10,6 +10,7 @@ class Controller:
 
     def initComponents(self):
         #initialize components (model,view,self)
+        logging.info("Controller init done")
         pass
 
     def loop(self):
