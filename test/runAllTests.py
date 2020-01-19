@@ -1,6 +1,7 @@
 import unittest
 from controller.Controller import Controller
 
+
 class TestStringMethods(unittest.TestCase):
 
     def test_upper(self):
