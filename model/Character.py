@@ -12,4 +12,3 @@ class Character(ABC):
         self.properties = []
         self.gadgets = []
 
-

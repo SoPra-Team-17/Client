@@ -8,6 +8,8 @@ class Action(Operation):pass
 
 class Movement(Operation): pass
 
+class Retire(Operation): pass
+
 
 
 class GadgetAction(Action): pass

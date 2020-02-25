@@ -1,20 +1,22 @@
 import unittest
 from controller.Controller import Controller
 
-"""
-Naming scheme for tests: test*.py
-"""
+
 
 class TestStringMethods(unittest.TestCase):
+    """
+    Enthält testfälle
+    Naming scheme for tests: test*.py
+    """
 
     def test_upper(self):
         controller = Controller()
-        self.assertEqual(controller.someFunc(3,2),5)
+        self.assertEqual(controller.someFunc(3, 2), 5)
 
     def test_isupper(self):
         controller = Controller()
-        self.assertTrue(controller.someFunc(2,0))
-        self.assertFalse(controller.someFunc(2,-2))
+        self.assertTrue(controller.someFunc(2, 0))
+        self.assertFalse(controller.someFunc(2, -2))
 
 
 if __name__ == '__main__':
