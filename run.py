@@ -24,13 +24,14 @@ def init_logging():
 
 def main():
     init_logging()
-    # logging examples
+    #logging examples
     logging.info("Info output")
     logging.debug("Debug output")
     logging.warning("Warning output")
     logging.error("Error output")
     logging.critical("Critical output")
 
+    #create main controller
     controller = Controller()
     controller.init_components()
     controller.loop()
