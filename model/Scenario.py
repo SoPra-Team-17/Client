@@ -43,6 +43,6 @@ class Field:
 class Map:
     def __init__(self):
         #todo create 2D Array of Fields
-        self.map = [][]
+        self.map = []
 
 
