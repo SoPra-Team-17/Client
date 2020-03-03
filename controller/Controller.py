@@ -4,6 +4,7 @@
 import sys
 import logging
 import pygame
+import view.ViewConstants as props
 from view.MainMenu import MainMenu
 from controller.ControllerView import ControllerGameView, ControllerMainMenu
 
@@ -19,8 +20,8 @@ class Controller(ControllerGameView, ControllerMainMenu):
         super().__init__()
         pygame.init()
         # erstelle screen
-        self.screen = pygame.display.set_mode((1200, 900))
-        pygame.display.set_caption("No Time to Spy")
+        self.screen = pygame.display.set_mode((props.WINDOW_WIDTH, props.WINDOW_HEIGHT))
+        pygame.display.set_caption(props.WINDOW_NAME)
         self.clock = pygame.time.Clock()
         self.mainMenu = MainMenu(self.screen, self)
 
@@ -50,7 +51,7 @@ class Controller(ControllerGameView, ControllerMainMenu):
             # todo sollte in view
             self.mainMenu.draw()
 
-            self.clock.tick(60)
+            self.clock.tick(props.FRAME_RATE)
 
     def start_game(self):
         print("Press detected")
@@ -58,13 +59,3 @@ class Controller(ControllerGameView, ControllerMainMenu):
         pass
     def send_action(self):
         pass
-
-    # todo remove: example function for unit test
-    def someFunc(self, rhs, lhs):
-        """
-        unitest example func
-        :param a:
-        :param b:
-        :return:
-        """
-        return rhs + lhs
