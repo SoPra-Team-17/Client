@@ -2,8 +2,9 @@ from abc import ABC, abstractmethod
 import pygame
 
 
+
 class BasicView(ABC):
-    def __init__(self, window, controller):
+    def __init__(self, window: pygame.display, controller):
         self.window = window
         self.controller = controller
 

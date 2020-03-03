@@ -1,15 +1,16 @@
 import logging
 import sys
 import pygame_gui.elements.ui_button
-import pygame
 from pygame_gui.elements import UITextBox
+import pygame
+
 
 from view.BasicView import BasicView
 from controller.ControllerView import ControllerMainMenu
 
 
 class MainMenu(BasicView):
-    def __init__(self, window, controller: ControllerMainMenu):
+    def __init__(self, window: pygame.display, controller: ControllerMainMenu):
         super(MainMenu, self).__init__(window, controller)
         self.window_width, self.window_height = pygame.display.get_surface().get_size()
 
@@ -23,11 +24,11 @@ class MainMenu(BasicView):
             relative_rect=pygame.Rect((self.window_width * .45, self.window_height * .45), (150, 40)),
             text="Start Game",
             manager=self.manager)
-        self.start_game_button = pygame_gui.elements.UIButton(
+        self.help_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect((self.window_width * .45, self.window_height * .5), (150, 40)),
             text="Help",
             manager=self.manager)
-        self.start_game_button = pygame_gui.elements.UIButton(
+        self.settings_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect((self.window_width * .45, self.window_height * .55), (150, 40)),
             text="Settings",
             manager=self.manager)
@@ -60,6 +61,15 @@ class MainMenu(BasicView):
         if (event.type == pygame.USEREVENT and event.user_type == 'ui_button_pressed' and
                 event.ui_element == self.start_game_button):
             self.controller.start_game()
+
+        if (event.type == pygame.USEREVENT and event.user_type == 'ui_button_pressed' and
+                event.ui_element == self.help_button):
+            pass
+
+        if (event.type == pygame.USEREVENT and event.user_type == 'ui_button_pressed' and
+                event.ui_element == self.settings_button):
+            pass
+
         if (event.type == pygame.USEREVENT and event.user_type == 'ui_button_pressed' and
                 event.ui_element == self.end_game_button):
             pygame.quit()

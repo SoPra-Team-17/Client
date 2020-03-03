@@ -54,7 +54,7 @@ class Controller(ControllerGameView, ControllerMainMenu):
             self.clock.tick(props.FRAME_RATE)
 
     def start_game(self):
-        print("Press detected")
+        logging.info("StartGame in MainMenu View pressed")
     def exit_game(self):
         pass
     def send_action(self):
