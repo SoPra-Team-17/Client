@@ -43,8 +43,10 @@ class Controller(ControllerGameView, ControllerMainMenu):
                     pygame.quit()
                     sys.exit(0)
                 # todo sinnvolles filtern der events
-                if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.USEREVENT:
                     self.mainMenu.receive_event(event)
+                #todo muss irgendwo anders hin
+                self.mainMenu.manager.process_events(event)
             # todo sollte in view
             self.mainMenu.draw()
 
