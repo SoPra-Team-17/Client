@@ -2,11 +2,12 @@ from abc import ABC, abstractmethod
 import pygame
 
 
+
 class BasicView(ABC):
     """
     Defines abstract interface for any view
     """
-    def __init__(self, window, controller):
+    def __init__(self, window: pygame.display, controller):
         self.window = window
         self.controller = controller
 

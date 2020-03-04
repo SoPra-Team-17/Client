@@ -4,8 +4,11 @@
 import sys
 import logging
 import pygame
+import view.ViewConstants as props
 from view.MainMenu import MainMenu
 from controller.ControllerView import ControllerGameView, ControllerMainMenu
+
+
 
 
 class Controller(ControllerGameView, ControllerMainMenu):
@@ -17,22 +20,22 @@ class Controller(ControllerGameView, ControllerMainMenu):
         super().__init__()
         pygame.init()
         # erstelle screen
-        self.screen = pygame.display.set_mode((1200, 900))
-        pygame.display.set_caption("No Time to Spy")
+        self.screen = pygame.display.set_mode((props.WINDOW_WIDTH, props.WINDOW_HEIGHT))
+        pygame.display.set_caption(props.WINDOW_NAME)
         self.clock = pygame.time.Clock()
         self.mainMenu = MainMenu(self.screen, self)
 
     def init_components(self):
         """
-        initializes all other components
+        @brief  initializes all other components
         """
         # initialize components (model,view,self)
         logging.info("Controller init done")
 
     def loop(self):
         """
-        basic main loop
-        :return:
+        :brief: basic main loop
+        :return:    None
         """
         # main game loop is started from here
         while True:
@@ -41,27 +44,31 @@ class Controller(ControllerGameView, ControllerMainMenu):
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit(0)
-                if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.USEREVENT:
                     self.mainMenu.receive_event(event)
 
+                #todo muss irgendwo anders hin
+                self.mainMenu.manager.process_events(event)
             # todo extension for other views!
             self.mainMenu.draw()
 
-            self.clock.tick(60)
+            self.clock.tick(props.FRAME_RATE)
 
     def start_game(self):
         """
         Interface to MainMenu View
         :return:    None
         """
-        print("Press detected")
+        logging.info("Start game detected")
 
     def exit_game(self):
         """
         Interface to MainMenu View
         :return:    None
         """
-        pass
+        logging.info("Exit from MainMenu")
+        pygame.quit()
+        sys.exit(0)
 
     def send_action(self):
         """
