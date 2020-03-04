@@ -1,8 +1,8 @@
-from abc import ABC, ABCMeta, abstractmethod
+from abc import ABC
 
 
 class Gadget(ABC):
-    def __init__(self, range: int, probability: float, damage: int, usagesLeft: int):
+    def __init__(self, gadgetRange: int, probability: float, damage: int, usagesLeft: int):
         self.range = range
         self.probability = probability
         self.damage = damage
@@ -10,23 +10,24 @@ class Gadget(ABC):
 
 
 class HairDryer(Gadget):
-    def __init__(self, range: int, usagesLeft: int):
-        super().__init__(range, -1.0, -1, usagesLeft)
+    def __init__(self, gadgetRange: int, usagesLeft: int):
+        super().__init__(gadgetRange, -1.0, -1, usagesLeft)
 
 
 class MoleDie(Gadget):
-    def __init__(self, range: int):
-        super().__init__(range, -1.0, -1, -1)
+    def __init__(self, gadgetRange: int):
+        super().__init__(gadgetRange, -1.0, -1, -1)
 
 
 class TechnicolourPrism(Gadget):
-    def __init__(self, range: int):
-        super().__init__(range, -1.0, -1, -1)
+    def __init__(self, gadgetRange: int):
+        super().__init__(gadgetRange, -1.0, -1, -1)
 
 
 class BowlerBlade(Gadget):
-    def __init__(self, range: int, probability: float, damage: int, usagesLeft: int):
-        super().__init__(range, probability, damage, usagesLeft)
+    """
+    does not need __init__ as it is directly derived
+    """
 
 
 class MagneticWatch(Gadget):
@@ -50,23 +51,23 @@ class RocketPen(Gadget):
 
 
 class GasGloss(Gadget):
-    def __init__(self, range: int, damage: int, usagesLeft: int):
-        super().__init__(range, -1.0, damage, usagesLeft)
+    def __init__(self, gadgetRange: int, damage: int, usagesLeft: int):
+        super().__init__(gadgetRange, -1.0, damage, usagesLeft)
 
 
 class MothballPouch(Gadget):
-    def __init__(self, range: int, damage: int, usagesLeft: int):
-        super().__init__(range, -1.0, damage, usagesLeft)
+    def __init__(self, gadgetRange: int, damage: int, usagesLeft: int):
+        super().__init__(gadgetRange, -1.0, damage, usagesLeft)
 
 
 class FogTin(Gadget):
-    def __init__(self, range: int, usagesLeft: int):
-        super().__init__(range, -1.0, -1, usagesLeft)
+    def __init__(self, gadgetRange: int, usagesLeft: int):
+        super().__init__(gadgetRange, -1.0, -1, usagesLeft)
 
 
 class Grapple(Gadget):
-    def __init__(self, range: int, probability: float):
-        super().__init__(range, probability, -1, -1)
+    def __init__(self, gadgetRange: int, probability: float):
+        super().__init__(gadgetRange, probability, -1, -1)
 
 
 class Jetpack(Gadget):

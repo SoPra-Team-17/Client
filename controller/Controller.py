@@ -6,8 +6,6 @@ from view.MainMenu import MainMenu
 from controller.ControllerView import ControllerGameView, ControllerMainMenu
 
 
-
-
 class Controller(ControllerGameView, ControllerMainMenu):
     """
     @brief  class implementing a basic controller
@@ -44,7 +42,7 @@ class Controller(ControllerGameView, ControllerMainMenu):
                 if event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.USEREVENT:
                     self.mainMenu.receive_event(event)
 
-                #todo muss irgendwo anders hin
+                # todo muss irgendwo anders hin
                 self.mainMenu.manager.process_events(event)
             # todo extension for other views!
             self.mainMenu.draw()
@@ -72,4 +70,3 @@ class Controller(ControllerGameView, ControllerMainMenu):
         Interface to GameView
         :return:    None
         """
-        pass

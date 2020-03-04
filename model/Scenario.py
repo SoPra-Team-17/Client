@@ -1,6 +1,6 @@
 from abc import ABC
 from model import Gadgets
-from model import Character
+
 
 
 class FieldState(ABC):

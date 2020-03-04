@@ -49,4 +49,4 @@ jobs:
         pip install pylint
     - name: Code analysis mit pylint
       run: |
-        pylint controller model test util view
+        python lint.py
