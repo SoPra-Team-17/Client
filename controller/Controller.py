@@ -1,6 +1,3 @@
-"""
-@brief  some module String
-"""
 import sys
 import logging
 import pygame
