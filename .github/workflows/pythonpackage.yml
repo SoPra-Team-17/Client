@@ -29,7 +29,7 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Test with unittest
       run: |
-        python -m unittest discover
+        python -m unittest test
         
   Pylint: 
     name: Code analysis mit pylint
