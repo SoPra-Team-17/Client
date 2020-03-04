@@ -8,8 +8,6 @@ from view.MainMenu import MainMenu
 from controller.ControllerView import ControllerGameView, ControllerMainMenu
 
 
-
-
 class Controller(ControllerGameView, ControllerMainMenu):
     """
     @brief  class implementing a basic controller
@@ -26,43 +24,48 @@ class Controller(ControllerGameView, ControllerMainMenu):
 
     def init_components(self):
         """
-        @brief  initializes all other components
+        initializes all other components
         """
         # initialize components (model,view,self)
         logging.info("Controller init done")
 
     def loop(self):
         """
-        :brief: basic main loop
+        basic main loop
         :return:
         """
         # main game loop is started from here
         while True:
+            # events should be filtered
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit(0)
-                # todo sinnvolles filtern der events
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     self.mainMenu.receive_event(event)
-            # todo sollte in view
+
+            # todo extension for other views!
             self.mainMenu.draw()
 
             self.clock.tick(60)
 
     def start_game(self):
+        """
+        Interface to MainMenu View
+        :return:    None
+        """
         print("Press detected")
+
     def exit_game(self):
-        pass
-    def send_action(self):
+        """
+        Interface to MainMenu View
+        :return:    None
+        """
         pass
 
-    # todo remove: example function for unit test
-    def someFunc(self, rhs, lhs):
+    def send_action(self):
         """
-        unitest example func
-        :param a:
-        :param b:
-        :return:
+        Interface to GameView
+        :return:    None
         """
-        return rhs + lhs
+        pass
