@@ -1,14 +1,12 @@
-from abc import ABC, abstractmethod
+from model.Scenario import Point
 
 
-class Character(ABC):
-    @abstractmethod
+class Character:
     def __init__(self, bp=0, ap=0, hp=100, ip=0):
         self.ID = 0
         self.name = ""
         self.description = ""
-        self.x = 0
-        self.y = 0
+        self.Point = None
         self.bp = bp
         self.ap = ap
         self.hp = hp

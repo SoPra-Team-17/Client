@@ -21,10 +21,6 @@ class GadgetAction(Action):
     pass
 
 
-class GambleAction(Action):
-    pass
-
-
 class SpyAction(Action):
     pass
 

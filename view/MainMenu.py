@@ -3,13 +3,17 @@ import pygame_gui.elements.ui_button
 from pygame_gui.elements import UITextBox
 import pygame
 
+import view.ViewConstants as props
 from view.BasicView import BasicView
 from controller.ControllerView import ControllerMainMenu
 
 
+# todo positionen sind noch hardcoded --> relatives layout oder verwenden von layout manager
+# todo Skalierung der Größe der Buttons muss mit der Auflösung gehen, da muss mal bisschen Mathematik betrieben werden
 class MainMenu(BasicView):
     def __init__(self, window: pygame.display, controller: ControllerMainMenu):
         super(MainMenu, self).__init__(window, controller)
+
         self.window_width, self.window_height = pygame.display.get_surface().get_size()
 
         self.manager = pygame_gui.UIManager((self.window_width, self.window_height),
@@ -18,7 +22,7 @@ class MainMenu(BasicView):
 
         self.background = pygame.Surface((self.window_width, self.window_height))
         self.background.fill(self.manager.ui_theme.get_colour(None, None, 'dark_bg'))
-
+        # layout manger verwenden bspw. grid layout
         self.start_game_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect((self.window_width * .45,
                                        self.window_height * .45), (150, 40)),
@@ -49,14 +53,15 @@ class MainMenu(BasicView):
 
         logging.info("MainMenu init done")
 
-    def draw(self):
+    def init(self):
         """
-        Basic draw function for MainMenu View
+        Not yet implemented
         :return:    None
         """
+
+    def draw(self):
         pygame.draw.circle(self.window, (255, 0, 0), (250, 250), 50)
-        # todo delta refresh time from clock!
-        self.manager.update(0.0001)
+        self.manager.update(1 / props.FRAME_RATE)
 
         self.window.blit(self.background, (0, 0))
         self.manager.draw_ui(self.window)
@@ -65,25 +70,17 @@ class MainMenu(BasicView):
         pygame.display.flip()
 
     def receive_event(self, event: pygame.event.Event):
-        """
-        Basic Interface to Controller
-        Controller sends filtered events
-        :param event:   filtered event from controller
-        :return:    None
-        """
+        self.manager.process_events(event)
 
-        if (event.type == pygame.USEREVENT and event.user_type == 'ui_button_pressed' and
-                event.ui_element == self.start_game_button):
-            self.controller.start_game()
+        if event.type == pygame.USEREVENT and event.user_type == 'ui_button_pressed':
+            if event.ui_element == self.start_game_button:
+                self.controller.start_game()
 
-        if (event.type == pygame.USEREVENT and event.user_type == 'ui_button_pressed' and
-                event.ui_element == self.help_button):
-            pass
+            if event.ui_element == self.help_button:
+                pass
 
-        if (event.type == pygame.USEREVENT and event.user_type == 'ui_button_pressed' and
-                event.ui_element == self.settings_button):
-            pass
+            if event.ui_element == self.settings_button:
+                pass
 
-        if (event.type == pygame.USEREVENT and event.user_type == 'ui_button_pressed' and
-                event.ui_element == self.end_game_button):
-            self.controller.exit_game()
+            if event.ui_element == self.end_game_button:
+                self.controller.exit_game()

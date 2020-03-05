@@ -2,7 +2,6 @@ from abc import ABC
 from model import Gadgets
 
 
-
 class FieldState(ABC):
     pass
 
@@ -37,10 +36,11 @@ class FireplaceField(FieldState):
 
 class Field:
     def __init__(self):
-        self.fieldState = FieldState()
+        self.fieldState = None
         self.gadget = Gadgets.Gadget(0, 0.0, 0, 0)
         self.character = None
 
+        # could be moved to state itself
         self.isDestroyed = False
         self.chipAmount = 0
 
@@ -48,7 +48,13 @@ class Field:
         self.isFoggy = False
 
 
+class Point:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+
 class Map:
     def __init__(self):
-        # array of Fields
-        self.map = [[]]
+        # array of Fields, data structure should be changed to map <Point(x,y), Field>
+        self.map = {}

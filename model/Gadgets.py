@@ -1,13 +1,13 @@
 from abc import ABC
 
+#todo implementation of gadget and subclasses is not ideal, better ideas are welcome
 
 class Gadget(ABC):
     def __init__(self, gadgetRange: int, probability: float, damage: int, usagesLeft: int):
-        self.range = range
+        self.range = gadgetRange
         self.probability = probability
         self.damage = damage
         self.usagesLeft = usagesLeft
-
 
 class HairDryer(Gadget):
     def __init__(self, gadgetRange: int, usagesLeft: int):

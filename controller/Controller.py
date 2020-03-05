@@ -19,54 +19,46 @@ class Controller(ControllerGameView, ControllerMainMenu):
         pygame.display.set_caption(props.WINDOW_NAME)
         self.clock = pygame.time.Clock()
         self.mainMenu = MainMenu(self.screen, self)
+        self.activeViews = []
+
+        # at the beginning main menu is the active view
+        self.activeViews.append(self.mainMenu)
 
     def init_components(self):
         """
-        @brief  initializes all other components
+        initializes all other components
+        Calls init of view
         """
         # initialize components (model,view,self)
         logging.info("Controller init done")
 
     def loop(self):
         """
-        :brief: basic main loop
+        basic main loop
         :return:    None
         """
         # main game loop is started from here
         while True:
-            # events should be filtered
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit(0)
-                if event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.USEREVENT:
-                    self.mainMenu.receive_event(event)
-
-                # todo muss irgendwo anders hin
-                self.mainMenu.manager.process_events(event)
-            # todo extension for other views!
-            self.mainMenu.draw()
+                # distribute events to all active views
+                for view in self.activeViews:
+                    view.receive_event(event)
+            # drawing order to all active views
+            for view in self.activeViews:
+                view.draw()
 
             self.clock.tick(props.FRAME_RATE)
 
     def start_game(self):
-        """
-        Interface to MainMenu View
-        :return:    None
-        """
         logging.info("Start game detected")
 
     def exit_game(self):
-        """
-        Interface to MainMenu View
-        :return:    None
-        """
         logging.info("Exit from MainMenu")
         pygame.quit()
         sys.exit(0)
 
     def send_action(self):
-        """
-        Interface to GameView
-        :return:    None
-        """
+        pass

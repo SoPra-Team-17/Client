@@ -11,11 +11,17 @@ class ControllerMainMenu(ABC):
 
     @abstractmethod
     def start_game(self):
-        pass
+        """
+        Interface to MainMenu View
+        :return:    None
+        """
 
     @abstractmethod
     def exit_game(self):
-        pass
+        """
+        Interface to MainMenu View
+        :return:    None
+        """
 
 
 class ControllerGameView(ABC):
@@ -28,4 +34,7 @@ class ControllerGameView(ABC):
 
     @abstractmethod
     def send_action(self):
-        pass
+        """
+        Interface to GameView
+        :return:    None
+        """
