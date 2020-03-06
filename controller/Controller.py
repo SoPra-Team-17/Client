@@ -14,6 +14,8 @@ class Controller(ControllerGameView, ControllerMainMenu):
     def __init__(self):
         # call init of ControllerGameView
         super(Controller, self).__init__()
+        # call init of ControllerMainMenu
+        super(ControllerGameView, self).__init__()
 
         pygame.init()
         # erstelle screen
