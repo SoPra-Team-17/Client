@@ -15,8 +15,6 @@ class Controller(ControllerGameView, ControllerMainMenu):
         # call init of ControllerGameView
         super(Controller, self).__init__()
 
-        # call init of ControllerMainMenu
-        super(Controller, self).__init__()
         pygame.init()
         # erstelle screen
         self.screen = pygame.display.set_mode((props.WINDOW_WIDTH, props.WINDOW_HEIGHT))
