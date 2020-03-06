@@ -102,4 +102,4 @@ class PocketLitter(Gadget):
 
 class DiamondCollar(Gadget):
     def __init__(self):
-        super().__init__(-1, -1.0, -1, -1)
+        super().__init__()
