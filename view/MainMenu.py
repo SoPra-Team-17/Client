@@ -73,14 +73,8 @@ class MainMenu(BasicView):
         self.manager.process_events(event)
 
         if event.type == pygame.USEREVENT and event.user_type == 'ui_button_pressed':
-            if event.ui_element == self.start_game_button:
-                self.controller.start_game()
-
-            if event.ui_element == self.help_button:
-                pass
-
-            if event.ui_element == self.settings_button:
-                pass
-
-            if event.ui_element == self.end_game_button:
-                self.controller.exit_game()
+            switcher = {
+                self.start_game_button: self.controller.start_game,
+                self.end_game_button: self.controller.exit_game
+            }
+            switcher.get(event.ui_element)()
