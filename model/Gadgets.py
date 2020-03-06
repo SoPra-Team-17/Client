@@ -97,7 +97,7 @@ class MirrorOfWilderness(Gadget):
 
 class PocketLitter(Gadget):
     def __init__(self):
-        super().__init__(-1, -1.0, -1, -1)
+        super().__init__()
 
 
 class DiamondCollar(Gadget):
