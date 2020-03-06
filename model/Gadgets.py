@@ -77,7 +77,7 @@ class Jetpack(Gadget):
 
 class WiretapWithEarplugs(Gadget):
     def __init__(self, probability: float):
-        super().__init__(-1, probability, -1, -1)
+        super().__init__(probability=probability)
 
 
 class ChickenFeed(Gadget):
