@@ -47,7 +47,7 @@ class LaserCompact(Gadget):
 
 class RocketPen(Gadget):
     def __init__(self, damage: int):
-        super().__init__(-1, -1.0, damage, -1)
+        super().__init__(damage=damage)
 
 
 class GasGloss(Gadget):
