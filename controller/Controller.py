@@ -8,7 +8,7 @@ from controller.ControllerView import ControllerGameView, ControllerMainMenu
 
 class Controller(ControllerGameView, ControllerMainMenu):
     """
-    @brief  class implementing a basic controller
+    class implementing a basic controller
     """
 
     def __init__(self):
