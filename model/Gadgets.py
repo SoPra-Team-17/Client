@@ -67,7 +67,7 @@ class FogTin(Gadget):
 
 class Grapple(Gadget):
     def __init__(self, gadgetRange: int, probability: float):
-        super().__init__(gadgetRange, probability, -1, -1)
+        super().__init__(gadgetRange=gadgetRange, probability=probability)
 
 
 class Jetpack(Gadget):
