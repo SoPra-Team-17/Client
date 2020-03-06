@@ -1,21 +1,21 @@
-from enum import Enum
+from enum import Enum, auto
 
 
 class CharacterProperties(Enum):
-    Nimbleness
-    Sluggishness
-    Spryness
-    Stolidity
-    Agility
-    Jinx
-    LuckyDevil
-    ClammyClothes
-    ConstantClammyClothes
-    RobustStomach
-    Toughness
-    Babysitter
-    HoneyTrap
-    BangAndBurn
-    FlapsAndSeals
-    Tradecraft
-    Observation
+    Nimbleness = auto()
+    Sluggishness = auto()
+    Spryness = auto()
+    Stolidity = auto()
+    Agility = auto()
+    Jinx = auto()
+    LuckyDevil = auto()
+    ClammyClothes = auto()
+    ConstantClammyClothes = auto()
+    RobustStomach = auto()
+    Toughness = auto()
+    Babysitter = auto()
+    HoneyTrap = auto()
+    BangAndBurn = auto()
+    FlapsAndSeals = auto()
+    Tradecraft = auto()
+    Observation = auto()
