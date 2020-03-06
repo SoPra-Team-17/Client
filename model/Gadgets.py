@@ -16,7 +16,7 @@ class HairDryer(Gadget):
 
 class MoleDie(Gadget):
     def __init__(self, gadgetRange: int):
-        super().__init__(gadgetRange, -1.0, -1, -1)
+        super().__init__(gadgetRange=gadgetRange)
 
 
 class TechnicolourPrism(Gadget):
