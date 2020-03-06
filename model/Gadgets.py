@@ -92,7 +92,7 @@ class Nugget(Gadget):
 
 class MirrorOfWilderness(Gadget):
     def __init__(self, probability: float, usagesLeft: int):
-        super().__init__(-1, probability, -1, usagesLeft)
+        super().__init__(probability=probability, usagesLeft=usagesLeft)
 
 
 class PocketLitter(Gadget):
