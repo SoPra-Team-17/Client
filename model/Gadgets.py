@@ -82,7 +82,7 @@ class WiretapWithEarplugs(Gadget):
 
 class ChickenFeed(Gadget):
     def __init__(self, usagesLeft: int):
-        super().__init__(-1, -1.0, -1, usagesLeft)
+        super().__init__(usagesLeft=usagesLeft)
 
 
 class Nugget(Gadget):
