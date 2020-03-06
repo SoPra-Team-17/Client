@@ -52,7 +52,7 @@ class RocketPen(Gadget):
 
 class GasGloss(Gadget):
     def __init__(self, gadgetRange: int, damage: int, usagesLeft: int):
-        super().__init__(gadgetRange, -1.0, damage, usagesLeft)
+        super().__init__(gadgetRange=gadgetRange, damage=damage, usagesLeft=usagesLeft)
 
 
 class MothballPouch(Gadget):
