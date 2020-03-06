@@ -21,7 +21,7 @@ class MoleDie(Gadget):
 
 class TechnicolourPrism(Gadget):
     def __init__(self, gadgetRange: int):
-        super().__init__(gadgetRange, -1.0, -1, -1)
+        super().__init__(gadgetRange=gadgetRange)
 
 
 class BowlerBlade(Gadget):
