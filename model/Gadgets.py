@@ -3,7 +3,7 @@ from abc import ABC
 #todo implementation of gadget and subclasses is not ideal, better ideas are welcome
 
 class Gadget(ABC):
-    def __init__(self, gadgetRange: int, probability: float, damage: int, usagesLeft: int):
+    def __init__(self, gadgetRange: int = -1, probability: float = -1.0, damage: int = -1, usagesLeft: int = -1):
         self.range = gadgetRange
         self.probability = probability
         self.damage = damage
