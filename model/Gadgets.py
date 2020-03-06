@@ -87,7 +87,7 @@ class ChickenFeed(Gadget):
 
 class Nugget(Gadget):
     def __init__(self, usagesLeft: int):
-        super().__init__(-1, -1.0, -1, usagesLeft)
+        super().__init__(usagesLeft=usagesLeft)
 
 
 class MirrorOfWilderness(Gadget):
