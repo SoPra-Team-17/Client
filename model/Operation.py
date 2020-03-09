@@ -1,20 +1,29 @@
-from abc import ABC, ABCMeta, abstractmethod
+from abc import ABC
 
 
-class Operation(ABC): pass
+class Operation(ABC):
+    pass
 
 
-class Action(Operation):pass
-
-class Movement(Operation): pass
-
+class Action(Operation):
+    pass
 
 
-class GadgetAction(Action): pass
-class Roulette(Action): pass
-class Cocktails(Action): pass
-class Spionieren(Action): pass
-class TresorSpicke(Action): pass
+class Movement(Operation):
+    pass
 
 
+class Retire(Operation):
+    pass
 
+
+class GadgetAction(Action):
+    pass
+
+
+class SpyAction(Action):
+    pass
+
+
+class Property(Action):
+    pass

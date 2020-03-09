@@ -1,23 +1,21 @@
-from abc import ABC, ABCMeta, abstractmethod
+from enum import Enum, auto
 
 
-class CharacterProperties(ABC): pass
-
-
-class Flinkheit(CharacterProperties): pass
-class Schwerfaelligkeit(CharacterProperties): pass
-class Behaendigkeit(CharacterProperties): pass
-class Behaebigkeit(CharacterProperties): pass
-class Agilitaet(CharacterProperties): pass
-class Glueckspilz(CharacterProperties): pass
-class Pechvogel(CharacterProperties): pass
-class KlammeKlamotten(CharacterProperties): pass
-class KonstantKlammeKlamotten(CharacterProperties): pass
-class RobusterMagen(CharacterProperties): pass
-class Zaehigkeit(CharacterProperties): pass
-class Babysitter(CharacterProperties): pass
-class HoneyTrap(CharacterProperties): pass
-class BangAndBurn(CharacterProperties): pass
-class FlapsAndSeals(CharacterProperties): pass
-class Tradecraft(CharacterProperties): pass
-class Observation(CharacterProperties): pass
+class CharacterProperties(Enum):
+    Nimbleness = auto()
+    Sluggishness = auto()
+    Spryness = auto()
+    Stolidity = auto()
+    Agility = auto()
+    Jinx = auto()
+    LuckyDevil = auto()
+    ClammyClothes = auto()
+    ConstantClammyClothes = auto()
+    RobustStomach = auto()
+    Toughness = auto()
+    Babysitter = auto()
+    HoneyTrap = auto()
+    BangAndBurn = auto()
+    FlapsAndSeals = auto()
+    Tradecraft = auto()
+    Observation = auto()

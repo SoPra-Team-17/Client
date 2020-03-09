@@ -1,26 +1,102 @@
-from abc import ABC, ABCMeta, abstractmethod
-
-#todo id,prob,usagesLeft,damage,range müssen noch irgendwo auftauchen!
-class Gadget(ABC):pass
+from abc import ABC
 
 
+# todo implementation of gadget and subclasses is not ideal, better ideas are welcome
 
-class AkkuFoehn(Gadget): pass
-class Maulwuerfel(Gadget): pass
-class TechnicolorPrisma(Gadget): pass
-class KlingenHut(Gadget): pass
-class MagnetfeldArmbanduhr(Gadget): pass
-class GiftpillenFlasche(Gadget): pass
-class LaserPuderdose(Gadget): pass
-class RaketenwerfenFuellfederhalter(Gadget): pass
-class GaspatronenLippenstif(Gadget): pass
-class MottenkugelBeutel(Gadget): pass
-class Nebeldose(Gadget): pass
-class Wurfhaken(Gadget): pass
-class Jetpack(Gadget): pass
-class WanzeUndOhrstoepsel(Gadget): pass
-class ChickenFeed(Gadget): pass
-class Nugget(Gadget): pass
-class MirrorOfWilderness(Gadget): pass
-class PocketLitter(Gadget): pass
-class Diamanthalsband(Gadget): pass
+class Gadget(ABC):
+    def __init__(self, gadgetRange: int = -1, probability: float = -1.0, damage: int = -1, usagesLeft: int = -1):
+        self.range = gadgetRange
+        self.probability = probability
+        self.damage = damage
+        self.usagesLeft = usagesLeft
+
+
+class HairDryer(Gadget):
+    def __init__(self, gadgetRange: int, usagesLeft: int):
+        super().__init__(gadgetRange=gadgetRange, usagesLeft=usagesLeft)
+
+
+class MoleDie(Gadget):
+    def __init__(self, gadgetRange: int):
+        super().__init__(gadgetRange=gadgetRange)
+
+
+class TechnicolourPrism(Gadget):
+    def __init__(self, gadgetRange: int):
+        super().__init__(gadgetRange=gadgetRange)
+
+
+class BowlerBlade(Gadget):
+    """
+    does not need __init__ as it is directly derived
+    """
+
+
+class PoisonPills(Gadget):
+    def __init__(self):
+        super().__init__()
+
+
+class LaserCompact(Gadget):
+    def __init__(self, probability: float):
+        super().__init__(probability=probability)
+
+
+class RocketPen(Gadget):
+    def __init__(self, damage: int):
+        super().__init__(damage=damage)
+
+
+class GasGloss(Gadget):
+    def __init__(self, gadgetRange: int, damage: int, usagesLeft: int):
+        super().__init__(gadgetRange=gadgetRange, damage=damage, usagesLeft=usagesLeft)
+
+
+class MothballPouch(Gadget):
+    def __init__(self, gadgetRange: int, damage: int, usagesLeft: int):
+        super().__init__(gadgetRange=gadgetRange, damage=damage, usagesLeft=usagesLeft)
+
+
+class FogTin(Gadget):
+    def __init__(self, gadgetRange: int, usagesLeft: int):
+        super().__init__(gadgetRange=gadgetRange, usagesLeft=usagesLeft)
+
+
+class Grapple(Gadget):
+    def __init__(self, gadgetRange: int, probability: float):
+        super().__init__(gadgetRange=gadgetRange, probability=probability)
+
+
+class Jetpack(Gadget):
+    def __init__(self, usagesLeft: int):
+        super().__init__(usagesLeft=usagesLeft)
+
+
+class WiretapWithEarplugs(Gadget):
+    def __init__(self, probability: float):
+        super().__init__(probability=probability)
+
+
+class ChickenFeed(Gadget):
+    def __init__(self, usagesLeft: int):
+        super().__init__(usagesLeft=usagesLeft)
+
+
+class Nugget(Gadget):
+    def __init__(self, usagesLeft: int):
+        super().__init__(usagesLeft=usagesLeft)
+
+
+class MirrorOfWilderness(Gadget):
+    def __init__(self, probability: float, usagesLeft: int):
+        super().__init__(probability=probability, usagesLeft=usagesLeft)
+
+
+class PocketLitter(Gadget):
+    def __init__(self):
+        super().__init__()
+
+
+class DiamondCollar(Gadget):
+    def __init__(self):
+        super().__init__()
