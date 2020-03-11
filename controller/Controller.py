@@ -3,6 +3,7 @@ import logging
 import pygame
 import view.ViewConstants as props
 from view.MainMenu import MainMenu
+from view.GameView import GameView
 from controller.ControllerView import ControllerGameView, ControllerMainMenu
 
 
@@ -23,6 +24,7 @@ class Controller(ControllerGameView, ControllerMainMenu):
         pygame.display.set_caption(props.WINDOW_NAME)
         self.clock = pygame.time.Clock()
         self.mainMenu = MainMenu(self.screen, self)
+        self.gameView = GameView(self.screen, self)
         self.activeViews = []
 
         # at the beginning main menu is the active view
@@ -58,6 +60,8 @@ class Controller(ControllerGameView, ControllerMainMenu):
 
     def start_game(self):
         logging.info("Start game detected")
+        self.activeViews = []
+        self.activeViews.append(self.gameView)
 
     def exit_game(self):
         logging.info("Exit from MainMenu")

@@ -8,6 +8,7 @@ from view.BasicView import BasicView
 from controller.ControllerView import ControllerMainMenu
 
 
+
 class MainMenu(BasicView):
 
     def __init__(self, window: pygame.display, controller: ControllerMainMenu):
@@ -20,9 +21,10 @@ class MainMenu(BasicView):
         self.manager.add_font_paths("SanistaOne", "assets/Menu/SanistaOne.ttf")
 
         self.container = pygame_gui.core.UIContainer(
-            relative_rect=pygame.Rect((self.window_width * .15, self.window_height * .1),
+            relative_rect=pygame.Rect((self.window_width * .17, self.window_height * .1),
                                       (self.window_width / 4, self.window_height / 2)),
             manager=self.manager)
+
 
         self.__padding = self.container.rect.width / 10
         self.__buttonSize = (self.container.rect.width / 3, self.container.rect.width / 12)
@@ -30,9 +32,10 @@ class MainMenu(BasicView):
         self.background = pygame.Surface((self.window_width, self.window_height))
         self.background.fill(self.manager.ui_theme.get_colour(None, None, 'dark_bg'))
 
+
         self.start_game_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect((self.container.rect.centerx,
-                                       self.container.rect.centery + self.__padding * len(self.container.elements)),
+                                       self.container.rect.centery + self.__padding*len(self.container.elements)),
                                       self.__buttonSize),
             text="Start Game",
             manager=self.manager,
@@ -40,7 +43,7 @@ class MainMenu(BasicView):
         )
         self.help_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect((self.container.rect.centerx,
-                                       self.container.rect.centery + self.__padding * len(self.container.elements)),
+                                       self.container.rect.centery + self.__padding*len(self.container.elements)),
                                       self.__buttonSize),
             text="Help",
             manager=self.manager,
@@ -48,7 +51,7 @@ class MainMenu(BasicView):
         )
         self.settings_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect((self.container.rect.centerx,
-                                       self.container.rect.centery + self.__padding * len(self.container.elements)),
+                                       self.container.rect.centery + self.__padding*len(self.container.elements)),
                                       self.__buttonSize),
             text="Settings",
             manager=self.manager,
@@ -56,16 +59,15 @@ class MainMenu(BasicView):
         )
         self.end_game_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect((self.container.rect.centerx,
-                                       self.container.rect.centery + self.__padding * len(self.container.elements)),
+                                       self.container.rect.centery + self.__padding*len(self.container.elements)),
                                       self.__buttonSize),
             text="End Game",
             manager=self.manager,
             container=self.container
         )
 
-        # load title image
+        #load title image
         self.titleImage = pygame.image.load("assets/Menu/TitleImage.png")
-
         logging.info("MainMenu init done")
 
     def init(self):
@@ -80,7 +82,7 @@ class MainMenu(BasicView):
 
         self.window.blit(self.background, (0, 0))
         self.window.blit(self.titleImage,
-                         (self.window_width / 2 - self.container.rect.width / 2, self.window_height * .25))
+                         (self.window_width/2 - self.titleImage.get_rect().width/2, self.window_height * .25))
         self.manager.draw_ui(self.window)
 
         pygame.display.update()

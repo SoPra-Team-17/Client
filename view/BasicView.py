@@ -11,9 +11,6 @@ class BasicView(ABC):
         self.window = window
         self.controller = controller
 
-    @abstractmethod
-    def init(self):
-        pass
 
     @abstractmethod
     def draw(self):
