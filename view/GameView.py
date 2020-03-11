@@ -57,6 +57,7 @@ class GameView(BasicView):
         offsetX, offsetY = self.camera.getTrans()
         # parameter for tilesize!
         b = h = 64
-        xTrans = int(1 / b * x + 2 / b * y)
-        yTrans = int(-1 / h * x + 2 / h * y)
+        #woher kommen die konstanten offset -24 und 6?
+        xTrans = int(1 / b * x + 2 / b * y - offsetX) - 24
+        yTrans = int(-1 / h * x + 2 / h * y - offsetY) + 6
         logging.info("xTrans= " + str(xTrans) + " yTrans= " + str(yTrans))
