@@ -5,6 +5,7 @@ import view.ViewConstants as props
 from view.BasicView import BasicView
 from view.IsoElements import Block, BlockGroup, Camera
 from controller.ControllerView import ControllerGameView
+from util.Transforms import trafo_to_world_coords
 
 
 def create_playing_field(group: BlockGroup, window: pygame.display):
@@ -50,14 +51,8 @@ class GameView(BasicView):
 
         if event.type == pygame.MOUSEBUTTONUP:
             pos = pygame.mouse.get_pos()
-            self.trafo_to_world_coords(pos[0], pos[1])
-
-    def trafo_to_world_coords(self, x, y):
-        # todo, sieht bisher mal ganz gut, der konstante offset muss mal noch raus
-        offsetX, offsetY = self.camera.getTrans()
-        # parameter for tilesize!
-        b = h = 64
-        #woher kommen die konstanten offset -24 und 6?
-        xTrans = int(1 / b * x + 2 / b * y - offsetX) - 24
-        yTrans = int(-1 / h * x + 2 / h * y - offsetY) + 6
-        logging.info("xTrans= " + str(xTrans) + " yTrans= " + str(yTrans))
+            offsetX, offsetY = self.camera.getTrans()
+            # todo write unit test!
+            xTrans, yTrans = trafo_to_world_coords(pos[0], pos[1], offsetX, offsetY)
+            logging.info("Pos: " + str(pos) + " OffsetX= " + str(offsetX) + " OffsetY= " + str(offsetY))
+            logging.info("XTrans= " + str(xTrans) + " YTrans= " + str(yTrans))
