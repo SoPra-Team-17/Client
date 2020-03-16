@@ -2,7 +2,7 @@ from model.Scenario import Point
 
 
 class Character:
-    def __init__(self, bp=0, ap=0, hp=100, ip=0):
+    def __init__(self, bp: int = 0, ap: int = 0, hp: int = 100, ip: int = 0) -> None:
         self.ID = 0
         self.name = ""
         self.description = ""

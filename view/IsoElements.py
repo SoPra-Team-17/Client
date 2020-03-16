@@ -73,7 +73,7 @@ class BlockGroup:
     def add(self, block: Block) -> None:
         self.list.append(block)
 
-    def translation(self, x, y) -> None:
+    def translation(self, x: float, y: float) -> None:
         for block in self.list:
             block.x += x
             block.y += y

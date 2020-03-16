@@ -10,7 +10,7 @@ from controller.ControllerView import ControllerMainMenu
 
 class MainMenu(BasicView):
 
-    def __init__(self, window: pygame.display, controller: ControllerMainMenu):
+    def __init__(self, window: pygame.display, controller: ControllerMainMenu) -> None:
         super(MainMenu, self).__init__(window, controller)
 
         self.window_width, self.window_height = pygame.display.get_surface().get_size()
@@ -69,13 +69,13 @@ class MainMenu(BasicView):
         self.titleImage = pygame.image.load("assets/Menu/TitleImage.png")
         logging.info("MainMenu init done")
 
-    def init(self):
+    def init(self) -> None:
         """
         Not yet implemented
         :return:    None
         """
 
-    def draw(self):
+    def draw(self) -> None:
         pygame.draw.circle(self.window, (255, 0, 0), (250, 250), 50)
         self.manager.update(1 / props.FRAME_RATE)
 
@@ -87,7 +87,7 @@ class MainMenu(BasicView):
         pygame.display.update()
         pygame.display.flip()
 
-    def receive_event(self, event: pygame.event.Event):
+    def receive_event(self, event: pygame.event.Event) -> None:
         self.manager.process_events(event)
 
         if event.type == pygame.USEREVENT and event.user_type == 'ui_button_pressed':
@@ -99,8 +99,8 @@ class MainMenu(BasicView):
             }
             switcher.get(event.ui_element)()
 
-    def help_button_pressed(self):
+    def help_button_pressed(self) -> None:
         pass
 
-    def settings_button_pressed(self):
+    def settings_button_pressed(self) -> None:
         pass

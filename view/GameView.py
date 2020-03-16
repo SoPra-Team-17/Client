@@ -8,7 +8,14 @@ from controller.ControllerView import ControllerGameView
 from util.Transforms import Transformations
 
 
-def create_playing_field(group: BlockGroup, window: pygame.display):
+def create_playing_field(group: BlockGroup, window: pygame.display) -> None:
+    """
+    Methode used for testing, generates basic field to test transformations and so on
+    :todo can be deleted as soon as scenario files can be read in
+    :param group:
+    :param window:
+    :return:
+    """
     for i in range(0, 10, 1):
         for j in range(0, 10, 1):
             group.add(Block(window, i, j, 0))
@@ -28,7 +35,7 @@ def create_playing_field(group: BlockGroup, window: pygame.display):
 
 class GameView(BasicView):
 
-    def __init__(self, window: pygame.display, controller: ControllerGameView):
+    def __init__(self, window: pygame.display, controller: ControllerGameView) -> None:
         super().__init__(window, controller)
         self.window_width, self.window_height = pygame.display.get_surface().get_size()
 
@@ -36,7 +43,7 @@ class GameView(BasicView):
         create_playing_field(self.block_group, self.window)
         self.camera = Camera(camera_speed=.5)
 
-    def draw(self):
+    def draw(self) -> None:
         self.window.fill((50, 50, 50))
 
         self.camera.move_camera(pygame.key.get_pressed(), self.block_group)
@@ -46,7 +53,7 @@ class GameView(BasicView):
         pygame.display.update()
         pygame.display.flip()
 
-    def receive_event(self, event: pygame.event.Event):
+    def receive_event(self, event: pygame.event.Event) -> None:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
                 self.camera.center(self.block_group)

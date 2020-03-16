@@ -35,7 +35,7 @@ class FireplaceField(FieldState):
 
 
 class Field:
-    def __init__(self):
+    def __init__(self) -> None:
         self.fieldState = None
         self.gadget = Gadgets.Gadget(0, 0.0, 0, 0)
         self.character = None
@@ -49,12 +49,12 @@ class Field:
 
 
 class Point:
-    def __init__(self, x, y):
+    def __init__(self, x: int, y: int) -> None:
         self.x = x
         self.y = y
 
 
 class Map:
-    def __init__(self):
+    def __init__(self) -> None:
         # array of Fields, data structure should be changed to map <Point(x,y), Field>
         self.map = {}
