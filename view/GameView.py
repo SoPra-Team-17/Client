@@ -53,6 +53,6 @@ class GameView(BasicView):
             pos = pygame.mouse.get_pos()
             offsetX, offsetY = self.camera.getTrans()
             # todo write unit test!
-            xTrans, yTrans = trafo_to_world_coords(pos[0], pos[1], offsetX, offsetY)
+            xTrans, yTrans = Transformations.trafo_to_world_coords(pos[0], pos[1], offsetX, offsetY)
             logging.info("Pos: " + str(pos) + " OffsetX= " + str(offsetX) + " OffsetY= " + str(offsetY))
             logging.info("XTrans= " + str(xTrans) + " YTrans= " + str(yTrans))
