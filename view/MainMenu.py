@@ -1,6 +1,5 @@
 import logging
 import pygame_gui.elements.ui_button
-from pygame_gui.elements import UITextBox
 import pygame
 
 import view.ViewConstants as props

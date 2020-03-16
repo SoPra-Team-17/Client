@@ -40,6 +40,8 @@ class GameView(BasicView):
         self.window.fill((50, 50, 50))
 
         self.camera.move_camera(pygame.key.get_pressed(), self.block_group)
+
+        self.block_group.highlight_block_in_focus(self.camera.getTrans())
         self.block_group.draw(window=self.window)
         pygame.display.update()
         pygame.display.flip()
@@ -52,7 +54,6 @@ class GameView(BasicView):
         if event.type == pygame.MOUSEBUTTONUP:
             pos = pygame.mouse.get_pos()
             offsetX, offsetY = self.camera.getTrans()
-            # todo write unit test!
-            xTrans, yTrans = Transformations.trafo_to_world_coords(pos[0], pos[1], offsetX, offsetY)
+            xTrans, yTrans = Transformations.trafo_window_to_world_coords(pos[0], pos[1], offsetX, offsetY)
             logging.info("Pos: " + str(pos) + " OffsetX= " + str(offsetX) + " OffsetY= " + str(offsetY))
             logging.info("XTrans= " + str(xTrans) + " YTrans= " + str(yTrans))
