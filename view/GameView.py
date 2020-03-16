@@ -5,7 +5,7 @@ import view.ViewConstants as props
 from view.BasicView import BasicView
 from view.IsoElements import Block, BlockGroup, Camera
 from controller.ControllerView import ControllerGameView
-from util.Transforms import trafo_to_world_coords
+from util.Transforms import Transformations
 
 
 def create_playing_field(group: BlockGroup, window: pygame.display):

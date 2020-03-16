@@ -1,6 +1,6 @@
 import unittest
 
-import util.Transforms as transforms
+from util.Transforms import Transformations as transforms
 import view.ViewConstants as props
 
 
