@@ -101,7 +101,9 @@ class BlockGroup:
 
 
 class Camera:
-
+    """
+    The camera is an isometric camera with a rotation of 45° --> thus all proportions are 2:1
+    """
     def __init__(self, camera_speed: float = 1.0, x_factor: float = .5, y_factor: float = 1.0) -> None:
         self.__xTrans = 0
         self.__yTrans = 0
