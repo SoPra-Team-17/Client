@@ -1,3 +1,4 @@
 pylint
 pygame
 pygame_gui
+numpy
