@@ -50,7 +50,7 @@ class DrawableGroup:
     def highlight_drawable_in_focus(self, camOffset: Tuple[float, float]) -> None:
         pos = pygame.mouse.get_pos()
         # transform mouse pos to world coords
-        xt, yt = Transformations.trafo_window_to_world_coords(pos[0], pos[1], camOffset[0], camOffset[1])
+        xt, yt = Transformations.trafo_window_to_world_coords(pos[0], pos[1], -camOffset[0], -camOffset[1])
         # todo create map to access in O(1) instead of O(n)
         for drawable in self.list:
             if drawable.point.x == xt and drawable.point.y == yt and drawable.point.z == 0:
@@ -84,10 +84,10 @@ class Block(Drawable):
         self.nearness = self.__nearness__()
         m_x = window.get_rect().centerx
         m_y = window.get_rect().centery
-        v_x = (self.point.x + camOffset[0]) * self.__TILEWIDTH / 2 - (
-                self.point.y + camOffset[1]) * self.__TILEHEIGHT / 2 + m_x
-        v_y = (self.point.x + camOffset[0]) * self.__TILEWIDTH / 4 + (
-                self.point.y + camOffset[
+        v_x = (self.point.x - camOffset[0]) * self.__TILEWIDTH / 2 - (
+                self.point.y - camOffset[1]) * self.__TILEHEIGHT / 2 + m_x
+        v_y = (self.point.x - camOffset[0]) * self.__TILEWIDTH / 4 + (
+                self.point.y - camOffset[
             1]) * self.__TILEHEIGHT / 4 - self.point.z * self.__TILEHEIGHT / 2 + m_y / 2
 
         #only draw block, when still inside visible window! accout for block size so block is not clipped on the edge
