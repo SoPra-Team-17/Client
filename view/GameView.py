@@ -46,10 +46,10 @@ class GameView(BasicView):
     def draw(self) -> None:
         self.window.fill((50, 50, 50))
 
-        self.camera.move_camera(pygame.key.get_pressed(), self.block_group)
+        self.camera.move_camera(pygame.key.get_pressed())
 
         self.block_group.highlight_block_in_focus(self.camera.getTrans())
-        self.block_group.draw(window=self.window)
+        self.block_group.draw(window=self.window, camOffset=self.camera.getTrans())
         pygame.display.update()
         pygame.display.flip()
 

@@ -12,7 +12,7 @@ Später werden diese in ihre eigenen Module eingepflegt
 class Drawable(ABC):
 
     @abstractmethod
-    def draw_block(self, window: pygame.display) -> None:
+    def draw_block(self, window: pygame.display, camOffset: Tuple[float, float]) -> None:
         pass
 
     @abstractmethod
@@ -46,12 +46,20 @@ class Block(Drawable):
         self.__TILEHEIGHT = 64
         self.nearness = 0
 
-    def draw_block(self, window: pygame.display) -> None:
+    def draw_block(self, window: pygame.display, camOffset: Tuple[float, float]) -> None:
+        """
+        Draw individual Block
+        :note see that camera offset is now used in drawing function to keep field coords consistent
+        :param window:          pygame display in which the block is drawn
+        :param camOffset:       camera perspective
+        :return:                None
+        """
         self.nearness = self.__nearness__()
         m_x = window.get_rect().centerx
         m_y = window.get_rect().centery
-        v_x = self.x * self.__TILEWIDTH / 2 - self.y * self.__TILEHEIGHT / 2 + m_x
-        v_y = self.x * self.__TILEWIDTH / 4 + self.y * self.__TILEHEIGHT / 4 - self.z * self.__TILEHEIGHT / 2 + m_y / 2
+        v_x = (self.x + camOffset[0]) * self.__TILEWIDTH / 2 - (self.y + camOffset[1]) * self.__TILEHEIGHT / 2 + m_x
+        v_y = (self.x + camOffset[0]) * self.__TILEWIDTH / 4 + (
+                    self.y + camOffset[1]) * self.__TILEHEIGHT / 4 - self.z * self.__TILEHEIGHT / 2 + m_y / 2
 
         self.window.blit(self.current_image, (v_x, v_y))
 
@@ -81,10 +89,10 @@ class BlockGroup:
     def sort(self) -> None:
         self.list.sort(key=lambda block: block.nearness)
 
-    def draw(self, window: pygame.display) -> None:
+    def draw(self, window: pygame.display, camOffset: Tuple[float, float]) -> None:
         self.sort()
         for block in self.list:
-            block.draw_block(window)
+            block.draw_block(window, camOffset)
 
     def highlight_block_in_focus(self, camOffset: Tuple[float, float]) -> None:
         pos = pygame.mouse.get_pos()
@@ -93,8 +101,7 @@ class BlockGroup:
         xt, yt = Transformations.trafo_window_to_world_coords(pos[0], pos[1], offsetX, offsetY)
         for block in self.list:
             # subtract camera offset from coords to get field coords
-            xw, yw = Transformations.trafo_cam_to_world_coords(block.x, block.y, offsetX, offsetY)
-            if xw == xt and yw == yt and block.z == 0:
+            if block.x == xt and block.y == yt and block.z == 0:
                 block.hovering(focus=True)
             else:
                 block.hovering(focus=False)
@@ -104,6 +111,7 @@ class Camera:
     """
     The camera is an isometric camera with a rotation of 45° --> thus all proportions are 2:1
     """
+
     def __init__(self, camera_speed: float = 1.0, x_factor: float = .5, y_factor: float = 1.0) -> None:
         self.__xTrans = 0
         self.__yTrans = 0
@@ -111,29 +119,24 @@ class Camera:
         self.__yFactor = y_factor
         self.camera_speed = camera_speed
 
-    def move_camera(self, keys, block_group: BlockGroup) -> None:
+    def move_camera(self, keys) -> None:
         vx = self.camera_speed * self.__xFactor
         vy = self.camera_speed * self.__yFactor
 
         if keys[pygame.K_a]:
-            block_group.translation(-vx, vx)
             self.__xTrans -= vx
             self.__yTrans += vx
         if keys[pygame.K_d]:
-            block_group.translation(vx, -vx)
             self.__xTrans += vx
             self.__yTrans -= vx
         if keys[pygame.K_w]:
-            block_group.translation(-vy, -vy)
             self.__xTrans -= vy
             self.__yTrans -= vy
         if keys[pygame.K_s]:
-            block_group.translation(vy, vy)
             self.__xTrans += vy
             self.__yTrans += vy
 
     def center(self, block_group: BlockGroup) -> None:
-        block_group.translation(-self.__xTrans, -self.__yTrans)
         self.__xTrans = 0
         self.__yTrans = 0
 
