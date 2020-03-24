@@ -1,6 +1,7 @@
 from typing import Tuple
 from abc import ABC, abstractmethod
-from view.GameView.AssetStorage import BlockAssets
+from view.GameView.AssetStorage import BlockAssets, AssetStorage
+import view.ViewConstants as props
 from util.Transforms import Transformations
 from util.Coordinates import WorldPoint
 import pygame
@@ -8,8 +9,9 @@ import pygame
 
 class Drawable(ABC):
 
-    def __init__(self, pos: WorldPoint = None):
+    def __init__(self, pos: WorldPoint = None, asset_storage: AssetStorage=None):
         self.nearness = 0
+        self.asset_storage = asset_storage
         self.point = WorldPoint() if pos is None else pos
 
     @abstractmethod
@@ -58,13 +60,13 @@ class DrawableGroup:
 
 
 class Block(Drawable):
-    def __init__(self, window: pygame.display, pos: WorldPoint, assets: BlockAssets) -> None:
-        super(Block, self).__init__(pos)
+    def __init__(self, window: pygame.display, pos: WorldPoint, assets: AssetStorage) -> None:
+        super(Block, self).__init__(pos, assets)
 
         self.window = window
 
-        self.block = assets.block_image
-        self.hovered_image = assets.hovered_image
+        self.block = self.asset_storage.block_assets.block_image
+        self.hovered_image = self.asset_storage.block_assets.hovered_image
 
         self.current_image = self.block
 
@@ -88,7 +90,9 @@ class Block(Drawable):
                 self.point.y + camOffset[
             1]) * self.__TILEHEIGHT / 4 - self.point.z * self.__TILEHEIGHT / 2 + m_y / 2
 
-        self.window.blit(self.current_image, (v_x, v_y))
+        #only draw block, when still inside visible window! accout for block size so block is not clipped on the edge
+        if -64 <= v_x <= props.WINDOW_WIDTH+64 and -64 <= v_y <= props.WINDOW_HEIGHT:
+            self.window.blit(self.current_image, (v_x, v_y))
 
     def hovering(self, focus: bool = False) -> None:
         if focus:

@@ -18,19 +18,19 @@ def create_playing_field(group: DrawableGroup, window: pygame.display, assets: A
     """
     for i in range(0, 100, 1):
         for j in range(0, 100, 1):
-            group.add(Block(window, WorldPoint(i, j, 0), assets.block_assets))
+            group.add(Block(window, WorldPoint(i, j, 0), assets))
 
     for i in range(1, 6, 1):
-        group.add(Block(window, WorldPoint(0, 0, i), assets.block_assets))
-        group.add(Block(window, WorldPoint(9, 0, i), assets.block_assets))
-        group.add(Block(window, WorldPoint(0, 9, i), assets.block_assets))
-        group.add(Block(window, WorldPoint(9, 9, i), assets.block_assets))
+        group.add(Block(window, WorldPoint(0, 0, i), assets))
+        group.add(Block(window, WorldPoint(9, 0, i), assets))
+        group.add(Block(window, WorldPoint(0, 9, i), assets))
+        group.add(Block(window, WorldPoint(9, 9, i), assets))
 
     for i in range(1, 9, 1):
-        group.add(Block(window, WorldPoint(i, 0, 4), assets.block_assets))
-        group.add(Block(window, WorldPoint(i, 9, 4), assets.block_assets))
-        group.add(Block(window, WorldPoint(0, i, 4), assets.block_assets))
-        group.add(Block(window, WorldPoint(9, i, 4), assets.block_assets))
+        group.add(Block(window, WorldPoint(i, 0, 4), assets))
+        group.add(Block(window, WorldPoint(i, 9, 4), assets))
+        group.add(Block(window, WorldPoint(0, i, 4), assets))
+        group.add(Block(window, WorldPoint(9, i, 4), assets))
 
 
 class GameViewController:
