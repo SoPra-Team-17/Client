@@ -19,7 +19,7 @@ class DrawableAssets(ABC):
 
 class BlockAssets(DrawableAssets):
     def __init__(self):
-        self.block_image = pygame.image.load("assets/GameView/block.png")
+        self.block_image = pygame.image.load("assets/GameView/block.png").convert_alpha()
         self.block_image = pygame.transform.scale(self.block_image, (64, 64))
 
         self.hovered_image = self.block_image.copy()
