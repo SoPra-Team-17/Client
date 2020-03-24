@@ -1,4 +1,3 @@
-import logging
 import pygame
 
 from view.BasicView import BasicView

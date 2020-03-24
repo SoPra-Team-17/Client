@@ -1,7 +1,6 @@
-import logging
-
-from abc import ABC, abstractmethod
 from typing import Tuple
+from abc import ABC, abstractmethod
+from view.GameView.AssetStorage import BlockAssets
 from util.Transforms import Transformations
 from util.Coordinates import WorldPoint
 import pygame
@@ -59,17 +58,13 @@ class DrawableGroup:
 
 
 class Block(Drawable):
-    def __init__(self, window: pygame.display, pos: WorldPoint) -> None:
+    def __init__(self, window: pygame.display, pos: WorldPoint, assets: BlockAssets) -> None:
         super(Block, self).__init__(pos)
 
         self.window = window
 
-        self.block = pygame.image.load("assets/GameView/block.png")
-        self.block = pygame.transform.scale(self.block, (64, 64))
-
-        self.hovered_image = self.block.copy()
-        self.hovered_image.fill((0, 0, 0, 255), None, pygame.BLEND_RGBA_MULT)
-        self.hovered_image.fill((0, 255, 0, 0), None, pygame.BLEND_RGBA_ADD)
+        self.block = assets.block_image
+        self.hovered_image = assets.hovered_image
 
         self.current_image = self.block
 

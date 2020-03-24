@@ -1,5 +1,6 @@
 from typing import Tuple
 
+
 class Transformations:
 
     @staticmethod
