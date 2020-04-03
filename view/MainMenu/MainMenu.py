@@ -3,6 +3,7 @@ import pygame
 
 from view.BasicView import BasicView
 from view.MainMenu.MainMenuScreen import MainMenuScreen
+from view.MainMenu.SettingsScreen import SettingsScreen
 from controller.ControllerView import ControllerMainMenu
 
 
@@ -12,7 +13,8 @@ class MainMenu(BasicView):
         super(MainMenu, self).__init__(window, controller)
 
         self.active_screens = []
-        self.mainMenuScreen = MainMenuScreen(self.window, self.controller)
+        self.mainMenuScreen = MainMenuScreen(self.window, self.controller, self)
+        self.settingsScreen = SettingsScreen(self.window, self.controller, self)
 
         self.active_screens.append(self.mainMenuScreen)
         logging.info("MainMenu init done")
@@ -30,3 +32,12 @@ class MainMenu(BasicView):
     def receive_event(self, event: pygame.event.Event) -> None:
         for screen in self.active_screens:
             screen.receive_event(event)
+
+    def to_settings(self) -> None:
+        self.active_screens = [self.settingsScreen]
+
+    def to_help(self) -> None:
+        logging.error("Help Screen not yet implemented")
+
+    def to_main_menu(self) -> None:
+        self.active_screens = [self.mainMenuScreen]

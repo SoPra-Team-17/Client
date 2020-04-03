@@ -11,6 +11,8 @@ class BasicView(ABC):
         self.window = window
         self.controller = controller
 
+        self.window_width, self.window_height = pygame.display.get_surface().get_size()
+
 
     @abstractmethod
     def draw(self) -> None:

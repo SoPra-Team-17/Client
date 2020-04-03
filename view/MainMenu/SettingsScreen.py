@@ -7,16 +7,15 @@ from view.BasicView import BasicView
 from controller.ControllerView import ControllerMainMenu
 
 
-class MainMenuScreen(BasicView):
+class SettingsScreen(BasicView):
 
     def __init__(self, window: pygame.display, controller: ControllerMainMenu, parentView):
-        super(MainMenuScreen, self).__init__(window, controller)
+        super(SettingsScreen, self).__init__(window, controller)
 
         self.parent_view = parentView
 
         self.manager = pygame_gui.UIManager((self.window_width, self.window_height),
                                             "assets/Menu/MainMenuTheme.json")
-        self.manager.add_font_paths("SanistaOne", "assets/Menu/SanistaOne.ttf")
 
         self.container = pygame_gui.core.UIContainer(
             relative_rect=pygame.Rect((self.window_width * .17, self.window_height * .1),
@@ -29,49 +28,45 @@ class MainMenuScreen(BasicView):
         self.background = pygame.Surface((self.window_width, self.window_height))
         self.background.fill(self.manager.ui_theme.get_colour(None, None, 'dark_bg'))
 
-        self.start_game_button = pygame_gui.elements.UIButton(
+        self.button01 = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect((self.container.rect.centerx,
                                        self.container.rect.centery + self.__padding * len(self.container.elements)),
                                       self.__buttonSize),
-            text="Start Game",
+            text="Button01",
             manager=self.manager,
             container=self.container
         )
-        self.help_button = pygame_gui.elements.UIButton(
+        self.button02 = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect((self.container.rect.centerx,
                                        self.container.rect.centery + self.__padding * len(self.container.elements)),
                                       self.__buttonSize),
-            text="Help",
+            text="Button02",
             manager=self.manager,
             container=self.container
         )
-        self.settings_button = pygame_gui.elements.UIButton(
+        self.button03 = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect((self.container.rect.centerx,
                                        self.container.rect.centery + self.__padding * len(self.container.elements)),
                                       self.__buttonSize),
-            text="Settings",
+            text="Button03",
             manager=self.manager,
             container=self.container
         )
-        self.end_game_button = pygame_gui.elements.UIButton(
+        self.return_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect((self.container.rect.centerx,
                                        self.container.rect.centery + self.__padding * len(self.container.elements)),
                                       self.__buttonSize),
-            text="End Game",
+            text="Return",
             manager=self.manager,
             container=self.container
         )
 
-        # load title image
-        self.titleImage = pygame.image.load("assets/Menu/TitleImage.png")
-        logging.info(f"MainMenuScreen init done")
+        logging.info("Settings Screen init done")
 
     def draw(self) -> None:
         self.manager.update(1 / props.FRAME_RATE)
 
         self.window.blit(self.background, (0, 0))
-        self.window.blit(self.titleImage,
-                         (self.window_width / 2 - self.titleImage.get_rect().width / 2, self.window_height * .25))
         self.manager.draw_ui(self.window)
 
         pygame.display.update()
@@ -80,17 +75,17 @@ class MainMenuScreen(BasicView):
     def receive_event(self, event: pygame.event.Event) -> None:
         self.manager.process_events(event)
 
-        if event.type == pygame.USEREVENT and event.user_type == 'ui_button_pressed':
+        if event.type == pygame.USEREVENT and event.user_type == "ui_button_pressed":
             switcher = {
-                self.start_game_button: self.controller.start_game,
-                self.help_button: self.help_button_pressed,
-                self.settings_button: self.settings_button_pressed,
-                self.end_game_button: self.controller.exit_game
+                self.button01: self.default_callback,
+                self.button02: self.default_callback,
+                self.button03: self.default_callback,
+                self.return_button:  self.return_button_pressed
             }
             switcher.get(event.ui_element)()
 
-    def help_button_pressed(self) -> None:
-        self.parent_view.to_help()
+    def default_callback(self) -> None:
+        logging.info("Button pressed")
 
-    def settings_button_pressed(self) -> None:
-        self.parent_view.to_settings()
+    def return_button_pressed(self) -> None:
+        self.parent_view.to_main_menu()
