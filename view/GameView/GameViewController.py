@@ -16,8 +16,8 @@ def create_playing_field(group: DrawableGroup, window: pygame.display, assets: A
     :param window:
     :return:
     """
-    for i in range(0, 100, 1):
-        for j in range(0, 100, 1):
+    for i in range(0, 50, 1):
+        for j in range(0, 50, 1):
             group.add(Block(window, WorldPoint(i, j, 0), assets))
 
     for i in range(1, 6, 1):
@@ -34,6 +34,9 @@ def create_playing_field(group: DrawableGroup, window: pygame.display, assets: A
 
 
 class GameViewController:
+    """
+    This class contains all the relevant information for drawing the gameview
+    """
     def __init__(self, view):
         self.view = view
         self.asset_storage = AssetStorage()

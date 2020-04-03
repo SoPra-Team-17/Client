@@ -9,7 +9,7 @@ import pygame
 
 class Drawable(ABC):
 
-    def __init__(self, pos: WorldPoint = None, asset_storage: AssetStorage=None):
+    def __init__(self, pos: WorldPoint = None, asset_storage: AssetStorage = None):
         self.nearness = 0
         self.asset_storage = asset_storage
         self.point = WorldPoint() if pos is None else pos
@@ -90,8 +90,8 @@ class Block(Drawable):
                 self.point.y - camOffset[
             1]) * self.__TILEHEIGHT / 4 - self.point.z * self.__TILEHEIGHT / 2 + m_y / 2
 
-        #only draw block, when still inside visible window! accout for block size so block is not clipped on the edge
-        if -64 <= v_x <= props.WINDOW_WIDTH+64 and -64 <= v_y <= props.WINDOW_HEIGHT:
+        # only draw block, when still inside visible window! accout for block size so block is not clipped on the edge
+        if -64 <= v_x <= props.WINDOW_WIDTH + 64 and -64 <= v_y <= props.WINDOW_HEIGHT:
             self.window.blit(self.current_image, (v_x, v_y))
 
     def hovering(self, focus: bool = False) -> None:

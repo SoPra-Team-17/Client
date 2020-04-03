@@ -5,6 +5,10 @@ import pygame
 class DrawableAssets(ABC):
     """
     Class defines a common interface for all Drawables and their assets
+    loading of the needed assets and applying transformations to them if needed
+
+    :note   memory usage should not be a priority, but fps are! That means that every possible image which will be
+            needed should already be created and stored in memory and not transformed when needed!
     :todo animationen können auch hier gemacht werden
     """
 

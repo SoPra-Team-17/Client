@@ -1,7 +1,3 @@
-import cppyy
-cppyy.load_library('SampleLibrary')
-cppyy.include('SampleLibrary/library.h')
-
 import os
 import logging
 import sys
@@ -38,28 +34,6 @@ def main():
     logging.warning("Warning output")
     logging.error("Error output")
     logging.critical("Critical output")
-
-
-
-    #cppyy example
-    tc = cppyy.gbl.TestClass()
-    text = tc.getText()
-    print(text)
-    tc.printText()
-    cppyy.gbl.printTestClass(tc)
-
-    tc.setText("abc")
-    text = tc.getText()
-    print(text)
-    tc.printText()
-    cppyy.gbl.printTestClass(tc)
-
-    tc.text = "def"
-    text = tc.getText()
-    print(text)
-    tc.printText()
-    cppyy.gbl.printTestClass(tc)
-
 
 
     #create main controller

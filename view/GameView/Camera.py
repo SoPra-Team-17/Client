@@ -15,6 +15,12 @@ class Camera:
         self.camera_speed = camera_speed
 
     def move_camera(self, keys) -> None:
+        """
+        Camera is moved in the direction the key-presses are indicating
+
+        :param keys:    pressed keys provided by `GameViewController`
+        :return:        None
+        """
         vx = self.camera_speed * self.__xFactor
         vy = self.camera_speed * self.__yFactor
 
@@ -32,8 +38,16 @@ class Camera:
             self.__yTrans += vy
 
     def center(self) -> None:
+        """
+        Moves Camera back to center
+        :return:    None
+        """
         self.__xTrans = 0
         self.__yTrans = 0
 
     def getTrans(self) -> Tuple[float, float]:
+        """
+        Getter for offset from center
+        :return:    Tuple(xTrans, yTrans)
+        """
         return self.__xTrans, self.__yTrans
