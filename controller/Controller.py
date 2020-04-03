@@ -2,7 +2,7 @@ import sys
 import logging
 import pygame
 import view.ViewConstants as props
-from view.MainMenu import MainMenu
+from view.MainMenu.MainMenu import MainMenu
 from view.GameView import GameView
 from controller.ControllerView import ControllerGameView, ControllerMainMenu
 
