@@ -3,16 +3,16 @@ from typing import Dict
 import pygame_gui.elements.ui_button
 import pygame
 
-import view.ViewConstants as props
 from view.BasicView import BasicView
+from view.ViewSettings import ViewSettings
 from controller.ControllerView import ControllerMainMenu
 
 
 class SettingsScreen(BasicView):
     _valid_resolutions = ["1024x576", "1152x648", "1366x768", "1600x900", "1920x1080", "2560x1440", "3840x2160"]
 
-    def __init__(self, window: pygame.display, controller: ControllerMainMenu, parentView):
-        super(SettingsScreen, self).__init__(window, controller)
+    def __init__(self, window: pygame.display, controller: ControllerMainMenu, parentView, settings: ViewSettings):
+        super(SettingsScreen, self).__init__(window, controller, settings)
 
         self.parent_view = parentView
 
@@ -32,7 +32,7 @@ class SettingsScreen(BasicView):
 
         self.address_label = pygame_gui.elements.UITextBox(
             relative_rect=pygame.Rect((300, 300), (200, 50)),
-            html_text="<p><strong>Server Address</strong></p>",
+            html_text="<strong>Server Address</strong>",
             manager=self.manager
         )
 
@@ -90,7 +90,7 @@ class SettingsScreen(BasicView):
         logging.info("Settings Screen init done")
 
     def draw(self) -> None:
-        self.manager.update(1 / props.FRAME_RATE)
+        self.manager.update(1 / self.settings.frame_rate)
 
         self.window.blit(self.background, (0, 0))
         self.manager.draw_ui(self.window)
@@ -122,6 +122,8 @@ class SettingsScreen(BasicView):
 
     def return_button_pressed(self) -> Dict:
         # save changed values in dict
+        #todo evtl. könnte man die werte auch direkt in den settings ändern und kein dict machen!
+        #schließt dann false update aus
         settings = {}
         settings["audio_effects"] = self.audio_effects_slider.get_current_value()
         settings["audio_music"] = self.audio_music_slider_.get_current_value()

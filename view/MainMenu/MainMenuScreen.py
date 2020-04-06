@@ -2,15 +2,16 @@ import logging
 import pygame_gui.elements.ui_button
 import pygame
 
-import view.ViewConstants as props
+import view.ViewSettings as props
 from view.BasicView import BasicView
+from view.ViewSettings import ViewSettings
 from controller.ControllerView import ControllerMainMenu
 
 
 class MainMenuScreen(BasicView):
 
-    def __init__(self, window: pygame.display, controller: ControllerMainMenu, parentView):
-        super(MainMenuScreen, self).__init__(window, controller)
+    def __init__(self, window: pygame.display, controller: ControllerMainMenu, parentView, settings: ViewSettings):
+        super(MainMenuScreen, self).__init__(window, controller, settings)
 
         self.parent_view = parentView
 
@@ -67,7 +68,7 @@ class MainMenuScreen(BasicView):
         logging.info("MainMenuScreen init done")
 
     def draw(self) -> None:
-        self.manager.update(1 / props.FRAME_RATE)
+        self.manager.update(1 / self.settings.frame_rate)
 
         self.window.blit(self.background, (0, 0))
         self.window.blit(self.titleImage,

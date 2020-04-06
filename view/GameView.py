@@ -1,9 +1,10 @@
 import logging
 import pygame
 
-import view.ViewConstants as props
+import view.ViewSettings as props
 from view.BasicView import BasicView
 from view.IsoElements import Block, BlockGroup, Camera
+from view.ViewSettings import ViewSettings
 from controller.ControllerView import ControllerGameView
 from util.Transforms import Transformations
 
@@ -35,8 +36,8 @@ def create_playing_field(group: BlockGroup, window: pygame.display) -> None:
 
 class GameView(BasicView):
 
-    def __init__(self, window: pygame.display, controller: ControllerGameView) -> None:
-        super().__init__(window, controller)
+    def __init__(self, window: pygame.display, controller: ControllerGameView, settings: ViewSettings) -> None:
+        super().__init__(window, controller, settings)
         self.window_width, self.window_height = pygame.display.get_surface().get_size()
 
         self.block_group = BlockGroup()
