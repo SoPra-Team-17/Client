@@ -1,4 +1,5 @@
 import logging
+from typing import Dict
 import pygame
 
 from view.BasicView import BasicView
@@ -39,5 +40,7 @@ class MainMenu(BasicView):
     def to_help(self) -> None:
         logging.error("Help Screen not yet implemented")
 
-    def to_main_menu(self) -> None:
+    def to_main_menu(self, settings: Dict) -> None:
+        for k, v in settings.items():
+            print(f"Key: {k} Value: {v}")
         self.active_screens = [self.mainMenuScreen]

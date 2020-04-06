@@ -1,7 +1,6 @@
 import unittest
 
 from util.Transforms import Transformations as transforms
-import view.ViewConstants as props
 
 
 class testTrafoToWorldCoords(unittest.TestCase):

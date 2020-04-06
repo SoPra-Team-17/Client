@@ -64,7 +64,7 @@ class MainMenuScreen(BasicView):
 
         # load title image
         self.titleImage = pygame.image.load("assets/Menu/TitleImage.png")
-        logging.info(f"MainMenuScreen init done")
+        logging.info("MainMenuScreen init done")
 
     def draw(self) -> None:
         self.manager.update(1 / props.FRAME_RATE)
@@ -80,7 +80,7 @@ class MainMenuScreen(BasicView):
     def receive_event(self, event: pygame.event.Event) -> None:
         self.manager.process_events(event)
 
-        if event.type == pygame.USEREVENT and event.user_type == 'ui_button_pressed':
+        if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_PRESSED:
             switcher = {
                 self.start_game_button: self.controller.start_game,
                 self.help_button: self.help_button_pressed,
