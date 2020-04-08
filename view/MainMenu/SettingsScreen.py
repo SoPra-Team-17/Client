@@ -51,22 +51,15 @@ class SettingsScreen(BasicView):
         pygame.display.flip()
 
     def receive_event(self, event: pygame.event.Event) -> None:
-        # todo refactore control flow in this method!
         self.manager.process_events(event)
-
-        if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_TEXT_ENTRY_FINISHED and event.ui_element == self.textbox:
-            logging.info(f"TextEntry:\t{self.textbox.get_text()}")
-            logging.info(f"SliderValue:\t{self.audio_effects_slider.get_current_value()}")
-            logging.info(f"Dropdown:\t{self.resolution_dropdown.selected_option}")
 
         if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_PRESSED:
             switcher = {
-                self.return_button: self.return_button_pressed,
+                self.return_button.object_ids[0]: self.return_button_pressed,
             }
-            # todo: findet jeweils dropdown/slider nicht im dict..
             try:
-                switcher.get(event.ui_element)()
-            except Exception:
+                switcher.get(event.ui_object_id)()
+            except TypeError:
                 logging.warning("Did not find UI-Element in Dict")
 
     def default_callback(self) -> None:
@@ -77,17 +70,32 @@ class SettingsScreen(BasicView):
         settings["audio_effects"] = self.audio_effects_slider.get_current_value()
         settings["audio_music"] = self.audio_music_slider_.get_current_value()
         settings["resolution"] = self.resolution_dropdown.selected_option
-        settings["address"] = self.textbox.get_text()
+        settings["address"] = self.address_textbox.get_text()
+        settings["port"] = self.port_textbox.get_text()
 
         self.parent_view.to_main_menu(settings)
 
-    def _init_ui_elements(self):
+    def _init_ui_elements(self) -> None:
+        """
+        In this method all the ui-elements are initialized
+        :return:    None
+        """
         self.address_label = pygame_gui.elements.UITextBox(
             relative_rect=pygame.Rect((self.containerLabels.rect.centerx,
                                        self.containerLabels.rect.centery + self.__padding * len(
                                            self.containerLabels.elements)),
                                       self.__buttonSize),
             html_text="<strong>Server Address</strong>",
+            manager=self.manager,
+            container=self.containerLabels
+        )
+
+        self.port_label = pygame_gui.elements.UITextBox(
+            relative_rect=pygame.Rect((self.containerLabels.rect.centerx,
+                                       self.containerLabels.rect.centery + self.__padding * len(
+                                           self.containerLabels.elements)),
+                                      self.__buttonSize),
+            html_text="<strong>Port</strong>",
             manager=self.manager,
             container=self.containerLabels
         )
@@ -122,7 +130,15 @@ class SettingsScreen(BasicView):
             container=self.containerLabels
         )
 
-        self.textbox = pygame_gui.elements.UITextEntryLine(
+        self.address_textbox = pygame_gui.elements.UITextEntryLine(
+            relative_rect=pygame.Rect((self.container.rect.centerx,
+                                       self.container.rect.centery + self.__padding * len(
+                                           self.container.elements)),
+                                      self.__buttonSize),
+            manager=self.manager,
+            container=self.container,
+        )
+        self.port_textbox = pygame_gui.elements.UITextEntryLine(
             relative_rect=pygame.Rect((self.container.rect.centerx,
                                        self.container.rect.centery + self.__padding * len(
                                            self.container.elements)),
@@ -145,7 +161,7 @@ class SettingsScreen(BasicView):
         self.audio_effects_slider = pygame_gui.elements.UIHorizontalSlider(
             relative_rect=pygame.Rect((self.container.rect.centerx,
                                        self.container.rect.centery + self.__padding * (len(
-                                           self.container.elements)-1)),
+                                           self.container.elements) - 1)),
                                       self.__sliderSize),
             start_value=50,
             value_range=(0, 100),
@@ -156,7 +172,7 @@ class SettingsScreen(BasicView):
         self.audio_music_slider_ = pygame_gui.elements.UIHorizontalSlider(
             relative_rect=pygame.Rect((self.container.rect.centerx,
                                        self.container.rect.centery + self.__padding * (len(
-                                           self.container.elements)-2)),
+                                           self.container.elements) - 2)),
                                       self.__sliderSize),
             start_value=50,
             value_range=(0, 100),
@@ -170,5 +186,6 @@ class SettingsScreen(BasicView):
                                       self.__buttonSize),
             text="Return",
             manager=self.manager,
-            container=self.container
+            container=self.container,
+            object_id="#return_button"
         )

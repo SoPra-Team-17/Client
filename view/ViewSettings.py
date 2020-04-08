@@ -1,3 +1,5 @@
+import ipaddress
+
 class ViewSettings:
     """
     Class implementing a state information of the current view settings
@@ -11,7 +13,7 @@ class ViewSettings:
         self.frame_rate = 60
         self.audio_effects = 50
         self.audio_music = 50
-        self.address = "127.0.0.1"
+        self.address = ipaddress.ip_address("127.0.0.1")
         self.port = 1337
 
     def __repr__(self):

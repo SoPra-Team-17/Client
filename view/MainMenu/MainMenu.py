@@ -1,4 +1,5 @@
 import logging
+import ipaddress
 from typing import Dict
 import pygame
 
@@ -46,11 +47,19 @@ class MainMenu(BasicView):
             width, height = settings["resolution"].split("x")
             width, height = int(width), int(height)
             self.settings.window_height, self.settings.window_width = height, width
-            self.settings.address = settings["address"]
-            self.settings.audio_effects = settings["audio_effects"]
-            self.settings.audio_music = settings["audio_music"]
-        except:
-            logging.warning("Unable to parse settings")
+        except ValueError:
+            logging.warning("Unable to parse Resolution")
+        try:
+            self.settings.address = ipaddress.ip_address(settings["address"])
+        except ValueError:
+            logging.warning("Unable to parse IP-Address")
+        try:
+            self.settings.port = settings["port"]
+        except ValueError:
+            logging.warning("Unable to parse port")
+
+        self.settings.audio_effects = settings["audio_effects"]
+        self.settings.audio_music = settings["audio_music"]
 
         logging.info(self.settings)
 

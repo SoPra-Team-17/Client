@@ -22,7 +22,8 @@ class Controller(ControllerGameView, ControllerMainMenu):
 
         pygame.init()
         # erstelle screen
-        self.screen = pygame.display.set_mode((self.view_settings.window_width, self.view_settings.window_height))
+        self.screen = pygame.display.set_mode((self.view_settings.window_width, self.view_settings.window_height),
+                                              pygame.RESIZABLE)
         pygame.display.set_caption(self.view_settings.window_name)
         self.clock = pygame.time.Clock()
         self.mainMenu = MainMenu(self.screen, self, self.view_settings)
