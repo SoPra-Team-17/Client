@@ -13,3 +13,11 @@ class ViewSettings:
         self.audio_music = 50
         self.address = "127.0.0.1"
         self.port = 1337
+
+    def __repr__(self):
+        return \
+            f"WindowName: {self.window_name}\n"\
+            f"Resolution: {self.window_width}x{self.window_height}\n"\
+            f"Frame rate: {self.frame_rate}\n"\
+            f"Audio effects: {self.audio_effects :.1f} Music: {self.audio_music :.1f}\n"\
+            f"Server address: {self.address} Port: {self.port}\n"

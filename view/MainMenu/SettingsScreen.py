@@ -73,13 +73,9 @@ class SettingsScreen(BasicView):
         logging.info("Button pressed")
 
     def return_button_pressed(self) -> Dict:
-        # save changed values in dict
-        # todo evtl. könnte man die werte auch direkt in den settings ändern und kein dict machen!
-        # schließt dann false update aus
         settings = {}
         settings["audio_effects"] = self.audio_effects_slider.get_current_value()
         settings["audio_music"] = self.audio_music_slider_.get_current_value()
-        # todo convert resolution from str to tuple
         settings["resolution"] = self.resolution_dropdown.selected_option
         settings["address"] = self.textbox.get_text()
 

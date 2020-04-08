@@ -42,6 +42,16 @@ class MainMenu(BasicView):
         logging.error("Help Screen not yet implemented")
 
     def to_main_menu(self, settings: Dict) -> None:
-        for k, v in settings.items():
-            print(f"Key: {k} Value: {v}")
+        try:
+            width, height = settings["resolution"].split("x")
+            width, height = int(width), int(height)
+            self.settings.window_height, self.settings.window_width = height, width
+            self.settings.address = settings["address"]
+            self.settings.audio_effects = settings["audio_effects"]
+            self.settings.audio_music = settings["audio_music"]
+        except:
+            logging.warning("Unable to parse settings")
+
+        logging.info(self.settings)
+
         self.active_screens = [self.mainMenuScreen]
