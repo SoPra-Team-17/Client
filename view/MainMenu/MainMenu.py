@@ -24,7 +24,7 @@ class MainMenu(BasicView):
 
     def init(self) -> None:
         """
-        Not yet implemented
+        Not yet implemented / needed
         :return:    None
         """
 
@@ -33,16 +33,35 @@ class MainMenu(BasicView):
             screen.draw()
 
     def receive_event(self, event: pygame.event.Event) -> None:
+        """
+        Receive Event method called by controller
+        :param event:   event
+        :return:        None
+        """
         for screen in self.active_screens:
             screen.receive_event(event)
 
     def to_settings(self) -> None:
+        """
+        Interface from children view to parent
+        :return:
+        """
         self.active_screens = [self.settingsScreen]
 
     def to_help(self) -> None:
+        """
+        Interface from children view to parent
+        :return:
+        """
         logging.error("Help Screen not yet implemented")
 
     def to_main_menu(self, settings: Dict) -> None:
+        """
+        Interface from children view to parent
+        In this method the settings entered in the settingsscreen are parsed
+        :param settings:
+        :return:
+        """
         try:
             width, height = settings["resolution"].split("x")
             width, height = int(width), int(height)
@@ -54,7 +73,8 @@ class MainMenu(BasicView):
         except ValueError:
             logging.warning("Unable to parse IP-Address")
         try:
-            self.settings.port = settings["port"]
+            self.settings.port = int(settings["port"])
+
         except ValueError:
             logging.warning("Unable to parse port")
 

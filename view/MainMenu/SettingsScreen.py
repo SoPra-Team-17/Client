@@ -1,5 +1,4 @@
 import logging
-from typing import Dict
 import pygame_gui.elements.ui_button
 import pygame
 
@@ -11,7 +10,8 @@ from controller.ControllerView import ControllerMainMenu
 class SettingsScreen(BasicView):
     _valid_resolutions = ["1024x576", "1152x648", "1366x768", "1600x900", "1920x1080", "2560x1440", "3840x2160"]
 
-    def __init__(self, window: pygame.display, controller: ControllerMainMenu, parentView, settings: ViewSettings):
+    def __init__(self, window: pygame.display, controller: ControllerMainMenu, parentView,
+                 settings: ViewSettings) -> None:
         super(SettingsScreen, self).__init__(window, controller, settings)
 
         self.parent_view = parentView
@@ -51,6 +51,11 @@ class SettingsScreen(BasicView):
         pygame.display.flip()
 
     def receive_event(self, event: pygame.event.Event) -> None:
+        """
+        Receive event method, called by parent view. In this case MainMenu
+        :param event:   event
+        :return:        None
+        """
         self.manager.process_events(event)
 
         if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_PRESSED:
@@ -63,9 +68,17 @@ class SettingsScreen(BasicView):
                 logging.warning("Did not find UI-Element in Dict")
 
     def default_callback(self) -> None:
-        logging.info("Button pressed")
+        """
+        Default callback for debug purposes
+        :return:
+        """
+        logging.info("Default callback")
 
-    def return_button_pressed(self) -> Dict:
+    def return_button_pressed(self) -> None:
+        """
+        Callback when return button is pressed
+        :return:    Dict containing the entered settings
+        """
         settings = {}
         settings["audio_effects"] = self.audio_effects_slider.get_current_value()
         settings["audio_music"] = self.audio_music_slider_.get_current_value()
@@ -78,6 +91,7 @@ class SettingsScreen(BasicView):
     def _init_ui_elements(self) -> None:
         """
         In this method all the ui-elements are initialized
+        todo slider need double the padding, is at the moment hardcoded
         :return:    None
         """
         self.address_label = pygame_gui.elements.UITextBox(
@@ -87,7 +101,8 @@ class SettingsScreen(BasicView):
                                       self.__buttonSize),
             html_text="<strong>Server Address</strong>",
             manager=self.manager,
-            container=self.containerLabels
+            container=self.containerLabels,
+            object_id="#address_label"
         )
 
         self.port_label = pygame_gui.elements.UITextBox(
@@ -97,7 +112,8 @@ class SettingsScreen(BasicView):
                                       self.__buttonSize),
             html_text="<strong>Port</strong>",
             manager=self.manager,
-            container=self.containerLabels
+            container=self.containerLabels,
+            object_id="#port_label"
         )
 
         self.resolution_label = pygame_gui.elements.UITextBox(
@@ -107,27 +123,30 @@ class SettingsScreen(BasicView):
                                       self.__buttonSize),
             html_text="<strong>Resolution</strong>",
             manager=self.manager,
-            container=self.containerLabels
+            container=self.containerLabels,
+            object_id="#resolution_label"
         )
 
         self.audio_music_label = pygame_gui.elements.UITextBox(
             relative_rect=pygame.Rect((self.containerLabels.rect.centerx,
-                                       self.containerLabels.rect.centery + self.__padding * len(
-                                           self.containerLabels.elements)),
+                                       self.containerLabels.rect.centery + self.__padding * (len(
+                                           self.containerLabels.elements) + 1)),
                                       self.__buttonSize),
             html_text="<strong>Music</strong>",
             manager=self.manager,
-            container=self.containerLabels
+            container=self.containerLabels,
+            object_id="#audio_music_label"
         )
 
         self.audio_effects_label = pygame_gui.elements.UITextBox(
             relative_rect=pygame.Rect((self.containerLabels.rect.centerx,
-                                       self.containerLabels.rect.centery + self.__padding * len(
-                                           self.containerLabels.elements)),
+                                       self.containerLabels.rect.centery + self.__padding * (len(
+                                           self.containerLabels.elements) + 3)),
                                       self.__buttonSize),
             html_text="<strong>Effects</strong>",
             manager=self.manager,
-            container=self.containerLabels
+            container=self.containerLabels,
+            object_id="#audio_effects_label"
         )
 
         self.address_textbox = pygame_gui.elements.UITextEntryLine(
@@ -137,6 +156,7 @@ class SettingsScreen(BasicView):
                                       self.__buttonSize),
             manager=self.manager,
             container=self.container,
+            object_id="#address_textbox"
         )
         self.port_textbox = pygame_gui.elements.UITextEntryLine(
             relative_rect=pygame.Rect((self.container.rect.centerx,
@@ -145,6 +165,7 @@ class SettingsScreen(BasicView):
                                       self.__buttonSize),
             manager=self.manager,
             container=self.container,
+            object_id="#port_textbox"
         )
 
         self.resolution_dropdown = pygame_gui.elements.UIDropDownMenu(
@@ -155,7 +176,8 @@ class SettingsScreen(BasicView):
                                            self.container.elements)),
                                       self.__buttonSize),
             manager=self.manager,
-            container=self.container
+            container=self.container,
+            object_id="#resolution_dropdown"
         )
 
         self.audio_effects_slider = pygame_gui.elements.UIHorizontalSlider(
@@ -166,7 +188,8 @@ class SettingsScreen(BasicView):
             start_value=50,
             value_range=(0, 100),
             manager=self.manager,
-            container=self.container
+            container=self.container,
+            object_id="#audio_effects_slider"
         )
 
         self.audio_music_slider_ = pygame_gui.elements.UIHorizontalSlider(
@@ -177,7 +200,8 @@ class SettingsScreen(BasicView):
             start_value=50,
             value_range=(0, 100),
             manager=self.manager,
-            container=self.container
+            container=self.container,
+            object_id="#audio_music_slider"
         )
 
         self.return_button = pygame_gui.elements.UIButton(

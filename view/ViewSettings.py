@@ -16,7 +16,11 @@ class ViewSettings:
         self.address = ipaddress.ip_address("127.0.0.1")
         self.port = 1337
 
-    def __repr__(self):
+    def __repr__(self) -> str:
+        """
+        Returning string representation of settings
+        :return:    string
+        """
         return \
             f"WindowName: {self.window_name}\n"\
             f"Resolution: {self.window_width}x{self.window_height}\n"\
