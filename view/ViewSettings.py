@@ -1,5 +1,9 @@
-
 class ViewSettings:
+    """
+    Class implementing a state information of the current view settings
+    The settings can be changed from the MainMenu or InGame
+    """
+
     def __init__(self):
         self.window_width = 1920
         self.window_height = 1080

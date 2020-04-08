@@ -75,7 +75,6 @@ class MainMenuScreen(BasicView):
                          (self.window_width / 2 - self.titleImage.get_rect().width / 2, self.window_height * .25))
         self.manager.draw_ui(self.window)
 
-        pygame.display.update()
         pygame.display.flip()
 
     def receive_event(self, event: pygame.event.Event) -> None:
