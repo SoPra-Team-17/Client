@@ -30,38 +30,7 @@ class MainMenuScreen(BasicView):
         self.background = pygame.Surface((self.window_width, self.window_height))
         self.background.fill(self.manager.ui_theme.get_colour(None, None, 'dark_bg'))
 
-        self.start_game_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect((self.container.rect.centerx,
-                                       self.container.rect.centery + self.__padding * len(self.container.elements)),
-                                      self.__buttonSize),
-            text="Start Game",
-            manager=self.manager,
-            container=self.container
-        )
-        self.help_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect((self.container.rect.centerx,
-                                       self.container.rect.centery + self.__padding * len(self.container.elements)),
-                                      self.__buttonSize),
-            text="Help",
-            manager=self.manager,
-            container=self.container
-        )
-        self.settings_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect((self.container.rect.centerx,
-                                       self.container.rect.centery + self.__padding * len(self.container.elements)),
-                                      self.__buttonSize),
-            text="Settings",
-            manager=self.manager,
-            container=self.container
-        )
-        self.end_game_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect((self.container.rect.centerx,
-                                       self.container.rect.centery + self.__padding * len(self.container.elements)),
-                                      self.__buttonSize),
-            text="End Game",
-            manager=self.manager,
-            container=self.container
-        )
+        self._init_ui_elements()
 
         # load title image
         self.titleImage = pygame.image.load("assets/Menu/TitleImage.png")
@@ -94,3 +63,37 @@ class MainMenuScreen(BasicView):
 
     def settings_button_pressed(self) -> None:
         self.parent_view.to_settings()
+
+    def _init_ui_elements(self) -> None:
+        self.start_game_button = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect((self.container.rect.centerx,
+                                       self.container.rect.centery + self.__padding * len(self.container.elements)),
+                                      self.__buttonSize),
+            text="Start Game",
+            manager=self.manager,
+            container=self.container
+        )
+        self.help_button = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect((self.container.rect.centerx,
+                                       self.container.rect.centery + self.__padding * len(self.container.elements)),
+                                      self.__buttonSize),
+            text="Help",
+            manager=self.manager,
+            container=self.container
+        )
+        self.settings_button = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect((self.container.rect.centerx,
+                                       self.container.rect.centery + self.__padding * len(self.container.elements)),
+                                      self.__buttonSize),
+            text="Settings",
+            manager=self.manager,
+            container=self.container
+        )
+        self.end_game_button = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect((self.container.rect.centerx,
+                                       self.container.rect.centery + self.__padding * len(self.container.elements)),
+                                      self.__buttonSize),
+            text="End Game",
+            manager=self.manager,
+            container=self.container
+        )
