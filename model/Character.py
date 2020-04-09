@@ -1,4 +1,4 @@
-from model.Scenario import Point
+from util.Coordinates import WorldPoint
 
 
 class Character:
@@ -6,7 +6,7 @@ class Character:
         self.ID = 0
         self.name = ""
         self.description = ""
-        self.Point = None
+        self.Point = WorldPoint()
         self.bp = bp
         self.ap = ap
         self.hp = hp
