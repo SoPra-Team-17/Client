@@ -9,6 +9,22 @@ from controller.ControllerView import ControllerMainMenu
 
 class SettingsScreen(BasicView):
     _valid_resolutions = ["1024x576", "1152x648", "1366x768", "1600x900", "1920x1080", "2560x1440", "3840x2160"]
+    _text_labels = {
+        "address_text": "Server Address",
+        "port_text": "Port",
+        "resolution_text": "Resolution",
+        "resolution_select_text": "Select Resolution",
+        "music_text": "Music",
+        "effects_text": "Effects"
+    }
+    _start_value_slider = {
+        "effects_start": 50.0,
+        "music_start": 50.0
+    }
+    _range_slider = {
+        "effects_range": (0.0, 100.0),
+        "music_range": (0.0, 100.0)
+    }
 
     def __init__(self, window: pygame.display, controller: ControllerMainMenu, parentView,
                  settings: ViewSettings) -> None:
@@ -31,9 +47,9 @@ class SettingsScreen(BasicView):
         )
 
         self.__padding = self.container.rect.width / 15
-        self.__buttonSize = (self.container.rect.width / 3, self.container.rect.width / 12)
-        self.__textboxSize = (self.container.rect.width / 3, self.container.rect.width / 15)
-        self.__sliderSize = (self.container.rect.width / 3, self.container.rect.width / 15)
+        self.__buttonSize = (self.container.rect.width / 2, self.container.rect.width / 12)
+        self.__labelSize = (self.container.rect.width / 3, self.container.rect.width / 15)
+        self.__sliderSize = (self.container.rect.width / 2, self.container.rect.width / 15)
 
         self.background = pygame.Surface((self.window_width, self.window_height))
         self.background.fill(self.manager.ui_theme.get_colour(None, None, 'dark_bg'))
@@ -99,8 +115,8 @@ class SettingsScreen(BasicView):
             relative_rect=pygame.Rect((self.containerLabels.rect.centerx,
                                        self.containerLabels.rect.centery + self.__padding * len(
                                            self.containerLabels.elements)),
-                                      self.__textboxSize),
-            text="Server Address",
+                                      self.__labelSize),
+            text=self._text_labels["address_text"],
             manager=self.manager,
             container=self.containerLabels,
             object_id="#address_label"
@@ -110,8 +126,8 @@ class SettingsScreen(BasicView):
             relative_rect=pygame.Rect((self.containerLabels.rect.centerx,
                                        self.containerLabels.rect.centery + self.__padding * len(
                                            self.containerLabels.elements)),
-                                      self.__textboxSize),
-            text="Port",
+                                      self.__labelSize),
+            text=self._text_labels["port_text"],
             manager=self.manager,
             container=self.containerLabels,
             object_id="#port_label",
@@ -121,8 +137,8 @@ class SettingsScreen(BasicView):
             relative_rect=pygame.Rect((self.containerLabels.rect.centerx,
                                        self.containerLabels.rect.centery + self.__padding * len(
                                            self.containerLabels.elements)),
-                                      self.__textboxSize),
-            text="Resolution",
+                                      self.__labelSize),
+            text=self._text_labels["resolution_text"],
             manager=self.manager,
             container=self.containerLabels,
             object_id="#resolution_label"
@@ -132,8 +148,8 @@ class SettingsScreen(BasicView):
             relative_rect=pygame.Rect((self.containerLabels.rect.centerx,
                                        self.containerLabels.rect.centery + self.__padding * (len(
                                            self.containerLabels.elements) + 1)),
-                                      self.__textboxSize),
-            text="Music",
+                                      self.__labelSize),
+            text=self._text_labels["music_text"],
             manager=self.manager,
             container=self.containerLabels,
             object_id="#audio_music_label"
@@ -143,8 +159,8 @@ class SettingsScreen(BasicView):
             relative_rect=pygame.Rect((self.containerLabels.rect.centerx,
                                        self.containerLabels.rect.centery + self.__padding * (len(
                                            self.containerLabels.elements) + 3)),
-                                      self.__textboxSize),
-            text="Effects",
+                                      self.__labelSize),
+            text=self._text_labels["effects_text"],
             manager=self.manager,
             container=self.containerLabels,
             object_id="#audio_effects_label"
@@ -171,7 +187,7 @@ class SettingsScreen(BasicView):
 
         self.resolution_dropdown = pygame_gui.elements.UIDropDownMenu(
             options_list=self._valid_resolutions,
-            starting_option="Select Resolution",
+            starting_option=self._text_labels["resolution_select_text"],
             relative_rect=pygame.Rect((self.container.rect.centerx,
                                        self.container.rect.centery + self.__padding * len(
                                            self.container.elements)),
@@ -186,8 +202,8 @@ class SettingsScreen(BasicView):
                                        self.container.rect.centery + self.__padding * (len(
                                            self.container.elements) - 1)),
                                       self.__sliderSize),
-            start_value=50,
-            value_range=(0, 100),
+            start_value=self._start_value_slider["effects_start"],
+            value_range=self._range_slider["effects_range"],
             manager=self.manager,
             container=self.container,
             object_id="#audio_effects_slider"
@@ -198,8 +214,8 @@ class SettingsScreen(BasicView):
                                        self.container.rect.centery + self.__padding * (len(
                                            self.container.elements) - 2)),
                                       self.__sliderSize),
-            start_value=50,
-            value_range=(0, 100),
+            start_value=self._start_value_slider["music_start"],
+            value_range=self._range_slider["music_range"],
             manager=self.manager,
             container=self.container,
             object_id="#audio_music_slider"
