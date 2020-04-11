@@ -32,6 +32,7 @@ class SettingsScreen(BasicView):
 
         self.__padding = self.container.rect.width / 15
         self.__buttonSize = (self.container.rect.width / 3, self.container.rect.width / 12)
+        self.__textboxSize = (self.container.rect.width / 3, self.container.rect.width / 15)
         self.__sliderSize = (self.container.rect.width / 3, self.container.rect.width / 15)
 
         self.background = pygame.Surface((self.window_width, self.window_height))
@@ -94,56 +95,56 @@ class SettingsScreen(BasicView):
         todo slider need double the padding, is at the moment hardcoded
         :return:    None
         """
-        self.address_label = pygame_gui.elements.UITextBox(
+        self.address_label = pygame_gui.elements.UILabel(
             relative_rect=pygame.Rect((self.containerLabels.rect.centerx,
                                        self.containerLabels.rect.centery + self.__padding * len(
                                            self.containerLabels.elements)),
-                                      self.__buttonSize),
-            html_text="<strong>Server Address</strong>",
+                                      self.__textboxSize),
+            text="Server Address",
             manager=self.manager,
             container=self.containerLabels,
             object_id="#address_label"
         )
 
-        self.port_label = pygame_gui.elements.UITextBox(
+        self.port_label = pygame_gui.elements.UILabel(
             relative_rect=pygame.Rect((self.containerLabels.rect.centerx,
                                        self.containerLabels.rect.centery + self.__padding * len(
                                            self.containerLabels.elements)),
-                                      self.__buttonSize),
-            html_text="<strong>Port</strong>",
+                                      self.__textboxSize),
+            text="Port",
             manager=self.manager,
             container=self.containerLabels,
-            object_id="#port_label"
+            object_id="#port_label",
         )
 
-        self.resolution_label = pygame_gui.elements.UITextBox(
+        self.resolution_label = pygame_gui.elements.UILabel(
             relative_rect=pygame.Rect((self.containerLabels.rect.centerx,
                                        self.containerLabels.rect.centery + self.__padding * len(
                                            self.containerLabels.elements)),
-                                      self.__buttonSize),
-            html_text="<strong>Resolution</strong>",
+                                      self.__textboxSize),
+            text="Resolution",
             manager=self.manager,
             container=self.containerLabels,
             object_id="#resolution_label"
         )
 
-        self.audio_music_label = pygame_gui.elements.UITextBox(
+        self.audio_music_label = pygame_gui.elements.UILabel(
             relative_rect=pygame.Rect((self.containerLabels.rect.centerx,
                                        self.containerLabels.rect.centery + self.__padding * (len(
                                            self.containerLabels.elements) + 1)),
-                                      self.__buttonSize),
-            html_text="<strong>Music</strong>",
+                                      self.__textboxSize),
+            text="Music",
             manager=self.manager,
             container=self.containerLabels,
             object_id="#audio_music_label"
         )
 
-        self.audio_effects_label = pygame_gui.elements.UITextBox(
+        self.audio_effects_label = pygame_gui.elements.UILabel(
             relative_rect=pygame.Rect((self.containerLabels.rect.centerx,
                                        self.containerLabels.rect.centery + self.__padding * (len(
                                            self.containerLabels.elements) + 3)),
-                                      self.__buttonSize),
-            html_text="<strong>Effects</strong>",
+                                      self.__textboxSize),
+            text="Effects",
             manager=self.manager,
             container=self.containerLabels,
             object_id="#audio_effects_label"

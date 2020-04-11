@@ -7,8 +7,10 @@ class ViewSettings:
     """
 
     def __init__(self):
-        self.window_width = 1920
-        self.window_height = 1080
+        self.window_width = 1366
+        self.window_height = 768
+        #self.window_width = 1920
+        #self.window_height = 1080
         self.window_name = "No Time to Spy"
         self.frame_rate = 60
         self.audio_effects = 50
