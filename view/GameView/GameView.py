@@ -12,13 +12,19 @@ class GameView(BasicView):
     def __init__(self, window: pygame.display, controller: ControllerGameView) -> None:
         super().__init__(window, controller)
         self.window_width, self.window_height = pygame.display.get_surface().get_size()
+
+        self.active_views = []
+
         self.gameViewController = GameViewController(self)
+
+        self.active_views.append(self.gameViewController)
 
 
     def draw(self) -> None:
         self.window.fill((50, 50, 50))
 
-        self.gameViewController.draw()
+        for view in self.active_views:
+            view.draw()
 
         pygame.display.flip()
 
