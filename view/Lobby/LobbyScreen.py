@@ -9,6 +9,13 @@ from controller.ControllerView import ControllerLobby
 
 class LobbyScreen(BasicView):
     _vald_roles = ["Player", "Spectator"]
+    _text_labels = {
+        "start_game": "Start Game",
+        "reconnect": "Reconnect",
+        "name": "Enter name",
+        "role": "Select Role",
+        "return": "Return"
+    }
 
     def __init__(self, window: pygame.display, controller: ControllerLobby, parentView, settings: ViewSettings) -> None:
         super(LobbyScreen, self).__init__(window, controller, settings)
@@ -68,7 +75,7 @@ class LobbyScreen(BasicView):
             relative_rect=pygame.Rect((self.container.rect.centerx,
                                        self.container.rect.centery + self.__padding * len(self.container.elements)),
                                       self.__buttonSize),
-            text="Start Game",
+            text=self._text_labels["start_game"],
             manager=self.manager,
             container=self.container,
             object_id="#start_game"
@@ -78,7 +85,7 @@ class LobbyScreen(BasicView):
             relative_rect=pygame.Rect((self.container.rect.centerx,
                                        self.container.rect.centery + self.__padding * len(self.container.elements)),
                                       self.__buttonSize),
-            text="Reconnect",
+            text=self._text_labels["reconnect"],
             manager=self.manager,
             container=self.container,
             object_id="#reconnect"
@@ -97,7 +104,7 @@ class LobbyScreen(BasicView):
                                        self.container.rect.centery + self.__padding * len(self.container.elements)),
                                       self.__buttonSize),
             options_list=self._vald_roles,
-            starting_option="Select Role",
+            starting_option=self._text_labels["role"],
             manager=self.manager,
             container=self.container,
             object_id="#role_dropdown"
@@ -107,10 +114,10 @@ class LobbyScreen(BasicView):
             relative_rect=pygame.Rect((self.container.rect.centerx,
                                        self.container.rect.centery + self.__padding * len(self.container.elements)),
                                       self.__buttonSize),
-            text="Return",
+            text=self._text_labels["return"],
             manager=self.manager,
             container=self.container,
             object_id="#return"
         )
 
-        self.name_entryline.set_text("Enter name")
+        self.name_entryline.set_text(self._text_labels["name"])
