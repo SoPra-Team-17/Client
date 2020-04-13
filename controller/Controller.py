@@ -3,7 +3,7 @@ import logging
 import pygame
 from view.ViewSettings import ViewSettings
 from view.MainMenu.MainMenu import MainMenu
-from view.GameView import GameView
+from view.GameView.GameView import GameView
 from controller.ControllerView import ControllerGameView, ControllerMainMenu
 
 
