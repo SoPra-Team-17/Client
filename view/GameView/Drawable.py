@@ -15,7 +15,7 @@ class Drawable(ABC):
         self.point = WorldPoint() if pos is None else pos
 
     @abstractmethod
-    def draw(self, window: pygame.display, camOffset: Tuple[float, float]) -> None:
+    def draw(self, window: pygame.display, camOffset: Tuple[float, float], settings: ViewSettings) -> None:
         pass
 
     @abstractmethod
@@ -78,6 +78,7 @@ class Block(Drawable):
         """
         Draw individual Block
         :note see that camera offset is now used in drawing function to keep field coords consistent
+        :param settings:        settings object, containing window size, fps, etc.
         :param window:          pygame display in which the block is drawn
         :param camOffset:       camera perspective
         :return:                None
