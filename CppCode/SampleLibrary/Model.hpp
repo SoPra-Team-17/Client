@@ -2,12 +2,13 @@
 #define SAMPLELIBRARY_LIBRARY_H
 
 #include <string>
+#include <iostream>
 
 
-class TestClass {
+class Model {
 public:
 
-    TestClass() {
+    Model() {
         text = "init";
     }
 
@@ -15,12 +16,8 @@ public:
 
     void setText(std::string t);
 
-    std::string getText();
-
     void printText();
 
 };
-
-void printTestClass(TestClass tc);
 
 #endif //SAMPLELIBRARY_LIBRARY_H

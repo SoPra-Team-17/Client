@@ -1,26 +1,15 @@
 #include <iostream>
-#include <SampleLibrary/library.h>
+#include <SampleLibrary/Network.hpp>
+#include <SampleLibrary/CallbackClass.hpp>
+#include <SampleLibrary/Model.hpp>
 
 int main() {
-    std::string text;
+    Model model;
+    CallbackClass callback;
+    Network network = Network(callback, model);
 
-    TestClass tc = TestClass();
-    text = tc.getText();
-    std::cout<<text<<std::endl;
-    tc.printText();
-    printTestClass(tc);
-
-    tc.setText("abc");
-    text = tc.getText();
-    std::cout<<text<<std::endl;
-    tc.printText();
-    printTestClass(tc);
-
-    tc.text = "def";
-    text = tc.getText();
-    std::cout<<text<<std::endl;
-    tc.printText();
-    printTestClass(tc);
+    network.sentSetText("HalloSopra");
+    network.receivedGetText();
 
     return 0;
 }
