@@ -15,7 +15,6 @@ class SettingsScreen(BasicView):
         "address_text": "Server Address",
         "port_text": "Port",
         "resolution_text": "Resolution",
-        "resolution_select_text": "Select Resolution",
         "music_text": "Music",
         "effects_text": "Effects"
     }
@@ -204,7 +203,7 @@ class SettingsScreen(BasicView):
 
         self.resolution_dropdown = pygame_gui.elements.UIDropDownMenu(
             options_list=self._valid_resolutions,
-            starting_option=self._text_labels["resolution_select_text"],
+            starting_option=f"{self.settings.window_width}x{self.settings.window_height}",
             relative_rect=pygame.Rect((self.container.rect.centerx,
                                        self.container.rect.centery + self.__padding * len(
                                            self.container.elements)),

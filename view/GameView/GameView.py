@@ -13,7 +13,6 @@ class GameView(BasicView):
 
     def __init__(self, window: pygame.display, controller: ControllerGameView, setttings: ViewSettings) -> None:
         super().__init__(window, controller, setttings)
-        self.settings = setttings
         self.gameViewController = GameViewController(self, setttings)
 
     def draw(self) -> None:
