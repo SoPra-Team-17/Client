@@ -6,6 +6,7 @@ import pygame
 from view.BasicView import BasicView
 from view.MainMenu.MainMenuScreen import MainMenuScreen
 from view.MainMenu.SettingsScreen import SettingsScreen
+from view.MainMenu.HelpScreen import HelpScreen
 from view.ViewSettings import ViewSettings
 from controller.ControllerView import ControllerMainMenu
 
@@ -18,6 +19,7 @@ class MainMenu(BasicView):
         self.active_screens = []
         self.mainMenuScreen = MainMenuScreen(self.window, self.controller, self, self.settings)
         self.settingsScreen = SettingsScreen(self.window, self.controller, self, settings)
+        self.helpScreen = HelpScreen(self.window, self.controller, self, settings)
 
         self.active_screens.append(self.mainMenuScreen)
         logging.info("MainMenu init done")
@@ -31,6 +33,7 @@ class MainMenu(BasicView):
     def draw(self) -> None:
         for screen in self.active_screens:
             screen.draw()
+        pygame.display.flip()
 
     def receive_event(self, event: pygame.event.Event) -> None:
         """
@@ -53,34 +56,38 @@ class MainMenu(BasicView):
         Interface from children view to parent
         :return:
         """
-        logging.error("Help Screen not yet implemented")
+        if self.helpScreen in self.active_screens:
+            self.active_screens.remove(self.helpScreen)
+        else:
+            self.active_screens.append(self.helpScreen)
 
-    def to_main_menu(self, settings: Dict) -> None:
+    def to_main_menu(self, settings: Dict = None) -> None:
         """
         Interface from children view to parent
         In this method the settings entered in the settingsscreen are parsed
         :param settings:
         :return:
         """
-        try:
-            width, height = settings["resolution"].split("x")
-            width, height = int(width), int(height)
-            self.settings.window_height, self.settings.window_width = height, width
-        except ValueError:
-            logging.warning("Unable to parse Resolution")
-        try:
-            self.settings.address = ipaddress.ip_address(settings["address"])
-        except ValueError:
-            logging.warning("Unable to parse IP-Address")
-        try:
-            self.settings.port = int(settings["port"])
+        if settings is not None:
+            try:
+                width, height = settings["resolution"].split("x")
+                width, height = int(width), int(height)
+                self.settings.window_height, self.settings.window_width = height, width
+            except ValueError:
+                logging.warning("Unable to parse Resolution")
+            try:
+                self.settings.address = ipaddress.ip_address(settings["address"])
+            except ValueError:
+                logging.warning("Unable to parse IP-Address")
+            try:
+                self.settings.port = int(settings["port"])
 
-        except ValueError:
-            logging.warning("Unable to parse port")
+            except ValueError:
+                logging.warning("Unable to parse port")
 
-        self.settings.audio_effects = settings["audio_effects"]
-        self.settings.audio_music = settings["audio_music"]
+            self.settings.audio_effects = settings["audio_effects"]
+            self.settings.audio_music = settings["audio_music"]
 
-        logging.info(self.settings)
+            logging.info(self.settings)
 
         self.active_screens = [self.mainMenuScreen]

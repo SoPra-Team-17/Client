@@ -63,13 +63,15 @@ class Controller(ControllerGameView, ControllerMainMenu):
 
     def start_game(self) -> None:
         logging.info("Start game detected")
-        self.activeViews = []
-        self.activeViews.append(self.gameView)
+        self.activeViews = [self.gameView]
 
     def exit_game(self) -> None:
         logging.info("Exit from MainMenu")
         pygame.quit()
         sys.exit(0)
+
+    def to_main_menu(self) -> None:
+        self.activeViews = [self.mainMenu]
 
     def send_action(self) -> None:
         pass

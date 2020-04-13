@@ -64,9 +64,6 @@ class SettingsScreen(BasicView):
         self.window.blit(self.background, (0, 0))
         self.manager.draw_ui(self.window)
 
-        pygame.display.update()
-        pygame.display.flip()
-
     def receive_event(self, event: pygame.event.Event) -> None:
         """
         Receive event method, called by parent view. In this case MainMenu
@@ -83,6 +80,8 @@ class SettingsScreen(BasicView):
                 switcher.get(event.ui_object_id)()
             except TypeError:
                 logging.warning("Did not find UI-Element in Dict")
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+            self.return_button_pressed()
 
     def default_callback(self) -> None:
         """
