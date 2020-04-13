@@ -10,18 +10,19 @@
 
 class Network {
 public:
-
-    Network(CallbackClass c, Model m) {
+    Network(CallbackClass *c, Model *m) {
         callback = c;
         model = m;
     }
 
-    CallbackClass callback;
-    Model model;
+    CallbackClass *callback;
+    Model *model;
 
     void sentSetText(std::string t);
 
     std::string receivedGetText();
+
+    Model* getModel();
 
 };
 

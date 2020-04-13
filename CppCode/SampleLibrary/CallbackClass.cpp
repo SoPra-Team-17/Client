@@ -4,6 +4,3 @@
 
 #include "CallbackClass.hpp"
 
-void CallbackClass::receivedGetText(Model m) {
-    m.printText();
-}

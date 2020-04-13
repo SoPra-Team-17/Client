@@ -6,9 +6,13 @@
 
 
 void Network::sentSetText(std::string t) {
-    model.setText(t);
+    model->setText(t);
 }
 
 std::string Network::receivedGetText() {
-    callback.receivedGetText(model);
+    callback->receivedGetText();
+}
+
+Model* Network::getModel() {
+    return this->model;
 }
