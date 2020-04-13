@@ -117,6 +117,7 @@ class SettingsScreen(BasicView):
         self.settings.audio_effects = self.audio_effects_slider.get_current_value()
         self.settings.audio_music = self.audio_music_slider.get_current_value()
 
+        self.settings.to_json()
         logging.info(self.settings)
 
         self.parent_view.to_main_menu()
