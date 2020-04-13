@@ -1,6 +1,4 @@
 import logging
-import ipaddress
-from typing import Dict
 import pygame
 
 from view.BasicView import BasicView
@@ -61,33 +59,10 @@ class MainMenu(BasicView):
         else:
             self.active_screens.append(self.helpScreen)
 
-    def to_main_menu(self, settings: Dict = None) -> None:
+    def to_main_menu(self) -> None:
         """
         Interface from children view to parent
-        In this method the settings entered in the settingsscreen are parsed
         :param settings:
         :return:
         """
-        if settings is not None:
-            try:
-                width, height = settings["resolution"].split("x")
-                width, height = int(width), int(height)
-                self.settings.window_height, self.settings.window_width = height, width
-            except ValueError:
-                logging.warning("Unable to parse Resolution")
-            try:
-                self.settings.address = ipaddress.ip_address(settings["address"])
-            except ValueError:
-                logging.warning("Unable to parse IP-Address")
-            try:
-                self.settings.port = int(settings["port"])
-
-            except ValueError:
-                logging.warning("Unable to parse port")
-
-            self.settings.audio_effects = settings["audio_effects"]
-            self.settings.audio_music = settings["audio_music"]
-
-            logging.info(self.settings)
-
         self.active_screens = [self.mainMenuScreen]

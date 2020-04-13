@@ -17,19 +17,19 @@ class HelpScreen(BasicView):
 
         self.parent_view = parentView
 
-        self.manager = pygame_gui.UIManager((self.window_width, self.window_height),
+        self.manager = pygame_gui.UIManager((self.settings.window_width, self.settings.window_height),
                                             "assets/Menu/MainMenuTheme.json")
 
         self.container = pygame_gui.core.UIContainer(
-            relative_rect=pygame.Rect((self.window_width * .0, self.window_height * .0),
-                                      (self.window_width / 4, self.window_height / 2)),
+            relative_rect=pygame.Rect((self.settings.window_width * .0, self.settings.window_height * .0),
+                                      (self.settings.window_width / 4, self.settings.window_height / 2)),
             manager=self.manager
         )
 
         self.__padding = self.container.rect.width / 15
         self.__labelSize = (self.container.rect.width / 1.5, self.container.rect.width / 1.8)
 
-        self.background = pygame.Surface((self.window_width / 4, self.window_height / 2))
+        self.background = pygame.Surface((self.settings.window_width / 4, self.settings.window_height / 2))
         self.background.fill((20, 48, 11))
 
         self._init_ui_elements()

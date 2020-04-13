@@ -1,4 +1,5 @@
 import logging
+import ipaddress
 import pygame_gui.elements.ui_button
 import pygame
 
@@ -9,6 +10,7 @@ from controller.ControllerView import ControllerMainMenu
 
 class SettingsScreen(BasicView):
     _valid_resolutions = ["1024x576", "1152x648", "1366x768", "1600x900", "1920x1080", "2560x1440", "3840x2160"]
+    _valid_address_inputs = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "."]
     _text_labels = {
         "address_text": "Server Address",
         "port_text": "Port",
@@ -32,17 +34,17 @@ class SettingsScreen(BasicView):
 
         self.parent_view = parentView
 
-        self.manager = pygame_gui.UIManager((self.window_width, self.window_height),
+        self.manager = pygame_gui.UIManager((self.settings.window_width, self.settings.window_height),
                                             "assets/Menu/MainMenuTheme.json")
 
         self.container = pygame_gui.core.UIContainer(
-            relative_rect=pygame.Rect((self.window_width * .17, self.window_height * .0),
-                                      (self.window_width / 4, self.window_height / 2)),
+            relative_rect=pygame.Rect((self.settings.window_width * .17, self.settings.window_height * .0),
+                                      (self.settings.window_width / 4, self.settings.window_height / 2)),
             manager=self.manager
         )
         self.containerLabels = pygame_gui.core.UIContainer(
-            relative_rect=pygame.Rect((self.window_width * .05, self.window_height * 0),
-                                      (self.window_width / 4, self.window_height / 2)),
+            relative_rect=pygame.Rect((self.settings.window_width * .05, self.settings.window_height * 0),
+                                      (self.settings.window_width / 4, self.settings.window_height / 2)),
             manager=self.manager
         )
 
@@ -51,7 +53,7 @@ class SettingsScreen(BasicView):
         self.__labelSize = (self.container.rect.width / 3, self.container.rect.width / 15)
         self.__sliderSize = (self.container.rect.width / 2, self.container.rect.width / 15)
 
-        self.background = pygame.Surface((self.window_width, self.window_height))
+        self.background = pygame.Surface((self.settings.window_width, self.settings.window_height))
         self.background.fill(self.manager.ui_theme.get_colour(None, None, 'dark_bg'))
 
         self._init_ui_elements()
@@ -95,14 +97,29 @@ class SettingsScreen(BasicView):
         Callback when return button is pressed
         :return:    Dict containing the entered settings
         """
-        settings = {}
-        settings["audio_effects"] = self.audio_effects_slider.get_current_value()
-        settings["audio_music"] = self.audio_music_slider_.get_current_value()
-        settings["resolution"] = self.resolution_dropdown.selected_option
-        settings["address"] = self.address_textbox.get_text()
-        settings["port"] = self.port_textbox.get_text()
+        try:
+            width, height = self.resolution_dropdown.selected_option.split("x")
+            width, height = int(width), int(height)
+            # todo changing the resolution does not work atm! has to be implemented see issue
+            # self.settings.window_height, self.settings.window_width = height, width
+        except ValueError:
+            logging.warning("Unable to parse Resolution")
+        try:
+            self.settings.address = ipaddress.ip_address(self.address_entryline.get_text())
+        except ValueError:
+            logging.warning("Unable to parse IP-Address")
+        try:
+            self.settings.port = int(self.port_entryline.get_text())
 
-        self.parent_view.to_main_menu(settings)
+        except ValueError:
+            logging.warning("Unable to parse port")
+
+        self.settings.audio_effects = self.audio_effects_slider.get_current_value()
+        self.settings.audio_music = self.audio_music_slider.get_current_value()
+
+        logging.info(self.settings)
+
+        self.parent_view.to_main_menu()
 
     def _init_ui_elements(self) -> None:
         """
@@ -165,7 +182,7 @@ class SettingsScreen(BasicView):
             object_id="#audio_effects_label"
         )
 
-        self.address_textbox = pygame_gui.elements.UITextEntryLine(
+        self.address_entryline = pygame_gui.elements.UITextEntryLine(
             relative_rect=pygame.Rect((self.container.rect.centerx,
                                        self.container.rect.centery + self.__padding * len(
                                            self.container.elements)),
@@ -174,7 +191,7 @@ class SettingsScreen(BasicView):
             container=self.container,
             object_id="#address_textbox"
         )
-        self.port_textbox = pygame_gui.elements.UITextEntryLine(
+        self.port_entryline = pygame_gui.elements.UITextEntryLine(
             relative_rect=pygame.Rect((self.container.rect.centerx,
                                        self.container.rect.centery + self.__padding * len(
                                            self.container.elements)),
@@ -208,7 +225,7 @@ class SettingsScreen(BasicView):
             object_id="#audio_effects_slider"
         )
 
-        self.audio_music_slider_ = pygame_gui.elements.UIHorizontalSlider(
+        self.audio_music_slider = pygame_gui.elements.UIHorizontalSlider(
             relative_rect=pygame.Rect((self.container.rect.centerx,
                                        self.container.rect.centery + self.__padding * (len(
                                            self.container.elements) - 2)),
@@ -229,3 +246,12 @@ class SettingsScreen(BasicView):
             container=self.container,
             object_id="#return_button"
         )
+
+        self.address_entryline.set_text(f"{self.settings.address}")
+        self.address_entryline.allowed_characters = self._valid_address_inputs
+
+        self.port_entryline.set_text(f"{self.settings.port}")
+        self.port_entryline.allowed_characters = self._valid_address_inputs[:-1]
+
+        self.audio_effects_slider.set_current_value(self.settings.audio_effects)
+        self.audio_music_slider.set_current_value(self.settings.audio_music)

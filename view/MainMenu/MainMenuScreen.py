@@ -2,7 +2,6 @@ import logging
 import pygame_gui.elements.ui_button
 import pygame
 
-import view.ViewSettings as props
 from view.BasicView import BasicView
 from view.ViewSettings import ViewSettings
 from controller.ControllerView import ControllerMainMenu
@@ -10,24 +9,25 @@ from controller.ControllerView import ControllerMainMenu
 
 class MainMenuScreen(BasicView):
 
-    def __init__(self, window: pygame.display, controller: ControllerMainMenu, parentView, settings: ViewSettings):
+    def __init__(self, window: pygame.display, controller: ControllerMainMenu, parentView,
+                 settings: ViewSettings) -> None:
         super(MainMenuScreen, self).__init__(window, controller, settings)
 
         self.parent_view = parentView
 
-        self.manager = pygame_gui.UIManager((self.window_width, self.window_height),
+        self.manager = pygame_gui.UIManager((self.settings.window_width, self.settings.window_height),
                                             "assets/Menu/MainMenuTheme.json")
         self.manager.add_font_paths("SanistaOne", "assets/Menu/SanistaOne.ttf")
 
         self.container = pygame_gui.core.UIContainer(
-            relative_rect=pygame.Rect((self.window_width * .17, self.window_height * .1),
-                                      (self.window_width / 4, self.window_height / 2)),
+            relative_rect=pygame.Rect((self.settings.window_width * .17, self.settings.window_height * .1),
+                                      (self.settings.window_width / 4, self.settings.window_height / 2)),
             manager=self.manager)
 
         self.__padding = self.container.rect.width / 10
         self.__buttonSize = (self.container.rect.width / 3, self.container.rect.width / 12)
 
-        self.background = pygame.Surface((self.window_width, self.window_height))
+        self.background = pygame.Surface((self.settings.window_width, self.settings.window_height))
         self.background.fill(self.manager.ui_theme.get_colour(None, None, 'dark_bg'))
 
         self._init_ui_elements()
@@ -41,7 +41,8 @@ class MainMenuScreen(BasicView):
 
         self.window.blit(self.background, (0, 0))
         self.window.blit(self.titleImage,
-                         (self.window_width / 2 - self.titleImage.get_rect().width / 2, self.window_height * .25))
+                         (self.settings.window_width / 2 - self.titleImage.get_rect().width / 2,
+                          self.settings.window_height * .25))
         self.manager.draw_ui(self.window)
 
     def receive_event(self, event: pygame.event.Event) -> None:
