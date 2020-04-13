@@ -1,7 +1,7 @@
 import unittest
 
 from util.Transforms import Transformations as transforms
-
+from view.ViewSettings import ViewSettings
 
 class testTrafoToWorldCoords(unittest.TestCase):
     """
@@ -12,9 +12,11 @@ class testTrafoToWorldCoords(unittest.TestCase):
     :return: None
     """
 
+    settings = ViewSettings()
+
     def test_without_offset(self):
-        self.assertEqual(props.WINDOW_WIDTH, 1920)
-        self.assertEqual(props.WINDOW_HEIGHT, 1080)
+        self.assertEqual(self.settings.window_width, 1920)
+        self.assertEqual(self.settings.window_height, 1080)
 
         xt, yt = transforms.trafo_window_to_world_coords(1182, 446)
         self.assertEqual((8, 2), (xt, yt))
@@ -29,8 +31,8 @@ class testTrafoToWorldCoords(unittest.TestCase):
         self.assertEqual((3, 7), (xt, yt))
 
     def test_with_offset(self):
-        self.assertEqual(props.WINDOW_WIDTH, 1920)
-        self.assertEqual(props.WINDOW_HEIGHT, 1080)
+        self.assertEqual(self.settings.window_width, 1920)
+        self.assertEqual(self.settings.window_height, 1080)
 
         xt, yt = transforms.trafo_window_to_world_coords(525, 364, -12.75, 3.75)
         self.assertEqual((8, 6), (xt, yt))
@@ -42,8 +44,8 @@ class testTrafoToWorldCoords(unittest.TestCase):
         self.assertEqual((3, 1), (xt, yt))
 
     def test_with_offset_small_diff(self):
-        self.assertEqual(props.WINDOW_WIDTH, 1920)
-        self.assertEqual(props.WINDOW_HEIGHT, 1080)
+        self.assertEqual(self.settings.window_width, 1920)
+        self.assertEqual(self.settings.window_height, 1080)
 
         xt, yt = transforms.trafo_window_to_world_coords(652, 699, -1.5, 11.5)
         self.assertEqual((9, 7), (xt, yt))
@@ -58,8 +60,8 @@ class testTrafoToWorldCoords(unittest.TestCase):
         self.assertEqual((7, 9), (xt, yt))
 
     def test_diagonal(self):
-        self.assertEqual(props.WINDOW_WIDTH, 1920)
-        self.assertEqual(props.WINDOW_HEIGHT, 1080)
+        self.assertEqual(self.settings.window_width, 1920)
+        self.assertEqual(self.settings.window_height, 1080)
 
         xt, yt = transforms.trafo_window_to_world_coords(843, 477)
         self.assertEqual((4, 8), (xt, yt))
