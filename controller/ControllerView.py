@@ -44,3 +44,39 @@ class ControllerGameView(ABC):
         Interface to GameView
         :return:    None
         """
+
+
+class ControllerLobby(ABC):
+    """
+    Specifies interface from lobby view to controller
+    """
+
+    def __init__(self) -> None:
+        pass
+
+    @abstractmethod
+    def send_hello(self) -> None:
+        """
+        Interface to Network
+        :return:
+        """
+
+    @abstractmethod
+    def send_reconnect(self) -> None:
+        """
+        Interface to Network
+        :return:
+        """
+
+    @abstractmethod
+    def to_main_menu(self) -> None:
+        """
+        Interface to Lobby
+        :return:
+        """
+
+    def to_game_view(self) -> None:
+        """
+        Interface to Lobby
+        :return:
+        """
