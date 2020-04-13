@@ -1,3 +1,4 @@
+import os
 import logging
 import sys
 from controller.Controller import Controller
@@ -23,6 +24,9 @@ def init_logging():
 
 
 def main():
+    #os.environ['SDL_VIDEODRIVER'] = 'x11'
+    #os.environ['DISPLAY'] = '127.0.0.1:0'
+
     init_logging()
     #logging examples
     logging.info("Info output")
@@ -30,6 +34,7 @@ def main():
     logging.warning("Warning output")
     logging.error("Error output")
     logging.critical("Critical output")
+
 
     #create main controller
     controller = Controller()
