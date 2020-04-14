@@ -1,0 +1,3 @@
+[submodule "extern/LibClient"]
+	path = extern/LibClient
+	url = https://github.com/SoPra-Team-17/LibClient
