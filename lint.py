@@ -5,7 +5,7 @@ from pylint.lint import Run
 
 logging.getLogger().setLevel(logging.INFO)
 
-path = ["view", "model", "controller", "test", "util"]
+path = ["view", "model", "controller", "test", "util", "network"]
 threshold = 5
 
 results = Run(path, do_exit=False)
