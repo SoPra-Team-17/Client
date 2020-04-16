@@ -2,6 +2,7 @@ import pygame
 
 from view.BasicView import BasicView
 from view.GameView.GameViewController import GameViewController
+from view.ViewSettings import ViewSettings
 from controller.ControllerView import ControllerGameView
 
 
@@ -29,6 +30,6 @@ class GameView(BasicView):
         pygame.display.flip()
 
     def receive_event(self, event: pygame.event.Event) -> None:
-        #todo for now all events are forwarded
-        #here the filtering between HUD and Game should take place!
+        # todo for now all events are forwarded
+        # here the filtering between HUD and Game should take place!
         self.gameViewController.receive_event(event)

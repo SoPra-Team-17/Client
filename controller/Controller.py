@@ -1,8 +1,8 @@
 import sys
 import logging
 import pygame
-import view.ViewConstants as props
-from view.MainMenu import MainMenu
+from view.ViewSettings import ViewSettings
+from view.MainMenu.MainMenu import MainMenu
 from view.GameView.GameView import GameView
 from controller.ControllerView import ControllerGameView, ControllerMainMenu
 
@@ -18,13 +18,16 @@ class Controller(ControllerGameView, ControllerMainMenu):
         # call init of ControllerMainMenu
         super(ControllerGameView, self).__init__()
 
+        self.view_settings = ViewSettings()
+
         pygame.init()
         # erstelle screen
-        self.screen = pygame.display.set_mode((props.WINDOW_WIDTH, props.WINDOW_HEIGHT))
-        pygame.display.set_caption(props.WINDOW_NAME)
+        self.screen = pygame.display.set_mode((self.view_settings.window_width, self.view_settings.window_height),
+                                              pygame.RESIZABLE)
+        pygame.display.set_caption(self.view_settings.window_name)
         self.clock = pygame.time.Clock()
-        self.mainMenu = MainMenu(self.screen, self)
-        self.gameView = GameView(self.screen, self)
+        self.mainMenu = MainMenu(self.screen, self, self.view_settings)
+        self.gameView = GameView(self.screen, self, self.view_settings)
         self.activeViews = []
 
         # at the beginning main menu is the active view
@@ -56,17 +59,19 @@ class Controller(ControllerGameView, ControllerMainMenu):
             for view in self.activeViews:
                 view.draw()
 
-            self.clock.tick(props.FRAME_RATE)
+            self.clock.tick(self.view_settings.frame_rate)
 
     def start_game(self) -> None:
         logging.info("Start game detected")
-        self.activeViews = []
-        self.activeViews.append(self.gameView)
+        self.activeViews = [self.gameView]
 
     def exit_game(self) -> None:
         logging.info("Exit from MainMenu")
         pygame.quit()
         sys.exit(0)
+
+    def to_main_menu(self) -> None:
+        self.activeViews = [self.mainMenu]
 
     def send_action(self) -> None:
         pass

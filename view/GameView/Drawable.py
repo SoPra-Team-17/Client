@@ -1,7 +1,7 @@
 from typing import Tuple
 from abc import ABC, abstractmethod
 from view.GameView.AssetStorage import BlockAssets, AssetStorage
-import view.ViewConstants as props
+from view.ViewSettings import ViewSettings
 from util.Transforms import Transformations
 from util.Coordinates import WorldPoint
 import pygame
@@ -15,7 +15,7 @@ class Drawable(ABC):
         self.point = WorldPoint() if pos is None else pos
 
     @abstractmethod
-    def draw(self, window: pygame.display, camOffset: Tuple[float, float]) -> None:
+    def draw(self, window: pygame.display, camOffset: Tuple[float, float], settings: ViewSettings) -> None:
         pass
 
     @abstractmethod
@@ -28,8 +28,9 @@ class Drawable(ABC):
 
 class DrawableGroup:
 
-    def __init__(self) -> None:
+    def __init__(self, settings: ViewSettings) -> None:
         self.list = []
+        self.settings = settings
 
     def add(self, drawable: Drawable) -> None:
         self.list.append(drawable)
@@ -45,7 +46,7 @@ class DrawableGroup:
     def draw(self, window: pygame.display, camOffset: Tuple[float, float]) -> None:
         self.sort()
         for drawable in self.list:
-            drawable.draw(window, camOffset)
+            drawable.draw(window, camOffset, self.settings)
 
     def highlight_drawable_in_focus(self, camOffset: Tuple[float, float]) -> None:
         pos = pygame.mouse.get_pos()
@@ -73,10 +74,11 @@ class Block(Drawable):
         self.__TILEWIDTH = 64
         self.__TILEHEIGHT = 64
 
-    def draw(self, window: pygame.display, camOffset: Tuple[float, float]) -> None:
+    def draw(self, window: pygame.display, camOffset: Tuple[float, float], settings: ViewSettings) -> None:
         """
         Draw individual Block
         :note see that camera offset is now used in drawing function to keep field coords consistent
+        :param settings:        settings object, containing window size, fps, etc.
         :param window:          pygame display in which the block is drawn
         :param camOffset:       camera perspective
         :return:                None
@@ -91,7 +93,7 @@ class Block(Drawable):
             1]) * self.__TILEHEIGHT / 4 - self.point.z * self.__TILEHEIGHT / 2 + m_y / 2
 
         # only draw block, when still inside visible window! accout for block size so block is not clipped on the edge
-        if -64 <= v_x <= props.WINDOW_WIDTH + 64 and -64 <= v_y <= props.WINDOW_HEIGHT:
+        if -64 <= v_x <= settings.window_width + 64 and -64 <= v_y <= settings.window_height:
             self.window.blit(self.current_image, (v_x, v_y))
 
     def hovering(self, focus: bool = False) -> None:

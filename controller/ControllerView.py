@@ -38,3 +38,9 @@ class ControllerGameView(ABC):
         Interface to GameView
         :return:    None
         """
+
+    def to_main_menu(self) -> None:
+        """
+        Interface to GameView
+        :return:    None
+        """
