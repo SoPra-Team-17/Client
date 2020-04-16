@@ -10,6 +10,7 @@ from controller.ControllerView import ControllerMainMenu
 class HelpScreen(BasicView):
     with open("assets/Menu/help_text.html") as f:
         _help_text = f.read()
+        _help_text = _help_text.replace("\n", "")
 
     def __init__(self, window: pygame.display, controller: ControllerMainMenu, parentView,
                  settings: ViewSettings) -> None:
