@@ -1,5 +1,6 @@
-pylint
-pygame
-pygame_gui
-numpy
-cppyy
+cppyy==1.6.2
+pygame==1.9.6
+pygame-gui==0.4.2
+pylint==2.4.4
+pytest==5.4.1
+zipp==3.1.0
