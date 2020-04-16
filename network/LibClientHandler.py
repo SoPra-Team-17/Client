@@ -1,7 +1,7 @@
 import cppyy
 
 
-class PythonCallbackClass(cppyy.gbl.CallbackClass):
+class LibClientHandler(cppyy.gbl.CallbackClass):
 
     def __init__(self):
         pass
