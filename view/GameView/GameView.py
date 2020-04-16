@@ -34,5 +34,8 @@ class GameView(BasicView):
     def receive_event(self, event: pygame.event.Event) -> None:
         # todo for now all events are forwarded
         # here the filtering between HUD and Game should take place!
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+            self.controller.to_main_menu()
+
         for view in self.active_views:
             view.receive_event(event)
