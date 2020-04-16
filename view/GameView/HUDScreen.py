@@ -43,7 +43,16 @@ class HUDScreen(BasicView):
         self.manager.draw_ui(self.window)
 
     def receive_event(self, event: pygame.event.Event) -> None:
-        pass
+        self.manager.process_events(event)
+
+        if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_PRESSED:
+            switcher = {
+                self.menu_button.object_ids[0]: self.menu_button_pressed
+            }
+            switcher.get(event.ui_object_id)()
+
+    def menu_button_pressed(self):
+        self.controller.to_main_menu()
 
     def _init_ui_elements(self) -> None:
         self.char_image_list = []

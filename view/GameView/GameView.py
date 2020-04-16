@@ -35,5 +35,9 @@ class GameView(BasicView):
         if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
             self.controller.to_main_menu()
 
+        if event.type == pygame.MOUSEBUTTONUP and self.hudView.filter_event(event):
+            self.hudView.receive_event(event)
+            return
+
         for view in self.active_views:
             view.receive_event(event)
