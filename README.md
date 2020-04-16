@@ -31,6 +31,8 @@ Vermutlich kann man die C++ lib auch als Submodule verwenden, allerdings muss di
 
 ### "import" C++ lib to your project
 Hierzu muss kein make File oder dergleichen erstellt werden. Analog zu `import X` muss folgendes gemacht werden:
+
+#### C++ lib ist auf dem Gerät installiert
 ```
 # do this for every C++ lib you want to use
 cppyy.load_library('CppLib')
@@ -40,6 +42,17 @@ cppyy.include('CppLib/CppLibHeader1.hpp')
 cppyy.include('CppLib/CppLibHeaderN.hpp')
 ```
 Analogon zu C++: `cppyy.load_library('CppLib')` entspricht in C++ `target_link_libraries(${PROJECT_NAME} CppLib)` im CMakeLists.txt File. `cppyy.include('CppLib/CppLibHeader1.hpp')` entspricht in C++ `#include <CppLib/CppLibHeaderN.hpp>`
+
+#### C++ lib als Teil des Projekts (submodule, nicht installiert)
+```
+# do this for every C++ lib you want to use
+cppyy.add_include_path('<path to CppLib>')
+# include only header/code files needed
+cppyy.include('<path to CppLib>/CppLibHeader1.hpp')
+cppyy.include('<path to CppLib>/CppLibHeader1.cpp')
+...
+cppyy.include('<path to CppLib>/CppLibHeaderN.hpp')
+cppyy.include('<path to CppLib>/CppLibHeaderN.cpp')
 
 ### use C++ lib in your project after "importing"
 #### Klasse instanizieren und mit ihr arbeiten
