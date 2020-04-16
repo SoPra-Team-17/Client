@@ -1,13 +1,22 @@
-
 {
-    "button":
-    {
-        "misc":
-        {
-            "shape": "rounded_rectangle",
-            "shape_corner_radius": "10",
-            "border_width": "1",
-            "shadow_width": "2"
-        }
+  "button": {
+    "misc": {
+      "shape": "rounded_rectangle",
+      "shape_corner_radius": "10",
+      "border_width": "1",
+      "shadow_width": "2"
     }
+  },
+  "text_box": {
+    "colours": {
+      "dark_bg": "#2a2b2a",
+      "normal_border": "#999999"
+    },
+    "misc": {
+      "shape": "rounded_rectangle",
+      "shape_corner_radius": "10",
+      "border_width": "2",
+      "padding": "10,10"
+    }
+  }
 }
