@@ -1,6 +1,7 @@
 import logging
-import pygame
 import pygame_gui
+import pygame
+
 
 from view.BasicView import BasicView
 from view.ViewSettings import ViewSettings
