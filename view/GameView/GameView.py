@@ -14,7 +14,6 @@ class GameView(BasicView):
 
     def __init__(self, window: pygame.display, controller: ControllerGameView, settings: ViewSettings) -> None:
         super().__init__(window, controller, settings)
-        self.window_width, self.window_height = pygame.display.get_surface().get_size()
 
         self.gameViewController = GameViewController(self, settings)
         self.hudView = HUDView(self.window, self.controller, self.settings)

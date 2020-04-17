@@ -58,7 +58,7 @@ class MainMenuScreen(BasicView):
             switcher.get(event.ui_element)()
 
     def help_button_pressed(self) -> None:
-        self.parent_view.to_help()
+        self.parent_view.help_button_pressed()
 
     def settings_button_pressed(self) -> None:
         self.parent_view.to_settings()
