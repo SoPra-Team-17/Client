@@ -1,7 +1,17 @@
 import os
 import logging
 import sys
+import cppyy
+
 from controller.Controller import Controller
+
+os.system("mkdir extern/LibClient/build")
+os.system("cd extern/LibClient/build && cmake .. && make -j8")
+
+#cppyy.load_library("SopraClient")
+#obj_cpp = cppyy.gbl.libclient.Callback()
+#micro = cppyy.gbl.std.chrono.microseconds
+
 
 
 def init_logging():
@@ -28,13 +38,6 @@ def main():
     #os.environ['DISPLAY'] = '127.0.0.1:0'
 
     init_logging()
-    #logging examples
-    logging.info("Info output")
-    logging.debug("Debug output")
-    logging.warning("Warning output")
-    logging.error("Error output")
-    logging.critical("Critical output")
-
 
     #create main controller
     controller = Controller()
