@@ -21,7 +21,7 @@ class HelpScreen(BasicView):
                                             "assets/Menu/MainMenuTheme.json")
 
         self.container = pygame_gui.core.UIContainer(
-            relative_rect=pygame.Rect((self.settings.window_width * .0, self.settings.window_height * .0),
+            relative_rect=pygame.Rect((self.settings.window_width * .1, self.settings.window_height * .2),
                                       (self.settings.window_width / 4, self.settings.window_height / 2)),
             manager=self.manager
         )
@@ -57,8 +57,8 @@ class HelpScreen(BasicView):
         """
 
         self.help_box = pygame_gui.elements.UITextBox(
-            relative_rect=pygame.Rect((self.container.rect.centerx,
-                                       self.container.rect.centery + self.__padding * len(
+            relative_rect=pygame.Rect((0,
+                                       self.__padding * len(
                                            self.container.elements)),
                                       self.__labelSize),
             html_text=self._help_text,

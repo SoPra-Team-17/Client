@@ -37,12 +37,12 @@ class SettingsScreen(BasicView):
                                             "assets/Menu/MainMenuTheme.json")
 
         self.container = pygame_gui.core.UIContainer(
-            relative_rect=pygame.Rect((self.settings.window_width * .17, self.settings.window_height * .0),
+            relative_rect=pygame.Rect((self.settings.window_width * .45, self.settings.window_height * .4),
                                       (self.settings.window_width / 4, self.settings.window_height / 2)),
             manager=self.manager
         )
         self.containerLabels = pygame_gui.core.UIContainer(
-            relative_rect=pygame.Rect((self.settings.window_width * .05, self.settings.window_height * 0),
+            relative_rect=pygame.Rect((self.settings.window_width * .25, self.settings.window_height * .4),
                                       (self.settings.window_width / 4, self.settings.window_height / 2)),
             manager=self.manager
         )
@@ -75,10 +75,10 @@ class SettingsScreen(BasicView):
 
         if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_PRESSED:
             switcher = {
-                self.return_button.object_ids[0]: self.return_button_pressed,
+                self.return_button: self.return_button_pressed,
             }
             try:
-                switcher.get(event.ui_object_id)()
+                switcher.get(event.ui_element)()
             except TypeError:
                 logging.warning("Did not find UI-Element in Dict")
         if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
@@ -128,8 +128,8 @@ class SettingsScreen(BasicView):
         :return:    None
         """
         self.address_label = pygame_gui.elements.UILabel(
-            relative_rect=pygame.Rect((self.containerLabels.rect.centerx,
-                                       self.containerLabels.rect.centery + self.__padding * len(
+            relative_rect=pygame.Rect((0,
+                                       self.__padding * len(
                                            self.containerLabels.elements)),
                                       self.__labelSize),
             text=self._text_labels["address_text"],
@@ -139,10 +139,7 @@ class SettingsScreen(BasicView):
         )
 
         self.port_label = pygame_gui.elements.UILabel(
-            relative_rect=pygame.Rect((self.containerLabels.rect.centerx,
-                                       self.containerLabels.rect.centery + self.__padding * len(
-                                           self.containerLabels.elements)),
-                                      self.__labelSize),
+            relative_rect=pygame.Rect((0, self.__padding * len(self.containerLabels.elements)), self.__labelSize),
             text=self._text_labels["port_text"],
             manager=self.manager,
             container=self.containerLabels,
@@ -150,10 +147,7 @@ class SettingsScreen(BasicView):
         )
 
         self.resolution_label = pygame_gui.elements.UILabel(
-            relative_rect=pygame.Rect((self.containerLabels.rect.centerx,
-                                       self.containerLabels.rect.centery + self.__padding * len(
-                                           self.containerLabels.elements)),
-                                      self.__labelSize),
+            relative_rect=pygame.Rect((0, self.__padding * len(self.containerLabels.elements)), self.__labelSize),
             text=self._text_labels["resolution_text"],
             manager=self.manager,
             container=self.containerLabels,
@@ -161,10 +155,7 @@ class SettingsScreen(BasicView):
         )
 
         self.audio_music_label = pygame_gui.elements.UILabel(
-            relative_rect=pygame.Rect((self.containerLabels.rect.centerx,
-                                       self.containerLabels.rect.centery + self.__padding * (len(
-                                           self.containerLabels.elements) + 1)),
-                                      self.__labelSize),
+            relative_rect=pygame.Rect((0, self.__padding * (len(self.containerLabels.elements) + 1)), self.__labelSize),
             text=self._text_labels["music_text"],
             manager=self.manager,
             container=self.containerLabels,
@@ -172,10 +163,7 @@ class SettingsScreen(BasicView):
         )
 
         self.audio_effects_label = pygame_gui.elements.UILabel(
-            relative_rect=pygame.Rect((self.containerLabels.rect.centerx,
-                                       self.containerLabels.rect.centery + self.__padding * (len(
-                                           self.containerLabels.elements) + 3)),
-                                      self.__labelSize),
+            relative_rect=pygame.Rect((0, self.__padding * (len(self.containerLabels.elements) + 1)), self.__labelSize),
             text=self._text_labels["effects_text"],
             manager=self.manager,
             container=self.containerLabels,
@@ -183,19 +171,13 @@ class SettingsScreen(BasicView):
         )
 
         self.address_entryline = pygame_gui.elements.UITextEntryLine(
-            relative_rect=pygame.Rect((self.container.rect.centerx,
-                                       self.container.rect.centery + self.__padding * len(
-                                           self.container.elements)),
-                                      self.__buttonSize),
+            relative_rect=pygame.Rect((0, self.__padding * len(self.container.elements)), self.__buttonSize),
             manager=self.manager,
             container=self.container,
             object_id="#address_textbox"
         )
         self.port_entryline = pygame_gui.elements.UITextEntryLine(
-            relative_rect=pygame.Rect((self.container.rect.centerx,
-                                       self.container.rect.centery + self.__padding * len(
-                                           self.container.elements)),
-                                      self.__buttonSize),
+            relative_rect=pygame.Rect((0, self.__padding * len(self.container.elements)), self.__buttonSize),
             manager=self.manager,
             container=self.container,
             object_id="#port_textbox"
@@ -204,20 +186,14 @@ class SettingsScreen(BasicView):
         self.resolution_dropdown = pygame_gui.elements.UIDropDownMenu(
             options_list=self._valid_resolutions,
             starting_option=f"{self.settings.window_width}x{self.settings.window_height}",
-            relative_rect=pygame.Rect((self.container.rect.centerx,
-                                       self.container.rect.centery + self.__padding * len(
-                                           self.container.elements)),
-                                      self.__buttonSize),
+            relative_rect=pygame.Rect((0, self.__padding * len(self.container.elements)), self.__buttonSize),
             manager=self.manager,
             container=self.container,
             object_id="#resolution_dropdown"
         )
 
         self.audio_effects_slider = pygame_gui.elements.UIHorizontalSlider(
-            relative_rect=pygame.Rect((self.container.rect.centerx,
-                                       self.container.rect.centery + self.__padding * (len(
-                                           self.container.elements) - 1)),
-                                      self.__sliderSize),
+            relative_rect=pygame.Rect((0, self.__padding * (len(self.container.elements) - 1)), self.__sliderSize),
             start_value=self._start_value_slider["effects_start"],
             value_range=self._range_slider["effects_range"],
             manager=self.manager,
@@ -226,10 +202,7 @@ class SettingsScreen(BasicView):
         )
 
         self.audio_music_slider = pygame_gui.elements.UIHorizontalSlider(
-            relative_rect=pygame.Rect((self.container.rect.centerx,
-                                       self.container.rect.centery + self.__padding * (len(
-                                           self.container.elements) - 2)),
-                                      self.__sliderSize),
+            relative_rect=pygame.Rect((0, self.__padding * (len(self.container.elements) - 2)), self.__sliderSize),
             start_value=self._start_value_slider["music_start"],
             value_range=self._range_slider["music_range"],
             manager=self.manager,
@@ -238,9 +211,7 @@ class SettingsScreen(BasicView):
         )
 
         self.return_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect((self.container.rect.centerx,
-                                       self.container.rect.centery + self.__padding * len(self.container.elements)),
-                                      self.__buttonSize),
+            relative_rect=pygame.Rect((0, self.__padding * len(self.container.elements)), self.__buttonSize),
             text="Return",
             manager=self.manager,
             container=self.container,

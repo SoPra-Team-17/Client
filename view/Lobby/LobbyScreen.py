@@ -26,7 +26,7 @@ class LobbyScreen(BasicView):
                                             "assets/Menu/MainMenuTheme.json")
 
         self.container = pygame_gui.core.UIContainer(
-            relative_rect=pygame.Rect((self.settings.window_width * .17, self.settings.window_height * .1),
+            relative_rect=pygame.Rect((self.settings.window_width * .465, self.settings.window_height * .4),
                                       (self.settings.window_width / 4, self.settings.window_height / 2)),
             manager=self.manager)
 
@@ -51,12 +51,12 @@ class LobbyScreen(BasicView):
 
         if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_PRESSED:
             switcher = {
-                self.start_game_button.object_ids[0]: self.controller.to_game_view,
-                self.reconnect_button.object_ids[0]: self.controller.send_reconnect,
-                self.return_button.object_ids[0]: self.controller.to_main_menu
+                self.start_game_button: self.controller.to_game_view,
+                self.reconnect_button: self.controller.send_reconnect,
+                self.return_button: self.controller.to_main_menu
             }
             try:
-                switcher.get(event.ui_object_id)()
+                switcher.get(event.ui_element)()
             except TypeError:
                 logging.warning("Did not find UI-Element in Dict")
 
@@ -72,9 +72,7 @@ class LobbyScreen(BasicView):
 
     def _init_ui_elements(self) -> None:
         self.start_game_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect((self.container.rect.centerx,
-                                       self.container.rect.centery + self.__padding * len(self.container.elements)),
-                                      self.__buttonSize),
+            relative_rect=pygame.Rect((0, self.__padding * len(self.container.elements)), self.__buttonSize),
             text=self._text_labels["start_game"],
             manager=self.manager,
             container=self.container,
@@ -82,9 +80,7 @@ class LobbyScreen(BasicView):
         )
 
         self.reconnect_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect((self.container.rect.centerx,
-                                       self.container.rect.centery + self.__padding * len(self.container.elements)),
-                                      self.__buttonSize),
+            relative_rect=pygame.Rect((0, self.__padding * len(self.container.elements)), self.__buttonSize),
             text=self._text_labels["reconnect"],
             manager=self.manager,
             container=self.container,
@@ -92,17 +88,13 @@ class LobbyScreen(BasicView):
         )
 
         self.name_entryline = pygame_gui.elements.UITextEntryLine(
-            relative_rect=pygame.Rect((self.container.rect.centerx,
-                                       self.container.rect.centery + self.__padding * len(self.container.elements)),
-                                      self.__buttonSize),
+            relative_rect=pygame.Rect((0, self.__padding * len(self.container.elements)), self.__buttonSize),
             manager=self.manager,
             container=self.container
         )
 
         self.role_dropdown = pygame_gui.elements.UIDropDownMenu(
-            relative_rect=pygame.Rect((self.container.rect.centerx,
-                                       self.container.rect.centery + self.__padding * len(self.container.elements)),
-                                      self.__buttonSize),
+            relative_rect=pygame.Rect((0, self.__padding * len(self.container.elements)), self.__buttonSize),
             options_list=self._vald_roles,
             starting_option=self._text_labels["role"],
             manager=self.manager,
@@ -111,9 +103,7 @@ class LobbyScreen(BasicView):
         )
 
         self.return_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect((self.container.rect.centerx,
-                                       self.container.rect.centery + self.__padding * len(self.container.elements)),
-                                      self.__buttonSize),
+            relative_rect=pygame.Rect((0, self.__padding * len(self.container.elements)), self.__buttonSize),
             text=self._text_labels["return"],
             manager=self.manager,
             container=self.container,
