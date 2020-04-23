@@ -48,9 +48,9 @@ class HUDScreen(BasicView):
 
         if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_PRESSED:
             switcher = {
-                self.menu_button.object_ids[0]: self.menu_button_pressed
+                self.menu_button: self.menu_button_pressed
             }
-            switcher.get(event.ui_object_id)()
+            switcher.get(event.ui_element)()
 
     def menu_button_pressed(self):
         self.controller.to_main_menu()
