@@ -5,11 +5,15 @@ import cppyy
 
 from controller.Controller import Controller
 
-os.system("mkdir extern/LibClient/build")
-os.system("cd extern/LibClient/build && cmake .. && make -j8")
+cppyy.load_library("libSopraClient")
+cppyy.load_library("libSopraCommon")
+cppyy.load_library("libSopraNetwork")
 
-#cppyy.load_library("SopraClient")
-#obj_cpp = cppyy.gbl.libclient.Callback()
+cppyy.add_include_path("extern/LibClient/src")
+
+cppyy.include("LibClient.hpp")
+
+#obj_cpp = cppyy.gbl.LibClient()
 #micro = cppyy.gbl.std.chrono.microseconds
 
 
