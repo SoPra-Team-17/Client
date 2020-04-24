@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-# Setup
+# delete prev. downloads
+sudo rm -R /tmp/json /tmp/WebsocketCPP /tmp/LibCommon/ /tmp/LibClient/ /tmp/libwebsockets/
 
 # delete symbolic links and installed libs with headers
 sudo rm -R /usr/lib/libSopra*
@@ -15,25 +16,34 @@ set -e
 # libuuid
 sudo apt install uuid-dev
 # nlohmann json
-cd /tmp
-git clone --depth 1 https://github.com/nlohmann/json.git
-cd json
-mkdir build && cd build
-cmake -DJSON_BuildTests=false ..
-make -j$(nproc)
-sudo make install
+dpkg -s nlohmann-json3-dev > /dev/null 2>&1 && {
+  echo "nlohmann-json3-dev already installed"
+} || {
+  echo "nlohmann-json3-dev not installed. Installing now..."
+  cd /tmp
+  git clone --depth 1 https://github.com/nlohmann/json.git
+  cd json
+  mkdir build && cd build
+  cmake -DJSON_BuildTests=false ..
+  make -j$(nproc)
+  sudo make install
+}
+
 
 
 # Dependencies from WebsocketCPP
 # Libwebsockets
 sudo apt install libssl-dev
-cd /tmp
-git clone https://github.com/warmcat/libwebsockets.git
-cd libwebsockets
-mkdir build && cd build
-cmake ..
-make -j$(nproc)
-sudo make install
+if [ ! -f /usr/local/lib/libwebsockets.so ]; then
+    echo "Libwebsockets not installed. Installing now"
+    cd /tmp
+    git clone https://github.com/warmcat/libwebsockets.git
+    cd libwebsockets
+    mkdir build && cd build
+    cmake ..
+    make -j$(nproc)
+    sudo make install
+fi
 
 
 # Install LibCommon
@@ -58,6 +68,7 @@ sudo make install
 cd /tmp
 git clone https://github.com/SoPra-Team-17/LibClient.git
 cd LibClient
+git submodule update --init
 mkdir build && cd build
 cmake ..
 make -j$(nproc)
