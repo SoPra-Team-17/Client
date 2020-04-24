@@ -1,16 +1,16 @@
 from abc import ABC, abstractmethod
 import pygame
-
+from view.ViewSettings import ViewSettings
 
 class BasicView(ABC):
     """
     Defines abstract interface for any view
     """
 
-    def __init__(self, window: pygame.display, controller) -> None:
+    def __init__(self, window: pygame.display, controller, settings: ViewSettings) -> None:
         self.window = window
         self.controller = controller
-
+        self.settings = settings
 
     @abstractmethod
     def draw(self) -> None:

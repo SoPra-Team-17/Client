@@ -4,6 +4,7 @@ import pygame
 from view.GameView.Drawable import DrawableGroup, Block
 from view.GameView.Camera import Camera
 from view.GameView.AssetStorage import AssetStorage
+from view.ViewSettings import ViewSettings
 from util.Transforms import Transformations
 from util.Coordinates import WorldPoint
 
@@ -37,11 +38,12 @@ class GameViewController:
     """
     This class contains all the relevant information for drawing the gameview
     """
-    def __init__(self, view):
+    def __init__(self, view, settings: ViewSettings):
         self.view = view
         self.asset_storage = AssetStorage()
         self.camera = self.camera = Camera(camera_speed=.5)
-        self.drawable_group = DrawableGroup()
+        self.settings = settings
+        self.drawable_group = DrawableGroup(settings)
 
         create_playing_field(self.drawable_group, self.view.window, assets=self.asset_storage)
 
