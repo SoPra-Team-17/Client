@@ -6,6 +6,7 @@ from view.MainMenu.MainMenu import MainMenu
 from view.GameView.GameView import GameView
 from view.Lobby.LobbyView import LobbyView
 from controller.ControllerView import ControllerGameView, ControllerMainMenu, ControllerLobby
+from network.LibClientHandler import LibClientHandler
 
 
 class Controller(ControllerGameView, ControllerMainMenu, ControllerLobby):
@@ -18,6 +19,8 @@ class Controller(ControllerGameView, ControllerMainMenu, ControllerLobby):
         super(Controller, self).__init__()
         # call init of ControllerMainMenu
         super(ControllerGameView, self).__init__()
+
+        self.lib_client_handler = LibClientHandler()
 
         self.view_settings = ViewSettings()
 

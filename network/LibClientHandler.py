@@ -1,18 +1,19 @@
-import cppyy
+from network.Callback import Callback
 
 
-class LibClientHandler(cppyy.gbl.CallbackClass):
+class LibClientHandler:
 
     def __init__(self):
-        pass
+        self.callback = Callback()
 
     def init_model(self):
         """
-        todo create c++ instance of model
+        todo create c++ instance of model --> create LibClient in here
         :return:
         """
 
     # todo check all types
+    # in den folgenden Funktionen müssen die typen auf c++ typen gewandelt werden und Libclient.network aufrufen
     def sendHello(self, name: str, role):
         pass
 
@@ -38,43 +39,4 @@ class LibClientHandler(cppyy.gbl.CallbackClass):
         pass
 
     def sendRequestReplay(self):
-        pass
-
-    def onHelloReply(self):
-        pass
-
-    def onGameStarted(self):
-        pass
-
-    def onRequestChoice(self):
-        pass
-
-    def onRequestEquipmentChoice(self):
-        pass
-
-    def onGameStatus(self):
-        pass
-
-    def onRequestGameOperation(self):
-        pass
-
-    def onStatistics(self):
-        pass
-
-    def onGameLeft(self):
-        pass
-
-    def onGamePause(self):
-        pass
-
-    def onMetaInformation(self):
-        pass
-
-    def onStrike(self):
-        pass
-
-    def onErrorMessage(self):
-        pass
-
-    def onReplay(self):
         pass
