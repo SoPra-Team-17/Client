@@ -1,8 +1,7 @@
 import cppyy
 
-cppyy.add_include_path("extern/LibClient/src")
+cppyy.add_include_path("/usr/local/include/SopraClient")
 cppyy.include("Callback.hpp")
-
 
 class Callback(cppyy.gbl.libclient.Callback):
     def __init__(self):

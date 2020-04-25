@@ -3,6 +3,7 @@ from network.Callback import Callback
 
 cppyy.add_include_path("/usr/local/include/SopraClient")
 cppyy.add_include_path("/usr/local/include/SopraCommon")
+cppyy.add_include_path("/usr/local/include/SopraNetwork")
 
 cppyy.include("LibClient.hpp")
 
@@ -10,7 +11,7 @@ class LibClientHandler:
 
     def __init__(self):
         self.callback = Callback()
-        self.lib_client = cppyy.gbl.libclient.LibClient()
+        #self.lib_client = cppyy.gbl.libclient.LibClient()
 
     def init_model(self):
         """

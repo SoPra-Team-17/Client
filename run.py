@@ -5,8 +5,6 @@ from controller.Controller import Controller
 from network.InitCppy import init_cppyy
 
 
-
-
 def init_logging():
     formatter = logging.Formatter(
         "%(asctime)s [%(threadName)-12.12s]"
