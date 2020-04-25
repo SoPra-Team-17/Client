@@ -7,9 +7,10 @@ from view.GameView.GameView import GameView
 from view.Lobby.LobbyView import LobbyView
 from controller.ControllerView import ControllerGameView, ControllerMainMenu, ControllerLobby
 from network.LibClientHandler import LibClientHandler
+from controller.ControllerNetworkInterface import ControllerNetworkInterface
 
 
-class Controller(ControllerGameView, ControllerMainMenu, ControllerLobby):
+class Controller(ControllerGameView, ControllerMainMenu, ControllerLobby, ControllerNetworkInterface):
     """
     class implementing a basic controller
     """
@@ -19,8 +20,10 @@ class Controller(ControllerGameView, ControllerMainMenu, ControllerLobby):
         super(Controller, self).__init__()
         # call init of ControllerMainMenu
         super(ControllerGameView, self).__init__()
+        super(ControllerNetworkInterface, self).__init__()
 
-        self.lib_client_handler = LibClientHandler()
+
+        self.lib_client_handler = LibClientHandler(self)
 
         self.view_settings = ViewSettings()
 
@@ -89,4 +92,43 @@ class Controller(ControllerGameView, ControllerMainMenu, ControllerLobby):
         pass
 
     def send_hello(self) -> None:
+        pass
+
+    def onHelloReply(self):
+        pass
+
+    def onGameStarted(self):
+        pass
+
+    def onRequestChoice(self):
+        pass
+
+    def onRequestEquipmentChoice(self):
+        pass
+
+    def onGameStatus(self):
+        pass
+
+    def onRequestGameOperation(self):
+        pass
+
+    def onStatistics(self):
+        pass
+
+    def onGameLeft(self):
+        pass
+
+    def onGamePause(self):
+        pass
+
+    def onMetaInformation(self):
+        pass
+
+    def onStrike(self):
+        pass
+
+    def onErrorMessage(self):
+        pass
+
+    def onReplay(self):
         pass

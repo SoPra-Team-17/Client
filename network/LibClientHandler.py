@@ -9,9 +9,12 @@ cppyy.include("LibClient.hpp")
 
 class LibClientHandler:
 
-    def __init__(self):
-        self.callback = Callback()
+    def __init__(self, controller):
+        self.callback = Callback(controller)
         #self.lib_client = cppyy.gbl.libclient.LibClient()
+        self.model = cppyy.gbl.libclient.Model()
+        self.model.clientState.name = "Das ist ein Name"
+        print("Is connected model: ", self.model.clientState.name)
 
     def init_model(self):
         """

@@ -1,47 +1,54 @@
 import cppyy
 
+from controller.ControllerNetworkInterface import ControllerNetworkInterface
+
 cppyy.add_include_path("/usr/local/include/SopraClient")
 cppyy.include("Callback.hpp")
 
+
 class Callback(cppyy.gbl.libclient.Callback):
-    def __init__(self):
-        pass
+    """
+    Implements a simple callback class which itself calls the controller
+    """
 
-    def onHelloReply(self):
-        pass
+    def __init__(self, controller: ControllerNetworkInterface):
+        self.controller = controller
 
-    def onGameStarted(self):
-        pass
+    def onHelloReply(self) -> None:
+        self.controller.onHelloReply()
 
-    def onRequestChoice(self):
-        pass
+    def onGameStarted(self) -> None:
+        self.controller.onGameStarted()
 
-    def onRequestEquipmentChoice(self):
-        pass
+    def onRequestChoice(self) -> None:
+        self.controller.onRequestChoice()
 
-    def onGameStatus(self):
-        pass
+    def onRequestEquipmentChoice(self) -> None:
+        self.controller.onRequestEquipmentChoice()
 
-    def onRequestGameOperation(self):
-        pass
+    def onGameStatus(self) -> None:
+        self.controller.onGameStatus()
 
-    def onStatistics(self):
-        pass
+    def onRequestGameOperation(self) -> None:
+        self.controller.onRequestGameOperation()
 
-    def onGameLeft(self):
-        pass
+    def onStatistics(self) -> None:
+        self.controller.onStatistics()
 
-    def onGamePause(self):
-        pass
+    def onGameLeft(self) -> None:
+        self.controller.onGameLeft()
 
-    def onMetaInformation(self):
-        pass
+    def onGamePause(self) -> None:
+        self.controller.onGamePause()
 
-    def onStrike(self):
-        pass
+    def onMetaInformation(self) -> None:
+        self.controller.onMetaInformation()
 
-    def onErrorMessage(self):
-        pass
+    def onStrike(self) -> None:
+        self.controller.onStrike()
 
-    def onReplay(self):
-        pass
+    def onErrorMessage(self) -> None:
+        self.controller.onErrorMessage()
+
+    def onReplay(self) -> None:
+        self.controller.onReplay()
