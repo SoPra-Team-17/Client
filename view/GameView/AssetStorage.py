@@ -1,5 +1,11 @@
+"""
+Implements a storage class for all assets, so they're only loaded once at runtime and not for each element individually
+"""
 from abc import ABC, abstractmethod
 import pygame
+
+__author__ = "Marco Deuscher"
+__date__ = "25.04.2020 (date of doc. creation)"
 
 
 class DrawableAssets(ABC):

@@ -1,3 +1,6 @@
+"""
+Implements actual playing field
+"""
 import logging
 import pygame
 
@@ -7,6 +10,9 @@ from view.GameView.AssetStorage import AssetStorage
 from view.ViewSettings import ViewSettings
 from util.Transforms import Transformations
 from util.Coordinates import WorldPoint
+
+__author__ = "Marco Deuscher"
+__date__ = "25.04.2020 (date of doc. creation)"
 
 
 def create_playing_field(group: DrawableGroup, window: pygame.display, assets: AssetStorage) -> None:
@@ -38,6 +44,7 @@ class GameViewController:
     """
     This class contains all the relevant information for drawing the gameview
     """
+
     def __init__(self, view, settings: ViewSettings):
         self.view = view
         self.asset_storage = AssetStorage()
@@ -58,7 +65,7 @@ class GameViewController:
                 self.camera.center()
 
         if event.type == pygame.MOUSEBUTTONUP:
-            #todo remove debug info
+            # todo remove debug info
             pos = pygame.mouse.get_pos()
             offsetX, offsetY = self.camera.getTrans()
             xTrans, yTrans = Transformations.trafo_window_to_world_coords(pos[0], pos[1], offsetX, offsetY)

@@ -1,3 +1,7 @@
+"""
+Implements the actual settings screen
+"""
+
 import logging
 import validators
 import pygame_gui.elements.ui_button
@@ -6,6 +10,9 @@ import pygame
 from view.BasicView import BasicView
 from view.ViewSettings import ViewSettings
 from controller.ControllerView import ControllerMainMenu
+
+__author__ = "Marco Deuscher"
+__date__ = "25.04.2020 (date of doc. creation)"
 
 
 class SettingsScreen(BasicView):

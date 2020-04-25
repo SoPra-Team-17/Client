@@ -1,3 +1,6 @@
+"""
+Defines the interface between controller and MainMenu screens, also contains the different submenus
+"""
 import logging
 import pygame
 
@@ -7,6 +10,9 @@ from view.MainMenu.SettingsScreen import SettingsScreen
 from view.MainMenu.HelpScreen import HelpScreen
 from view.ViewSettings import ViewSettings
 from controller.ControllerView import ControllerMainMenu
+
+__author__ = "Marco Deuscher"
+__date__ = "25.04.2020 (date of doc. creation)"
 
 
 class MainMenu(BasicView):
