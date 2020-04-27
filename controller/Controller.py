@@ -22,7 +22,6 @@ class Controller(ControllerGameView, ControllerMainMenu, ControllerLobby, Contro
         super(ControllerGameView, self).__init__()
         super(ControllerNetworkInterface, self).__init__()
 
-
         self.lib_client_handler = LibClientHandler(self)
 
         self.view_settings = ViewSettings()
@@ -95,40 +94,40 @@ class Controller(ControllerGameView, ControllerMainMenu, ControllerLobby, Contro
         pass
 
     def onHelloReply(self):
-        pass
+        logging.info("Received hello reply message")
 
     def onGameStarted(self):
-        pass
+        logging.info("Received game started message")
 
     def onRequestChoice(self):
-        pass
+        logging.info("Recieved request choice message")
 
     def onRequestEquipmentChoice(self):
-        pass
+        logging.info("Received request eq. choice message")
 
     def onGameStatus(self):
-        pass
+        logging.info("Received game status message")
 
     def onRequestGameOperation(self):
-        pass
+        logging.info("Received request game operation message")
 
     def onStatistics(self):
-        pass
+        logging.info("Received statistics message")
 
     def onGameLeft(self):
-        pass
+        logging.info("Recieved game left message")
 
     def onGamePause(self):
-        pass
+        logging.info("Received game pause message")
 
     def onMetaInformation(self):
-        pass
+        logging.info("Received meta information message")
 
     def onStrike(self):
-        pass
+        logging.info("Received strike message")
 
     def onErrorMessage(self):
-        pass
+        logging.info("Received error message")
 
     def onReplay(self):
-        pass
+        logging.info("Received replay message")

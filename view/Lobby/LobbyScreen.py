@@ -10,7 +10,7 @@ from controller.ControllerView import ControllerLobby
 class LobbyScreen(BasicView):
     _vald_roles = ["Player", "Spectator"]
     _text_labels = {
-        "start_game": "Start Game",
+        "start_game": "Connect",
         "reconnect": "Reconnect",
         "name": "Enter name",
         "role": "Select Role",
@@ -51,7 +51,7 @@ class LobbyScreen(BasicView):
 
         if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_PRESSED:
             switcher = {
-                self.start_game_button: self.controller.to_game_view,
+                self.start_game_button: self.start_game_pressed,
                 self.reconnect_button: self.controller.send_reconnect,
                 self.return_button: self.controller.to_main_menu
             }
@@ -62,6 +62,10 @@ class LobbyScreen(BasicView):
 
         if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
             self.controller.to_main_menu()
+
+    def start_game_pressed(self):
+        print("Message", self.controller.lib_client_handler.connect(self.settings.address, self.settings.port))
+        self.controller.to_game_view()
 
     def _extract_info(self) -> dict:
         d = {}

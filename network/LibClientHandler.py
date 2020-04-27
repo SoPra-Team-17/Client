@@ -6,6 +6,7 @@ cppyy.add_include_path("/usr/local/include/SopraCommon")
 cppyy.add_include_path("/usr/local/include/SopraNetwork")
 
 cppyy.include("LibClient.hpp")
+cppyy.include("util/UUID.hpp")
 
 
 class LibClientHandler:
@@ -24,12 +25,8 @@ class LibClientHandler:
 
         del network, model
 
-        res = self.lib_client.network.sendGameLeave()
-        print("Result of Message:", res)
-
-    # todo check all types
-    # in den folgenden Funktionen müssen die typen auf c++ typen gewandelt werden und Libclient.network aufrufen
     def connect(self, servername: str, port: int) -> bool:
+        print(type(servername), type(port))
         if isinstance(servername, str) and isinstance(port, int):
             return self.lib_client.network.connect(servername, port)
         else:
@@ -47,7 +44,7 @@ class LibClientHandler:
     def sendReconnect(self) -> bool:
         return self.lib_client.network.sendReconnect()
 
-    def sendItemChoice(self, choice: (cppyy.gbl.spy.utl.UUID, cppyy.gbl.spy.gadget.GadgetEnum)) -> bool:
+    def sendItemChoice(self, choice: (cppyy.gbl.spy.util.UUID, cppyy.gbl.spy.gadget.GadgetEnum)) -> bool:
         if isinstance(choice, (cppyy.gbl.spy.utl.UUID, cppyy.gbl.spy.gadget.GadgetEnum)):
             return self.lib_client.network.sendItemChoice(choice)
         else:
@@ -72,7 +69,7 @@ class LibClientHandler:
         else:
             raise TypeError("Invalid gamePause type (not bool)")
 
-    def sendRequestMetaInformation(self, keys: list[str]) -> bool:
+    def sendRequestMetaInformation(self, keys) -> bool:
         if isinstance(keys, list) and all(isinstance(elem, str) for elem in keys):
             return self.lib_client.network.sendRequestMetaInformation(keys)
         else:
