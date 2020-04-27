@@ -1,6 +1,6 @@
 import cppyy
 
-from controller.ControllerNetworkInterface import ControllerNetworkInterface
+from network.NetworkEvent import create_network_event
 
 cppyy.add_include_path("/usr/local/include/SopraClient")
 cppyy.include("Callback.hpp")
@@ -11,44 +11,44 @@ class Callback(cppyy.gbl.libclient.Callback):
     Implements a simple callback class which itself calls the controller
     """
 
-    def __init__(self, controller: ControllerNetworkInterface):
-        self.controller = controller
+    def __init__(self, ):
+        pass
 
-    def onHelloReply(self) -> None:
-        self.controller.onHelloReply()
+    def on_hello_reply(self) -> None:
+        create_network_event({"message_type": "HelloReply"})
 
-    def onGameStarted(self) -> None:
-        self.controller.onGameStarted()
+    def on_game_started(self) -> None:
+        create_network_event({"message_type": "GameStarted"})
 
-    def onRequestChoice(self) -> None:
-        self.controller.onRequestChoice()
+    def on_request_choice(self) -> None:
+        create_network_event({"message_type": "RequestItemChoice"})
 
-    def onRequestEquipmentChoice(self) -> None:
-        self.controller.onRequestEquipmentChoice()
+    def on_request_equipment_choice(self) -> None:
+        create_network_event({"message_type": "RequestEquipmentChoice"})
 
-    def onGameStatus(self) -> None:
-        self.controller.onGameStatus()
+    def on_game_status(self) -> None:
+        create_network_event({"message_type": "GameStatus"})
 
-    def onRequestGameOperation(self) -> None:
-        self.controller.onRequestGameOperation()
+    def on_request_game_operation(self) -> None:
+        create_network_event({"message_type": "RequestGameOperation"})
 
-    def onStatistics(self) -> None:
-        self.controller.onStatistics()
+    def on_statistics(self) -> None:
+        create_network_event({"message_type": "Statistics"})
 
-    def onGameLeft(self) -> None:
-        self.controller.onGameLeft()
+    def on_game_left(self) -> None:
+        create_network_event({"message_type": "GameLeft"})
 
-    def onGamePause(self) -> None:
-        self.controller.onGamePause()
+    def on_game_pause(self) -> None:
+        create_network_event({"message_type": "GamePause"})
 
-    def onMetaInformation(self) -> None:
-        self.controller.onMetaInformation()
+    def on_meta_information(self) -> None:
+        create_network_event({"message_type": "MetaInformation"})
 
-    def onStrike(self) -> None:
-        self.controller.onStrike()
+    def on_strike(self) -> None:
+        create_network_event({"message_type": "Strike"})
 
-    def onErrorMessage(self) -> None:
-        self.controller.onErrorMessage()
+    def on_error_message(self) -> None:
+        create_network_event({"message_type": "Error"})
 
-    def onReplay(self) -> None:
-        self.controller.onReplay()
+    def on_replay(self) -> None:
+        create_network_event({"message_type": "Replay"})

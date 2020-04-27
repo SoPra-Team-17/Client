@@ -6,12 +6,10 @@ from view.MainMenu.MainMenu import MainMenu
 from view.GameView.GameView import GameView
 from view.Lobby.LobbyView import LobbyView
 from controller.ControllerView import ControllerGameView, ControllerMainMenu, ControllerLobby
-from controller.ControllerNetworkInterface import ControllerNetworkInterface
 from network.LibClientHandler import LibClientHandler
 
 
-
-class Controller(ControllerGameView, ControllerMainMenu, ControllerLobby, ControllerNetworkInterface):
+class Controller(ControllerGameView, ControllerMainMenu, ControllerLobby):
     """
     class implementing a basic controller
     """
@@ -21,7 +19,6 @@ class Controller(ControllerGameView, ControllerMainMenu, ControllerLobby, Contro
         super(Controller, self).__init__()
         # call init of ControllerMainMenu
         super(ControllerGameView, self).__init__()
-        super(ControllerNetworkInterface, self).__init__()
 
         self.lib_client_handler = LibClientHandler(self)
 
@@ -99,64 +96,23 @@ class Controller(ControllerGameView, ControllerMainMenu, ControllerLobby, Contro
         return self.lib_client_handler.sendHello(name, role)
 
     # GameView Messages
-    def sendItemChoice(self, choice) -> bool:
+    def send_item_choice(self, choice) -> bool:
         return self.lib_client_handler.sendItemChoice(choice)
 
-    def sendEquipmentChoice(self, equipMap) -> bool:
+    def send_equipment_choice(self, equipMap) -> bool:
         return self.lib_client_handler.sendEquipmentChoice(equipMap)
 
-    def sendGameOperation(self, operation) -> bool:
+    def send_game_operation(self, operation) -> bool:
         return self.lib_client_handler.sendGameOperation(operation)
 
-    def sendGameLeave(self) -> bool:
+    def send_game_leave(self) -> bool:
         return self.lib_client_handler.sendGameLeave()
 
-    def sendRequestGamePause(self, gamePause: bool) -> bool:
+    def send_request_game_pause(self, gamePause: bool) -> bool:
         return self.lib_client_handler.sendRequestGamePause(gamePause)
 
-    def sendRequestMetaInformation(self, keys) -> bool:
+    def send_request_meta_information(self, keys) -> bool:
         return self.lib_client_handler.sendRequestMetaInformation(keys)
 
-    def sendRequestReplay(self) -> bool:
+    def send_request_replay(self) -> bool:
         return self.lib_client_handler.sendRequestReplay()
-
-    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~NETWORK MESSAGE CALLBACK~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-    def onHelloReply(self) -> None:
-        logging.info("Received hello reply message")
-
-    def onGameStarted(self) -> None:
-        logging.info("Received game started message")
-
-    def onRequestChoice(self) -> None:
-        logging.info("Recieved request choice message")
-
-    def onRequestEquipmentChoice(self) -> None:
-        logging.info("Received request eq. choice message")
-
-    def onGameStatus(self) -> None:
-        logging.info("Received game status message")
-
-    def onRequestGameOperation(self) -> None:
-        logging.info("Received request game operation message")
-
-    def onStatistics(self) -> None:
-        logging.info("Received statistics message")
-
-    def onGameLeft(self) -> None:
-        logging.info("Recieved game left message")
-
-    def onGamePause(self) -> None:
-        logging.info("Received game pause message")
-
-    def onMetaInformation(self) -> None:
-        logging.info("Received meta information message")
-
-    def onStrike(self) -> None:
-        logging.info("Received strike message")
-
-    def onErrorMessage(self) -> None:
-        logging.info("Received error message")
-
-    def onReplay(self) -> None:
-        logging.info("Received replay message")

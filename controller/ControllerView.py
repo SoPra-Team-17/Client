@@ -33,31 +33,31 @@ class ControllerGameView(ABC):
         pass
 
     @abstractmethod
-    def sendItemChoice(self, choice) -> bool:
+    def send_item_choice(self, choice) -> bool:
         pass
 
     @abstractmethod
-    def sendEquipmentChoice(self, equipMap) -> bool:
+    def send_equipment_choice(self, equipMap) -> bool:
         pass
 
     @abstractmethod
-    def sendGameOperation(self, operation) -> bool:
+    def send_game_operation(self, operation) -> bool:
         pass
 
     @abstractmethod
-    def sendGameLeave(self) -> bool:
+    def send_game_leave(self) -> bool:
         pass
 
     @abstractmethod
-    def sendRequestGamePause(self, gamePause: bool) -> bool:
+    def send_request_game_pause(self, gamePause: bool) -> bool:
         pass
 
     @abstractmethod
-    def sendRequestMetaInformation(self, keys) -> bool:
+    def send_request_meta_information(self, keys) -> bool:
         pass
 
     @abstractmethod
-    def sendRequestReplay(self) -> bool:
+    def send_request_replay(self) -> bool:
         pass
 
     @abstractmethod

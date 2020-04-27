@@ -4,11 +4,10 @@ import pygame
 from view.BasicView import BasicView
 from view.Lobby.LobbyScreen import LobbyScreen
 from view.ViewSettings import ViewSettings
-from view.NetworkViewInterface import LobbyViewNetwork
 from controller.ControllerView import ControllerLobby
 
 
-class LobbyView(BasicView, LobbyViewNetwork):
+class LobbyView(BasicView):
 
     def __init__(self, window: pygame.display, controller: ControllerLobby, settings: ViewSettings) -> None:
         super(LobbyView, self).__init__(window, controller, settings)
@@ -29,9 +28,3 @@ class LobbyView(BasicView, LobbyViewNetwork):
     def receive_event(self, event: pygame.event.Event) -> None:
         for screen in self.active_screens:
             screen.receive_event(event)
-
-    def onHelloReplay(self) -> None:
-        pass
-
-    def onErrorMessage(self) -> None:
-        pass

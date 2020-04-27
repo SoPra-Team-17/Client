@@ -16,7 +16,7 @@ class LibClientHandler:
         todo bei caro funktioniert das auch ohne diese lokalen variablen, konnte den Grund aber noch nicht finden
         :param controller:
         """
-        self.callback = Callback(controller)
+        self.callback = Callback()
         self.make_shared_callback = cppyy.py_make_shared(Callback)
         self.make_shared_model = cppyy.py_make_shared(cppyy.gbl.libclient.Model)
         model = cppyy.gbl.libclient.Model()
