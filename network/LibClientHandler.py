@@ -7,46 +7,76 @@ cppyy.add_include_path("/usr/local/include/SopraNetwork")
 
 cppyy.include("LibClient.hpp")
 
+
 class LibClientHandler:
 
     def __init__(self, controller):
+        """
+        todo bei caro funktioniert das auch ohne diese lokalen variablen, konnte den Grund aber noch nicht finden
+        :param controller:
+        """
         self.callback = Callback(controller)
-        #self.lib_client = cppyy.gbl.libclient.LibClient()
-        self.model = cppyy.gbl.libclient.Model()
-        self.model.clientState.name = "Das ist ein Name"
-        print("Is connected model: ", self.model.clientState.name)
+        self.make_shared_callback = cppyy.py_make_shared(Callback)
+        self.make_shared_model = cppyy.py_make_shared(cppyy.gbl.libclient.Model)
+        model = cppyy.gbl.libclient.Model()
+        network = cppyy.gbl.libclient.Network(self.make_shared_callback(self.callback), self.make_shared_model(model))
+        self.lib_client = cppyy.gbl.libclient.LibClient(self.make_shared_callback(self.callback))
 
-    def init_model(self):
-        """
-        todo create c++ instance of model --> create LibClient in here
-        :return:
-        """
+        del network, model
+
+        res = self.lib_client.network.sendGameLeave()
+        print("Result of Message:", res)
 
     # todo check all types
     # in den folgenden Funktionen müssen die typen auf c++ typen gewandelt werden und Libclient.network aufrufen
-    def sendHello(self, name: str, role):
-        pass
+    def connect(self, servername: str, port: int) -> bool:
+        if isinstance(servername, str) and isinstance(port, int):
+            return self.lib_client.network.connect(servername, port)
+        else:
+            raise TypeError("Invalid Servername or Port type")
 
-    def sendReconnect(self, sessionId):
-        pass
+    def disconnect(self) -> bool:
+        return self.lib_client.network.disconnect()
 
-    def sendItemChoice(self, chosenCharacterId, chosenGadget):
-        pass
+    def sendHello(self, name: str, role: cppyy.gbl.spy.network.RoleEnum) -> bool:
+        if isinstance(name, str) and isinstance(role, cppyy.gbl.spy.network.RoleEnum):
+            return self.lib_client.network.sendHello(name, role)
+        else:
+            raise TypeError("Invalid Name or Role type")
 
-    def sendEquipmentChoice(self, equipMap):
-        pass
+    def sendReconnect(self) -> bool:
+        return self.lib_client.network.sendReconnect()
 
-    def sendGameOperation(self, operation):
-        pass
+    def sendItemChoice(self, choice: (cppyy.gbl.spy.utl.UUID, cppyy.gbl.spy.gadget.GadgetEnum)) -> bool:
+        if isinstance(choice, (cppyy.gbl.spy.utl.UUID, cppyy.gbl.spy.gadget.GadgetEnum)):
+            return self.lib_client.network.sendItemChoice(choice)
+        else:
+            raise TypeError("Invalid Choice type")
 
-    def sendGameLeave(self):
-        pass
+    def sendEquipmentChoice(self, equipMap) -> bool:
+        # todo how to handle Map?
+        raise Exception("Map handling not implemented")
 
-    def sendRequestGamePause(self, gamePause: bool):
-        pass
+    def sendGameOperation(self, operation: cppyy.gbl.spy.gameplay.Operation) -> bool:
+        if isinstance(operation, cppyy.gbl.spy.gameplay.Operation):
+            return self.lib_client.network.sendGameOperation(operation)
+        else:
+            raise TypeError("Invalid operation type")
 
-    def sendMetaInformation(self, keys):
-        pass
+    def sendGameLeave(self) -> bool:
+        return self.lib_client.network.sendGameLeave
 
-    def sendRequestReplay(self):
-        pass
+    def sendRequestGamePause(self, gamePause: bool) -> bool:
+        if isinstance(gamePause, bool):
+            self.lib_client.network.sendRequestGamePause(gamePause)
+        else:
+            raise TypeError("Invalid gamePause type (not bool)")
+
+    def sendRequestMetaInformation(self, keys: list[str]) -> bool:
+        if isinstance(keys, list) and all(isinstance(elem, str) for elem in keys):
+            return self.lib_client.network.sendRequestMetaInformation(keys)
+        else:
+            raise TypeError("Invalid keys type (not list of strings)")
+
+    def sendRequestReplay(self) -> bool:
+        return self.lib_client.network.sendRequestReplay()
