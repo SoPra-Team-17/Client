@@ -11,9 +11,9 @@ class GameView(BasicView):
     This class implements the interface of the GameView classes to the main controller
     """
 
-    def __init__(self, window: pygame.display, controller: ControllerGameView, setttings: ViewSettings) -> None:
-        super().__init__(window, controller, setttings)
-        self.gameViewController = GameViewController(self, setttings)
+    def __init__(self, window: pygame.display, controller: ControllerGameView, settings: ViewSettings) -> None:
+        super().__init__(window, controller, settings)
+        self.gameViewController = GameViewController(self, settings)
 
     def draw(self) -> None:
         self.window.fill((50, 50, 50))

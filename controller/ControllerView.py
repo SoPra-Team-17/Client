@@ -33,12 +33,34 @@ class ControllerGameView(ABC):
         pass
 
     @abstractmethod
-    def send_action(self) -> None:
-        """
-        Interface to GameView
-        :return:    None
-        """
+    def sendItemChoice(self, choice) -> bool:
+        pass
 
+    @abstractmethod
+    def sendEquipmentChoice(self, equipMap) -> bool:
+        pass
+
+    @abstractmethod
+    def sendGameOperation(self, operation) -> bool:
+        pass
+
+    @abstractmethod
+    def sendGameLeave(self) -> bool:
+        pass
+
+    @abstractmethod
+    def sendRequestGamePause(self, gamePause: bool) -> bool:
+        pass
+
+    @abstractmethod
+    def sendRequestMetaInformation(self, keys) -> bool:
+        pass
+
+    @abstractmethod
+    def sendRequestReplay(self) -> bool:
+        pass
+
+    @abstractmethod
     def to_main_menu(self) -> None:
         """
         Interface to GameView
@@ -55,28 +77,36 @@ class ControllerLobby(ABC):
         pass
 
     @abstractmethod
-    def send_hello(self) -> None:
+    def connect_to_server(self, servername: str, port: int) -> bool:
         """
-        Interface to Network
-        :return:
+        Interface to network
+        :return:    None
         """
 
     @abstractmethod
-    def send_reconnect(self) -> None:
+    def send_reconnect(self) -> bool:
+        """
+        Interface to network
+        :return:    None
+        """
+
+    @abstractmethod
+    def send_hello(self, name, role) -> bool:
         """
         Interface to Network
-        :return:
+        :return:    None
         """
 
     @abstractmethod
     def to_main_menu(self) -> None:
         """
         Interface to Lobby
-        :return:
+        :return:    None
         """
 
+    @abstractmethod
     def to_game_view(self) -> None:
         """
         Interface to Lobby
-        :return:
+        :return:    None
         """

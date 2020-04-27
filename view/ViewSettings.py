@@ -22,7 +22,7 @@ class ViewSettings:
             self.frame_rate = 60
             self.audio_effects = 50
             self.audio_music = 50
-            self.address = ipaddress.ip_address("127.0.0.1")
+            self.address = "127.0.0.1"
             self.port = 1337
 
 
@@ -48,7 +48,7 @@ class ViewSettings:
         j["frame_rate"] = self.frame_rate
         j["audio_effects"] = self.audio_effects
         j["audio_music"] = self.audio_music
-        j["address"] = f"{self.address}"
+        j["address"] = self.address
         j["port"] = self.port
 
         with open(self._settings_path, "w") as f:
@@ -60,5 +60,5 @@ class ViewSettings:
         self.frame_rate = j["frame_rate"]
         self.audio_effects = j["audio_effects"]
         self.audio_music = j["audio_music"]
-        self.address = ipaddress.ip_address(j["address"])
+        self.address = j["address"]
         self.port = j["port"]

@@ -8,12 +8,12 @@ from controller.ControllerView import ControllerLobby
 
 
 class LobbyScreen(BasicView):
-    _vald_roles = ["Player", "Spectator"]
+    _valid_roles = ["Player", "Spectator"]
     _text_labels = {
         "start_game": "Connect",
         "reconnect": "Reconnect",
         "name": "Enter name",
-        "role": "Select Role",
+        "role": _valid_roles[0],
         "return": "Return"
     }
 
@@ -64,7 +64,6 @@ class LobbyScreen(BasicView):
             self.controller.to_main_menu()
 
     def start_game_pressed(self):
-        print("Message", self.controller.lib_client_handler.connect(self.settings.address, self.settings.port))
         self.controller.to_game_view()
 
     def _extract_info(self) -> dict:
@@ -99,7 +98,7 @@ class LobbyScreen(BasicView):
 
         self.role_dropdown = pygame_gui.elements.UIDropDownMenu(
             relative_rect=pygame.Rect((0, self.__padding * len(self.container.elements)), self.__buttonSize),
-            options_list=self._vald_roles,
+            options_list=self._valid_roles,
             starting_option=self._text_labels["role"],
             manager=self.manager,
             container=self.container,

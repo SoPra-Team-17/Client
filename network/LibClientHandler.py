@@ -26,7 +26,6 @@ class LibClientHandler:
         del network, model
 
     def connect(self, servername: str, port: int) -> bool:
-        print(type(servername), type(port))
         if isinstance(servername, str) and isinstance(port, int):
             return self.lib_client.network.connect(servername, port)
         else:

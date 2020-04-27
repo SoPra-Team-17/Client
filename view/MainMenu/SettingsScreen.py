@@ -1,5 +1,5 @@
 import logging
-import ipaddress
+import validators
 import pygame_gui.elements.ui_button
 import pygame
 
@@ -10,7 +10,7 @@ from controller.ControllerView import ControllerMainMenu
 
 class SettingsScreen(BasicView):
     _valid_resolutions = ["1024x576", "1152x648", "1366x768", "1600x900", "1920x1080", "2560x1440", "3840x2160"]
-    _valid_address_inputs = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "."]
+    _valid_port_inputs = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
     _text_labels = {
         "address_text": "Server Address",
         "port_text": "Port",
@@ -103,13 +103,17 @@ class SettingsScreen(BasicView):
             # self.settings.window_height, self.settings.window_width = height, width
         except ValueError:
             logging.warning("Unable to parse Resolution")
-        try:
-            self.settings.address = ipaddress.ip_address(self.address_entryline.get_text())
-        except ValueError:
-            logging.warning("Unable to parse IP-Address")
+
+        address_entry = self.address_entryline.get_text()
+        valid_ipv4 = validators.ipv4(address_entry)
+        valid_ipv6 = validators.ipv6(address_entry)
+        valid_domain = validators.domain(address_entry)
+
+        if valid_ipv4 or valid_ipv6 or valid_domain:
+            self.settings.address = address_entry
+
         try:
             self.settings.port = int(self.port_entryline.get_text())
-
         except ValueError:
             logging.warning("Unable to parse port")
 
@@ -219,10 +223,9 @@ class SettingsScreen(BasicView):
         )
 
         self.address_entryline.set_text(f"{self.settings.address}")
-        self.address_entryline.allowed_characters = self._valid_address_inputs
 
         self.port_entryline.set_text(f"{self.settings.port}")
-        self.port_entryline.allowed_characters = self._valid_address_inputs[:-1]
+        self.port_entryline.allowed_characters = self._valid_port_inputs[:-1]
 
         self.audio_effects_slider.set_current_value(self.settings.audio_effects)
         self.audio_music_slider.set_current_value(self.settings.audio_music)
