@@ -1,3 +1,4 @@
+import logging
 import cppyy
 from network.Callback import Callback
 
@@ -35,7 +36,9 @@ class LibClientHandler:
         return self.lib_client.network.disconnect()
 
     def sendHello(self, name: str, role: cppyy.gbl.spy.network.RoleEnum) -> bool:
-        if isinstance(name, str) and isinstance(role, cppyy.gbl.spy.network.RoleEnum):
+        # instance of spy.network.RoleEnum is represented as int!
+        if isinstance(name, str) and isinstance(role, int):
+            logging.info(f"Send Hello Message: Name: {name} Role: {role}")
             return self.lib_client.network.sendHello(name, role)
         else:
             raise TypeError("Invalid Name or Role type")

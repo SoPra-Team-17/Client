@@ -1,12 +1,20 @@
 import sys
 import logging
 import pygame
+import cppyy
+
 from view.ViewSettings import ViewSettings
 from view.MainMenu.MainMenu import MainMenu
 from view.GameView.GameView import GameView
 from view.Lobby.LobbyView import LobbyView
 from controller.ControllerView import ControllerGameView, ControllerMainMenu, ControllerLobby
 from network.LibClientHandler import LibClientHandler
+
+cppyy.add_include_path("/usr/local/include/SopraClient")
+cppyy.add_include_path("/usr/local/include/SopraCommon")
+cppyy.add_include_path("/usr/local/include/SopraNetwork")
+
+cppyy.include("network/RoleEnum.hpp")
 
 
 class Controller(ControllerGameView, ControllerMainMenu, ControllerLobby):
@@ -93,6 +101,13 @@ class Controller(ControllerGameView, ControllerMainMenu, ControllerLobby):
         return self.lib_client_handler.sendReconnect()
 
     def send_hello(self, name, role) -> bool:
+        if role == "Player":
+            role = cppyy.gbl.spy.network.RoleEnum.PLAYER
+        elif role == "Spectator":
+            role = cppyy.gbl.spy.network.RoleEnum.SPECTATOR
+        else:
+            return False
+
         return self.lib_client_handler.sendHello(name, role)
 
     # GameView Messages
