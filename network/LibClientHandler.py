@@ -47,7 +47,7 @@ class LibClientHandler:
         return self.lib_client.network.sendReconnect()
 
     def sendItemChoice(self, choice: (cppyy.gbl.spy.util.UUID, cppyy.gbl.spy.gadget.GadgetEnum)) -> bool:
-        if isinstance(choice, (cppyy.gbl.spy.utl.UUID, int)):
+        if isinstance(choice, (cppyy.gbl.spy.util.UUID, int)):
             return self.lib_client.network.sendItemChoice(choice)
         else:
             raise TypeError("Invalid Choice type")
