@@ -1,4 +1,3 @@
-import logging
 import pygame
 
 from view.GameView.Drawable import DrawableGroup, Block
@@ -62,5 +61,3 @@ class GameViewController:
             pos = pygame.mouse.get_pos()
             offsetX, offsetY = self.camera.getTrans()
             xTrans, yTrans = Transformations.trafo_window_to_world_coords(pos[0], pos[1], offsetX, offsetY)
-            logging.info("Pos: (%d,%d) OffsetX: %f OffsetY: %f" % (pos[0], pos[1], offsetX, offsetY))
-            logging.info("XTrans: %d YTrans: %d" % (xTrans, yTrans))

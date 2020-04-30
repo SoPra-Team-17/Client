@@ -8,7 +8,7 @@ from view.GameView.Drawable import Drawable
 
 class DrawableMap:
 
-    def __init__(self, dims: Tuple[int, int, int] = (100, 100, 10), *args, **kwargs) -> None:
+    def __init__(self, dims: Tuple[int, int, int] = (100, 100, 10)) -> None:
         self._list = [None] * np.array(dims).prod()
         self._dims = dims
 
@@ -37,7 +37,7 @@ class DrawableMap:
         return len(self._list)
 
     def __repr__(self) -> string:
-        return (f"DawableList Length: {self.__len__()}")
+        return f"DawableList Length: {self.__len__()}"
 
     def __contains__(self, item: Drawable) -> bool:
         """
