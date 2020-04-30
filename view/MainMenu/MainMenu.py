@@ -49,7 +49,7 @@ class MainMenu(BasicView):
         """
         self.active_screens = [self.settingsScreen]
 
-    def to_help(self) -> None:
+    def help_button_pressed(self) -> None:
         """
         Interface from children view to parent
         :return:
