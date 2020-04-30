@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 
 # delete prev. downloads
-sudo rm -R /tmp/json /tmp/WebsocketCPP /tmp/LibCommon/ /tmp/LibClient/ /tmp/libwebsockets/
+sudo rm -rf /tmp/json /tmp/WebsocketCPP /tmp/LibCommon/ /tmp/LibClient/ /tmp/libwebsockets/
 
 # delete symbolic links and installed libs with headers
-sudo rm -R /usr/lib/libSopra*
-sudo rm -R /usr/local/lib/libSopra*
-sudo rm -R /usr/local/include/Sopra*
+sudo rm -rf /usr/lib/libSopra*
+sudo rm -rf /usr/local/lib/libSopra*
+sudo rm -rf /usr/local/include/Sopra*
 
 # Exit the script if any command fails
 set -e
@@ -16,10 +16,10 @@ set -e
 # libuuid
 sudo apt install uuid-dev
 # nlohmann json
-dpkg -s nlohmann-json3-dev > /dev/null 2>&1 && {
-  echo "nlohmann-json3-dev already installed"
+dpkg -s nlohmann-json-dev > /dev/null 2>&1 && {
+  echo "nlohmann-json-dev already installed"
 } || {
-  echo "nlohmann-json3-dev not installed. Installing now..."
+  echo "nlohmann-json-dev not installed. Installing now..."
   cd /tmp
   git clone --depth 1 https://github.com/nlohmann/json.git
   cd json
