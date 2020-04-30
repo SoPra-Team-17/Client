@@ -57,7 +57,7 @@ class MainMenuScreen(BasicView):
             switcher.get(event.ui_element)()
 
     def start_game_pressed(self) -> None:
-        ret = self.controller.connect_to_server("127.0.0.1", 7007)
+        self.controller.connect_to_server(self.settings.address, self.settings.port)
         self.controller.start_game()
 
     def help_button_pressed(self) -> None:
