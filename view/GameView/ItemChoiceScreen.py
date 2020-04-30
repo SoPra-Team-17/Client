@@ -4,6 +4,7 @@ import pygame
 
 from view.BasicView import BasicView
 from view.ViewSettings import ViewSettings
+from view.GameView.Visuals.GadgetsChoice.VisualGadget import GADGET_NAME_LIST, GADGET_PATH_LIST
 from controller.ControllerView import ControllerGameView
 
 
@@ -29,7 +30,19 @@ class ItemChoiceScreen(BasicView):
             manager=self.manager
         )
 
+        self.char_name_container = pygame_gui.core.UIContainer(
+            relative_rect=pygame.Rect((self.settings.window_width * .35, self.settings.window_height * .15),
+                                      (self.settings.window_width * 3 / 2, self.settings.window_height / 4)),
+            manager=self.manager
+        )
+
         self.gadget_img_container = pygame_gui.core.UIContainer(
+            relative_rect=pygame.Rect((self.settings.window_width * .35, self.settings.window_height * .45),
+                                      (self.settings.window_width * 3 / 2, self.settings.window_height / 4)),
+            manager=self.manager
+        )
+
+        self.gadget_name_container = pygame_gui.core.UIContainer(
             relative_rect=pygame.Rect((self.settings.window_width * .35, self.settings.window_height * .45),
                                       (self.settings.window_width * 3 / 2, self.settings.window_height / 4)),
             manager=self.manager
@@ -58,11 +71,12 @@ class ItemChoiceScreen(BasicView):
 
         if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_PRESSED:
             switcher = {
-                self.start_game_button: self.start_game_pressed
+                self.start_game_button: self.start_game_pressed,
             }
             try:
                 switcher.get(event.ui_element)()
             except TypeError:
+                self.selected_item(event.ui_element)
                 logging.warning("Did not find UI-Element in Dict")
 
         if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
@@ -71,14 +85,60 @@ class ItemChoiceScreen(BasicView):
     def start_game_pressed(self) -> None:
         self.parent_view.to_playing_field()
 
-    def _init_ui_elements(self) -> None:
-        self.test_char = pygame.image.load("assets/GameView/trash.png").convert_alpha()
-        self.test_gadget = pygame.image.load("assets/GameView/axe.png").convert_alpha()
+    def selected_item(self, element) -> None:
+        """
+        todo variable length --> index out of range can occur
+        :param element:
+        :return:
+        """
+        gadget = True
+        try:
+            index = self.gadget_img_list.index(element)
+        except ValueError:
+            gadget = False
+            index = self.char_img_list.index(element)
 
-        self.char_img_list = []
-        self.gadget_img_list = []
+        logging.info(f"Gadget: {gadget} Index: {index}")
 
-        for i in range(3):
+        try:
+            if gadget:
+                self.controller.send_item_choice(
+                    self.controller.lib_client_handler.lib_client.getOfferedGadgets()[index])
+            else:
+                self.controller.send_item_choice(
+                    self.controller.lib_client_handler.lib_client.getOfferedCharacters()[index])
+        except IndexError:
+            logging.error("Index out of range at item choice")
+
+    def update_selection(self) -> None:
+        """
+        todo: für chars bekommt man eine UUID --> mit character settings aus helloReply kommt man auf den Rest
+        call this method, when a ItemChoiceMessage is received!
+        :return:    None
+        """
+        offeredCharacters = self.controller.lib_client_handler.lib_client.getOfferedCharacters()
+        offeredGadgets = self.controller.lib_client_handler.lib_client.getOfferedGadgets()
+
+        self._create_selection_buttons(len(offeredGadgets), len(offeredCharacters))
+
+        for idx, (gad, char_id) in enumerate(zip(offeredGadgets, offeredCharacters)):
+            print(char_id)
+            self.gadget_img_list[idx].normal_image = pygame.image.load(GADGET_PATH_LIST[gad])
+            self.gadget_name_list[idx].text = GADGET_NAME_LIST[gad]
+            self.gadget_img_list[idx].rebuild()
+
+            for char in self.controller.lib_client_handler.lib_client.getCharacterSettings():
+                if char_id == char.getCharacterId():
+                    # hier können jetzt eigenschaften aus characterdescription extrahiert werden
+                    name = char.getName()
+                    gender = char.getGender()
+                    feature_list = char.getFeatures()
+
+    def _create_selection_buttons(self, gadget_len, char_len) -> None:
+        self.char_img_list, self.gadget_img_list = [], []
+        self.char_name_list, self.gadget_name_list = [], []
+
+        for i in range(char_len):
             self.char_img_list.append(
                 pygame_gui.elements.UIButton(
                     relative_rect=pygame.Rect((self.__img_pad * len(self.char_img_container.elements), 0),
@@ -89,7 +149,19 @@ class ItemChoiceScreen(BasicView):
                     object_id=f"#char_img0{i}"
                 )
             )
+            self.char_name_list.append(
+                pygame_gui.elements.UILabel(
+                    relative_rect=pygame.Rect(
+                        (self.__img_pad * len(self.char_name_container.elements), self.__img_size[0]),
+                        self.__img_size),
+                    text=f"TestChar{i}",
+                    manager=self.manager,
+                    container=self.char_name_container,
+                    object_id=f"#name_label0{i}"
+                )
+            )
 
+        for i in range(gadget_len):
             self.gadget_img_list.append(
                 pygame_gui.elements.UIButton(
                     relative_rect=pygame.Rect((self.__img_pad * len(self.gadget_img_container.elements), 0),
@@ -100,12 +172,33 @@ class ItemChoiceScreen(BasicView):
                     object_id=f"#gadget_img0{i}"
                 )
             )
-
-        for char, gadget in zip(self.char_img_list, self.gadget_img_list):
+            self.gadget_name_list.append(
+                pygame_gui.elements.UILabel(
+                    relative_rect=pygame.Rect(
+                        (self.__img_pad * len(self.gadget_name_container.elements), self.__img_size[0]),
+                        self.__img_size),
+                    text=f"TestGadget{i}",
+                    manager=self.manager,
+                    container=self.gadget_name_container,
+                    object_id=f"#name_label0{i}"
+                )
+            )
+        # todo can later be removed! just for testing
+        for char in self.char_img_list:
             char.normal_image = self.test_char
-            gadget.normal_image = self.test_gadget
             char.rebuild()
+
+        for gadget in self.gadget_img_list:
+            gadget.normal_image = self.test_gadget
             gadget.rebuild()
+
+    def _init_ui_elements(self) -> None:
+        self.test_char = pygame.image.load("assets/GameView/trash.png").convert_alpha()
+        self.test_gadget = pygame.image.load("assets/GameView/axe.png").convert_alpha()
+
+        self.gadget_img_list, self.char_img_list = [], []
+        self.gadget_name_list, self.char_name_list = [], []
+        self._create_selection_buttons(3, 2)
 
         self.start_game_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect((0, self.__padding * len(self.bottom_container.elements)), self.__button_size),
@@ -114,4 +207,3 @@ class ItemChoiceScreen(BasicView):
             container=self.bottom_container,
             object_id="#start_game"
         )
-
