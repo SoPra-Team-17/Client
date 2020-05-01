@@ -1,9 +1,15 @@
+"""
+Implements a datastructure to store the current representation of the playing field (in drawable elements)
+"""
 import string
 from typing import Tuple
 import numpy as np
 
 from util.Coordinates import WorldPoint
 from view.GameView.Drawable import Drawable
+
+__author__ = "Marco Deuscher"
+__date__ = "25.04.2020 (date of doc. creation)"
 
 
 class DrawableMap:

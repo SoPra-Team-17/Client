@@ -1,9 +1,14 @@
+"""
+Implements interface to Gameview between controller and view
+"""
 import pygame
 
 from view.BasicView import BasicView
 from view.GameView.GameViewController import GameViewController
 from view.ViewSettings import ViewSettings
 from controller.ControllerView import ControllerGameView
+
+import pygame
 
 
 class GameView(BasicView):

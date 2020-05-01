@@ -1,6 +1,12 @@
+"""
+Class implementing the needed settings for each view, also provides serialization to and from json
+"""
 import ipaddress
 import logging
 import json
+
+__author__ = "Marco Deuscher"
+__date__ = "25.04.2020 (date of doc. creation)"
 
 
 class ViewSettings:
@@ -9,6 +15,7 @@ class ViewSettings:
     The settings can be changed from the MainMenu or InGame
     """
     _settings_path = "assets/Menu/settings.json"
+
     def __init__(self):
         try:
             with open(self._settings_path, "r") as f:
@@ -25,7 +32,6 @@ class ViewSettings:
             self.address = "127.0.0.1"
             self.port = 1337
 
-
         self.to_json()
 
     def __repr__(self) -> str:
@@ -34,12 +40,11 @@ class ViewSettings:
         :return:    string
         """
         return \
-            f"WindowName: {self.window_name}\n"\
-            f"Resolution: {self.window_width}x{self.window_height}\n"\
-            f"Frame rate: {self.frame_rate}\n"\
-            f"Audio effects: {self.audio_effects :.1f} Music: {self.audio_music :.1f}\n"\
+            f"WindowName: {self.window_name}\n" \
+            f"Resolution: {self.window_width}x{self.window_height}\n" \
+            f"Frame rate: {self.frame_rate}\n" \
+            f"Audio effects: {self.audio_effects :.1f} Music: {self.audio_music :.1f}\n" \
             f"Server address: {self.address} Port: {self.port}\n"
-
 
     def to_json(self) -> None:
         j = {}

@@ -1,10 +1,17 @@
+"""
+Defines the abstract class of a drawable and contains implementations of Drawables
+"""
 from typing import Tuple
 from abc import ABC, abstractmethod
-from view.GameView.AssetStorage import BlockAssets, AssetStorage
+import pygame
+
+from view.GameView.AssetStorage import AssetStorage
 from view.ViewSettings import ViewSettings
 from util.Transforms import Transformations
 from util.Coordinates import WorldPoint
-import pygame
+
+__author__ = "Marco Deuscher"
+__date__ = "25.04.2020 (date of doc. creation)"
 
 
 class Drawable(ABC):
