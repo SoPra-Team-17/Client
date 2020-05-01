@@ -1,5 +1,5 @@
 """
-Implements a datastructure to store the current representatin of the playing field (in drawable elements)
+Implements a datastructure to store the current representation of the playing field (in drawable elements)
 """
 import string
 from typing import Tuple
