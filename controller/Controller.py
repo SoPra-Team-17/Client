@@ -1,3 +1,6 @@
+"""
+Implements the Controller, which is the first object created. Handles all interactions between network, user and views
+"""
 import sys
 import logging
 import pygame
@@ -15,6 +18,9 @@ cppyy.add_include_path("/usr/local/include/SopraCommon")
 cppyy.add_include_path("/usr/local/include/SopraNetwork")
 
 cppyy.include("network/RoleEnum.hpp")
+
+__author__ = "Marco Deuscher"
+__date__ = "25.04.2020 (date of doc. creation)"
 
 
 class Controller(ControllerGameView, ControllerMainMenu, ControllerLobby):

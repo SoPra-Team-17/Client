@@ -1,3 +1,6 @@
+"""
+Implements a Pop-Up window in the main menu which displays help functions
+"""
 import logging
 import pygame_gui
 import pygame
@@ -5,6 +8,9 @@ import pygame
 from view.BasicView import BasicView
 from view.ViewSettings import ViewSettings
 from controller.ControllerView import ControllerMainMenu
+
+__author__ = "Marco Deuscher"
+__date__ = "25.04.2020 (date of doc. creation)"
 
 
 class HelpScreen(BasicView):

@@ -1,6 +1,13 @@
+"""
+Defines the basic interface of a view
+"""
 from abc import ABC, abstractmethod
 import pygame
 from view.ViewSettings import ViewSettings
+
+__author__ = "Marco Deuscher"
+__date__ = "25.04.2020 (date of doc. creation)"
+
 
 class BasicView(ABC):
     """

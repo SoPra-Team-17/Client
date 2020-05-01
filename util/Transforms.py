@@ -1,4 +1,10 @@
+"""
+Implement all needed transforms between coordinate systems
+"""
 from typing import Tuple
+
+__author__ = "Marco Deuscher"
+__date__ = "25.04.2020 (date of doc. creation)"
 
 
 class Transformations:

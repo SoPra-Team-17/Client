@@ -1,7 +1,16 @@
+"""
+Class testing the transform from window to world coords
+
+Note: only works for a given resolution as the targets are hardcoded
+"""
 import unittest
 
 from util.Transforms import Transformations as transforms
 from view.ViewSettings import ViewSettings
+
+__author__ = "Marco"
+__date__ = "25.04.2020 (date of doc. creation)"
+
 
 class testTrafoToWorldCoords(unittest.TestCase):
     """
@@ -68,6 +77,7 @@ class testTrafoToWorldCoords(unittest.TestCase):
 
         xt, yt = transforms.trafo_window_to_world_coords(818, 479)
         self.assertEqual((3, 9), (xt, yt))
+
 
 if __name__ == '__main__':
     unittest.main()
