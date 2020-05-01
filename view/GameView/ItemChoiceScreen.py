@@ -4,7 +4,8 @@ import pygame
 
 from view.BasicView import BasicView
 from view.ViewSettings import ViewSettings
-from view.GameView.Visuals.GadgetsChoice.VisualGadget import GADGET_NAME_LIST, GADGET_PATH_LIST
+from view.GameView.Visuals.ItemChoice.VisualGadget import GADGET_NAME_LIST, GADGET_PATH_LIST
+from view.GameView.Visuals.ItemChoice.VisualCharacter import CHAR_PATH_LIST
 from controller.ControllerView import ControllerGameView
 
 
@@ -56,6 +57,9 @@ class ItemChoiceScreen(BasicView):
         self.background = pygame.Surface((self.settings.window_width, self.settings.window_height))
         self.background.fill(self.manager.ui_theme.get_colour(None, None, 'dark_bg'))
 
+        # font with which the descriptions are rendered
+        self.font = pygame.font.Font("assets/GameView/Montserrat-Regular.ttf", 20)
+
         self._init_ui_elements()
 
         logging.info("Lobbyscreen init done")
@@ -77,7 +81,6 @@ class ItemChoiceScreen(BasicView):
                 switcher.get(event.ui_element)()
             except TypeError:
                 self.selected_item(event.ui_element)
-                logging.warning("Did not find UI-Element in Dict")
 
         if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
             self.controller.to_main_menu()
@@ -124,15 +127,28 @@ class ItemChoiceScreen(BasicView):
         for idx, (gad, char_id) in enumerate(zip(offeredGadgets, offeredCharacters)):
             print(char_id)
             self.gadget_img_list[idx].normal_image = pygame.image.load(GADGET_PATH_LIST[gad])
-            self.gadget_name_list[idx].text = GADGET_NAME_LIST[gad]
+            self.gadget_img_list[idx].hovered_image = self.font.render(GADGET_NAME_LIST[idx], True, (255, 255, 255))
             self.gadget_img_list[idx].rebuild()
 
+            self.gadget_name_list[idx].text = GADGET_NAME_LIST[gad]
+            self.gadget_name_list[idx].rebuild()
+
+            # todo: img and text has to be set for characters!
             for char in self.controller.lib_client_handler.lib_client.getCharacterSettings():
                 if char_id == char.getCharacterId():
                     # hier können jetzt eigenschaften aus characterdescription extrahiert werden
                     name = char.getName()
                     gender = char.getGender()
                     feature_list = char.getFeatures()
+
+                    self.char_name_list[idx] = name
+                    self.char_name_list[idx].rebuild()
+
+                    self.char_img_list[idx].normal_image = pygame.image.load(CHAR_PATH_LIST[0])
+                    # todo pygame does not support rendering of escape characters!
+                    self.char_img_list[idx].hovered_image = self.font.render(name, True,
+                                                                             (255, 255, 255))
+                    self.char_img_list[idx].rebuild()
 
     def _create_selection_buttons(self, gadget_len, char_len) -> None:
         self.char_img_list, self.gadget_img_list = [], []
@@ -183,19 +199,23 @@ class ItemChoiceScreen(BasicView):
                     object_id=f"#name_label0{i}"
                 )
             )
+
+        text = self.font.render("Text23", True, (255, 255, 255))
+
         # todo can later be removed! just for testing
+        test_char = pygame.image.load("assets/GameView/trash.png").convert_alpha()
+        test_gadget = pygame.image.load("assets/GameView/axe.png").convert_alpha()
         for char in self.char_img_list:
-            char.normal_image = self.test_char
+            char.normal_image = test_char
+            char.hovered_image = text
             char.rebuild()
 
         for gadget in self.gadget_img_list:
-            gadget.normal_image = self.test_gadget
+            gadget.normal_image = test_gadget
+            gadget.hovered_image = text
             gadget.rebuild()
 
     def _init_ui_elements(self) -> None:
-        self.test_char = pygame.image.load("assets/GameView/trash.png").convert_alpha()
-        self.test_gadget = pygame.image.load("assets/GameView/axe.png").convert_alpha()
-
         self.gadget_img_list, self.char_img_list = [], []
         self.gadget_name_list, self.char_name_list = [], []
         self._create_selection_buttons(3, 2)
