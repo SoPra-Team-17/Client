@@ -1,5 +1,11 @@
+"""
+Implements a basic isometric camera with a rotation of 45°
+"""
 from typing import Tuple
 import pygame
+
+__author__ = "Marco Deuscher"
+__date__ = "25.04.2020 (date of doc. creation)"
 
 
 class Camera:

@@ -1,8 +1,14 @@
+"""
+Initializes logging and cppyy. Creates Controller and enters main loop
+"""
 import logging
 import sys
 
 from controller.Controller import Controller
 from network.InitCppy import init_cppyy
+
+__author__ = "Marco"
+__date__ = "25.04.2020 (date of doc. creation)"
 
 
 def init_logging():
@@ -34,7 +40,6 @@ def main():
     controller = Controller()
     controller.init_components()
     controller.loop()
-
 
 
 if __name__ == "__main__":

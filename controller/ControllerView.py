@@ -1,4 +1,10 @@
+"""
+Defines abstract interfaces between views and the controller
+"""
 from abc import ABC, abstractmethod
+
+__author__ = "Marco Deuscher"
+__date__ = "25.04.2020 (date of doc. creation)"
 
 
 class ControllerMainMenu(ABC):
