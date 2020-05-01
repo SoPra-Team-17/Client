@@ -60,6 +60,7 @@ class Controller(ControllerGameView, ControllerMainMenu, ControllerLobby):
         """
         # initialize components (model,view,self)
         logging.info("Controller init done")
+        print("123")
 
     def loop(self) -> None:
         """

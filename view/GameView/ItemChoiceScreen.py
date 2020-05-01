@@ -215,6 +215,8 @@ class ItemChoiceScreen(BasicView):
             gadget.hovered_image = text
             gadget.rebuild()
 
+        print("Test12")
+
     def _init_ui_elements(self) -> None:
         self.gadget_img_list, self.char_img_list = [], []
         self.gadget_name_list, self.char_name_list = [], []
