@@ -7,13 +7,14 @@ import pygame
 from view.ViewSettings import ViewSettings
 from view.MainMenu.MainMenu import MainMenu
 from view.GameView.GameView import GameView
-from controller.ControllerView import ControllerGameView, ControllerMainMenu
+from view.Lobby.LobbyView import LobbyView
+from controller.ControllerView import ControllerGameView, ControllerMainMenu, ControllerLobby
 
 __author__ = "Marco Deuscher"
 __date__ = "25.04.2020 (date of doc. creation)"
 
 
-class Controller(ControllerGameView, ControllerMainMenu):
+class Controller(ControllerGameView, ControllerMainMenu, ControllerLobby):
     """
     class implementing a basic controller
     """
@@ -34,6 +35,8 @@ class Controller(ControllerGameView, ControllerMainMenu):
         self.clock = pygame.time.Clock()
         self.mainMenu = MainMenu(self.screen, self, self.view_settings)
         self.gameView = GameView(self.screen, self, self.view_settings)
+        self.lobbyView = LobbyView(self.screen, self, self.view_settings)
+
         self.activeViews = []
 
         # at the beginning main menu is the active view
@@ -69,6 +72,9 @@ class Controller(ControllerGameView, ControllerMainMenu):
 
     def start_game(self) -> None:
         logging.info("Start game detected")
+        self.activeViews = [self.lobbyView]
+
+    def to_game_view(self) -> None:
         self.activeViews = [self.gameView]
 
     def exit_game(self) -> None:
@@ -80,4 +86,10 @@ class Controller(ControllerGameView, ControllerMainMenu):
         self.activeViews = [self.mainMenu]
 
     def send_action(self) -> None:
+        pass
+
+    def send_reconnect(self) -> None:
+        pass
+
+    def send_hello(self) -> None:
         pass

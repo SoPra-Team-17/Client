@@ -23,10 +23,9 @@ class MainMenuScreen(BasicView):
 
         self.manager = pygame_gui.UIManager((self.settings.window_width, self.settings.window_height),
                                             "assets/Menu/MainMenuTheme.json")
-        self.manager.add_font_paths("SanistaOne", "assets/Menu/SanistaOne.ttf")
 
         self.container = pygame_gui.core.UIContainer(
-            relative_rect=pygame.Rect((self.settings.window_width * .17, self.settings.window_height * .1),
+            relative_rect=pygame.Rect((self.settings.window_width * .375, self.settings.window_height * .4),
                                       (self.settings.window_width / 4, self.settings.window_height / 2)),
             manager=self.manager)
 
@@ -71,32 +70,33 @@ class MainMenuScreen(BasicView):
 
     def _init_ui_elements(self) -> None:
         self.start_game_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect((self.container.rect.centerx,
-                                       self.container.rect.centery + self.__padding * len(self.container.elements)),
-                                      self.__buttonSize),
+            relative_rect=pygame.Rect(
+                (self.container.get_size()[0] / 2.75, self.__padding * len(self.container.elements)),
+                self.__buttonSize),
             text="Start Game",
             manager=self.manager,
             container=self.container
         )
+
         self.help_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect((self.container.rect.centerx,
-                                       self.container.rect.centery + self.__padding * len(self.container.elements)),
+            relative_rect=pygame.Rect((self.container.get_size()[0] / 2.75,
+                                       self.__padding * len(self.container.elements)),
                                       self.__buttonSize),
             text="Help",
             manager=self.manager,
             container=self.container
         )
         self.settings_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect((self.container.rect.centerx,
-                                       self.container.rect.centery + self.__padding * len(self.container.elements)),
+            relative_rect=pygame.Rect((self.container.get_size()[0] / 2.75,
+                                       self.__padding * len(self.container.elements)),
                                       self.__buttonSize),
             text="Settings",
             manager=self.manager,
             container=self.container
         )
         self.end_game_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect((self.container.rect.centerx,
-                                       self.container.rect.centery + self.__padding * len(self.container.elements)),
+            relative_rect=pygame.Rect((self.container.get_size()[0] / 2.75,
+                                       self.__padding * len(self.container.elements)),
                                       self.__buttonSize),
             text="End Game",
             manager=self.manager,
