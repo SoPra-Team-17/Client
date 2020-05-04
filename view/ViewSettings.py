@@ -21,7 +21,7 @@ class ViewSettings:
             with open(self._settings_path, "r") as f:
                 parsed_json = json.load(f)
                 self.from_json(parsed_json)
-        except Exception:
+        except json.JSONDecodeError:
             logging.error("Unable to parse from JSON")
             self.window_width = 1920
             self.window_height = 1080

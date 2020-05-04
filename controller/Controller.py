@@ -4,11 +4,20 @@ Implements the Controller, which is the first object created. Handles all intera
 import sys
 import logging
 import pygame
+import cppyy
+
 from view.ViewSettings import ViewSettings
 from view.MainMenu.MainMenu import MainMenu
 from view.GameView.GameView import GameView
 from view.Lobby.LobbyView import LobbyView
 from controller.ControllerView import ControllerGameView, ControllerMainMenu, ControllerLobby
+from network.LibClientHandler import LibClientHandler
+
+cppyy.add_include_path("/usr/local/include/SopraClient")
+cppyy.add_include_path("/usr/local/include/SopraCommon")
+cppyy.add_include_path("/usr/local/include/SopraNetwork")
+
+cppyy.include("network/RoleEnum.hpp")
 
 __author__ = "Marco Deuscher"
 __date__ = "25.04.2020 (date of doc. creation)"
@@ -24,6 +33,8 @@ class Controller(ControllerGameView, ControllerMainMenu, ControllerLobby):
         super(Controller, self).__init__()
         # call init of ControllerMainMenu
         super(ControllerGameView, self).__init__()
+
+        self.lib_client_handler = LibClientHandler(self)
 
         self.view_settings = ViewSettings()
 
@@ -70,6 +81,8 @@ class Controller(ControllerGameView, ControllerMainMenu, ControllerLobby):
 
             self.clock.tick(self.view_settings.frame_rate)
 
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~VIEW SWITCHES~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
     def start_game(self) -> None:
         logging.info("Start game detected")
         self.activeViews = [self.lobbyView]
@@ -85,11 +98,45 @@ class Controller(ControllerGameView, ControllerMainMenu, ControllerLobby):
     def to_main_menu(self) -> None:
         self.activeViews = [self.mainMenu]
 
-    def send_action(self) -> None:
-        pass
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~SEND NETWORK MESSAGE~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # LobbyView Messages
+    def connect_to_server(self, servername: str, port: int) -> bool:
+        return self.lib_client_handler.connect(servername, port)
 
-    def send_reconnect(self) -> None:
-        pass
+    def disconnect_from_server(self) -> None:
+        self.lib_client_handler.disconnect()
 
-    def send_hello(self) -> None:
-        pass
+    def send_reconnect(self) -> bool:
+        return self.lib_client_handler.sendReconnect()
+
+    def send_hello(self, name, role) -> bool:
+        if role == "Player":
+            role = cppyy.gbl.spy.network.RoleEnum.PLAYER
+        elif role == "Spectator":
+            role = cppyy.gbl.spy.network.RoleEnum.SPECTATOR
+        else:
+            return False
+
+        return self.lib_client_handler.sendHello(name, role)
+
+    # GameView Messages
+    def send_item_choice(self, choice) -> bool:
+        return self.lib_client_handler.sendItemChoice(choice)
+
+    def send_equipment_choice(self, equipMap) -> bool:
+        return self.lib_client_handler.sendEquipmentChoice(equipMap)
+
+    def send_game_operation(self, operation) -> bool:
+        return self.lib_client_handler.sendGameOperation(operation)
+
+    def send_game_leave(self) -> bool:
+        return self.lib_client_handler.sendGameLeave()
+
+    def send_request_game_pause(self, gamePause: bool) -> bool:
+        return self.lib_client_handler.sendRequestGamePause(gamePause)
+
+    def send_request_meta_information(self, keys) -> bool:
+        return self.lib_client_handler.sendRequestMetaInformation(keys)
+
+    def send_request_replay(self) -> bool:
+        return self.lib_client_handler.sendRequestReplay()

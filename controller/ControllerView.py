@@ -39,12 +39,38 @@ class ControllerGameView(ABC):
         pass
 
     @abstractmethod
-    def send_action(self) -> None:
-        """
-        Interface to GameView
-        :return:    None
-        """
+    def send_reconnect(self) -> bool:
+        pass
 
+    @abstractmethod
+    def send_item_choice(self, choice) -> bool:
+        pass
+
+    @abstractmethod
+    def send_equipment_choice(self, equipMap) -> bool:
+        pass
+
+    @abstractmethod
+    def send_game_operation(self, operation) -> bool:
+        pass
+
+    @abstractmethod
+    def send_game_leave(self) -> bool:
+        pass
+
+    @abstractmethod
+    def send_request_game_pause(self, gamePause: bool) -> bool:
+        pass
+
+    @abstractmethod
+    def send_request_meta_information(self, keys) -> bool:
+        pass
+
+    @abstractmethod
+    def send_request_replay(self) -> bool:
+        pass
+
+    @abstractmethod
     def to_main_menu(self) -> None:
         """
         Interface to GameView
@@ -61,28 +87,43 @@ class ControllerLobby(ABC):
         pass
 
     @abstractmethod
-    def send_hello(self) -> None:
+    def connect_to_server(self, servername: str, port: int) -> bool:
         """
-        Interface to Network
-        :return:
+        Interface to network
+        :return:    None
         """
 
     @abstractmethod
-    def send_reconnect(self) -> None:
+    def disconnect_from_server(self) -> None:
+        """
+        Interface to network
+        :return:    None
+        """
+
+    @abstractmethod
+    def send_reconnect(self) -> bool:
+        """
+        Interface to network
+        :return:    None
+        """
+
+    @abstractmethod
+    def send_hello(self, name, role) -> bool:
         """
         Interface to Network
-        :return:
+        :return:    None
         """
 
     @abstractmethod
     def to_main_menu(self) -> None:
         """
         Interface to Lobby
-        :return:
+        :return:    None
         """
 
+    @abstractmethod
     def to_game_view(self) -> None:
         """
         Interface to Lobby
-        :return:
+        :return:    None
         """

@@ -8,12 +8,13 @@ from controller.ControllerView import ControllerLobby
 
 
 class LobbyScreen(BasicView):
-    _vald_roles = ["Player", "Spectator"]
+    _valid_roles = ["Player", "Spectator"]
     _text_labels = {
         "start_game": "Start Game",
+        "connect": "Connect",
         "reconnect": "Reconnect",
         "name": "Enter name",
-        "role": "Select Role",
+        "role": _valid_roles[0],
         "return": "Return"
     }
 
@@ -51,7 +52,8 @@ class LobbyScreen(BasicView):
 
         if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_PRESSED:
             switcher = {
-                self.start_game_button: self.controller.to_game_view,
+                self.start_game_button: self.start_game_pressed,
+                self.connect_button: self.connect_pressed,
                 self.reconnect_button: self.controller.send_reconnect,
                 self.return_button: self.controller.to_main_menu
             }
@@ -62,6 +64,14 @@ class LobbyScreen(BasicView):
 
         if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
             self.controller.to_main_menu()
+
+    def start_game_pressed(self) -> None:
+        self.controller.to_game_view()
+
+    def connect_pressed(self) -> None:
+        d = self._extract_info()
+        ret = self.controller.send_hello(d["name"], d["role"])
+        logging.info(f"Sending Hello successfull: {ret}")
 
     def _extract_info(self) -> dict:
         d = {}
@@ -77,6 +87,14 @@ class LobbyScreen(BasicView):
             manager=self.manager,
             container=self.container,
             object_id="#start_game"
+        )
+
+        self.connect_button = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect((0, self.__padding * len(self.container.elements)), self.__buttonSize),
+            text=self._text_labels["connect"],
+            manager=self.manager,
+            container=self.container,
+            object_id="#connect"
         )
 
         self.reconnect_button = pygame_gui.elements.UIButton(
@@ -95,7 +113,7 @@ class LobbyScreen(BasicView):
 
         self.role_dropdown = pygame_gui.elements.UIDropDownMenu(
             relative_rect=pygame.Rect((0, self.__padding * len(self.container.elements)), self.__buttonSize),
-            options_list=self._vald_roles,
+            options_list=self._valid_roles,
             starting_option=self._text_labels["role"],
             manager=self.manager,
             container=self.container,
