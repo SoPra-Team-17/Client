@@ -1,5 +1,5 @@
 """
-Implements a event, caused by a new network message
+Implements an event, caused by a new network message
 """
 import pygame
 
