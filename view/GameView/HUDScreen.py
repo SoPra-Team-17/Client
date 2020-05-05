@@ -60,10 +60,22 @@ class HUDScreen(BasicView):
         self.health_bar_list = []
 
         for idx in range(6):
-            self.char_image_list.append(
+            # old code
+            """self.char_image_list.append(
                 pygame_gui.elements.UIImage(
                     relative_rect=pygame.Rect((idx * (128 + 15), 0), self.test_surface.get_size()),
                     image_surface=self.test_surface,
+                    manager=self.manager,
+                    container=self.container,
+                    object_id=f"#char_image0{idx}"
+                )
+            )"""
+            # changed UIImage to UIButton
+            self.char_image_list.append(
+                pygame_gui.elements.UIButton(
+                    # TODO: button-size responsive to window-size
+                    relative_rect=pygame.Rect((idx * (128 + 15), 0), self.test_surface.get_size()),
+                    text="Character",
                     manager=self.manager,
                     container=self.container,
                     object_id=f"#char_image0{idx}"
@@ -77,6 +89,14 @@ class HUDScreen(BasicView):
                     object_id=f"#health_bar0{idx}"
                 )
             )
+            # TODO: implementing action_bar_list with all actions a character can perform
+
+        # loading sample image on UIButton
+        # TODO: loading personal character-information by hovering over a button
+        test_char = pygame.image.load("assets/GameView/trash.png").convert_alpha()
+        for char in self.char_image_list:
+            char.normal_image = test_char
+            char.rebuild()
 
         ip = 123
         mp = 456
