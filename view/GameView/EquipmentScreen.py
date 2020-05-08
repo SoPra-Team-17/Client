@@ -52,7 +52,7 @@ class EquipmentScreen(BasicView):
                                                            "assets/GameView/GameViewTheme.json")
 
         self.bottom_container = pygame_gui.core.UIContainer(
-            relative_rect=pygame.Rect((self.settings.window_width * .465, self.settings.window_height * .75),
+            relative_rect=pygame.Rect((self.settings.window_width * .465, self.settings.window_height * .7),
                                       (self.settings.window_width / 4, self.settings.window_height / 8)),
             manager=self.manager)
 
@@ -62,7 +62,7 @@ class EquipmentScreen(BasicView):
         self.__padding = self.bottom_container.rect.width / 10
         self.__button_size = (self.bottom_container.rect.width / 3, self.bottom_container.rect.width / 12)
         self.__img_size = (128, 128)
-        self.__img_pad = 2 * self.__img_size[0]
+        self.__img_pad = 2.25 * self.__img_size[0]
 
         self._init_ui_elements()
 
@@ -101,7 +101,11 @@ class EquipmentScreen(BasicView):
     def continue_pressed(self):
         if len(self.gadgets) != 0:
             logging.info("Not all gadgets owned by a character")
+            return
 
+        print(self.gadget_char_map)
+        # todo uncomment for network connection!
+        # self.controller.send_equipment_choice(self.gadget_char_map)
         self.parent_view.to_playing_field()
 
     def _drag_and_drop(self, event):
@@ -130,7 +134,18 @@ class EquipmentScreen(BasicView):
                 self.gadgets[self.__drag_index].rect.x = mouse_x + self.__offset[self.__drag_index][0]
                 self.gadgets[self.__drag_index].rect.y = mouse_y + self.__offset[self.__drag_index][1]
 
+        if len(self.gadgets) == 0:
+            self.text_label.set_text("Equipment done")
+
     def _init_ui_elements(self) -> None:
+        self.text_label = pygame_gui.elements.UILabel(
+            relative_rect=pygame.Rect((0, self.__padding * len(self.bottom_container.elements)), self.__button_size),
+            text="",
+            manager=self.manager,
+            container=self.bottom_container,
+            object_id="#text_label"
+        )
+
         self.continue_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect((0, self.__padding * len(self.bottom_container.elements)), self.__button_size),
             text="Continue",
@@ -144,23 +159,25 @@ class EquipmentScreen(BasicView):
         self.characters = []
 
         if self.__debug:
-            for idx in range(5):
+            for idx in range(6):
                 self.gadgets.append(DrawableImage(pygame.Rect(
-                    (self.settings.window_width * .15 + idx * 2 * self.__img_size[0], self.settings.window_height * .6),
+                    (self.settings.window_width * .15 + idx * self.__img_pad, self.settings.window_height * .45),
                     (128, 128)
-                ), pygame.image.load("assets/GameView/axe.png")))
+                ), pygame.image.load("assets/GameView/axe.png"), idx))
+
+            for idx in range(2):
                 self.characters.append(DrawableImage(pygame.Rect(
-                    (self.settings.window_width * .15 + idx * 2 * self.__img_size[0],
+                    (self.settings.window_width * .15 + idx * self.__img_pad,
                      self.settings.window_height * .1),
                     (128, 128)),
-                    pygame.image.load("assets/GameView/trash.png")))
+                    pygame.image.load("assets/GameView/trash.png"), idx+10))
         else:
             selected_characters = self.controller.lib_client_handler.lib_client.getChosenCharacters()
             selected_gadgets = self.controller.lib_client_handler.lib_client.getChosenGadgets()
 
             for idx, char in selected_characters:
                 self.characters.append(DrawableImage(pygame.Rect(
-                    (self.settings.window_width * .15 + idx * 2 * self.__img_size[0],
+                    (self.settings.window_width * .1 + idx * self.__img_pad,
                      self.settings.window_height * .1),
                     (128, 128)),
                     # todo update assets
@@ -170,7 +187,7 @@ class EquipmentScreen(BasicView):
 
             for idx, gad in selected_gadgets:
                 self.gadgets.append(DrawableImage(pygame.Rect(
-                    (self.settings.window_width * .15 + idx * 2 * self.__img_size[0], self.settings.window_height * .6),
+                    (self.settings.window_width * .1 + idx * self.__img_pad, self.settings.window_height * .45),
                     (128, 128)),
                     pygame.image.load(GADGET_PATH_LIST[gad]),
                     gad

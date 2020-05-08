@@ -52,9 +52,12 @@ class LibClientHandler:
         else:
             raise TypeError("Invalid Choice type")
 
-    def sendEquipmentChoice(self, equipMap) -> bool:
-        # todo how to handle Map?
-        raise Exception("Map handling not implemented")
+    def sendEquipmentChoice(self, equipMap: dict) -> bool:
+        # todo test if this works!
+        if isinstance(equipMap, dict) and isinstance(equipMap.keys()[0], int) and isinstance(equipMap.values()[0], cppyy.gbl.spy.util.UUID):
+            return self.lib_client.network.sendEquipmentChoice(equipMap)
+        else:
+            raise TypeError("Invalid equipment map")
 
     def sendGameOperation(self, operation: cppyy.gbl.spy.gameplay.Operation) -> bool:
         if isinstance(operation, cppyy.gbl.spy.gameplay.Operation):

@@ -5,6 +5,7 @@ import sys
 import logging
 import pygame
 import cppyy
+from cppyy.gbl.std import map
 
 from view.ViewSettings import ViewSettings
 from view.MainMenu.MainMenu import MainMenu
@@ -125,7 +126,11 @@ class Controller(ControllerGameView, ControllerMainMenu, ControllerLobby):
         return self.lib_client_handler.sendItemChoice(choice)
 
     def send_equipment_choice(self, equipMap) -> bool:
-        return self.lib_client_handler.sendEquipmentChoice(equipMap)
+        # convert to c++ map (gadgetenum as int)
+        map_cpp = map[int, cppyy.gbl.spy.util.UUID]
+        for (gad, char) in equipMap.items():
+            map[gad] = char
+        return self.lib_client_handler.sendEquipmentChoice(map_cpp)
 
     def send_game_operation(self, operation) -> bool:
         return self.lib_client_handler.sendGameOperation(operation)
