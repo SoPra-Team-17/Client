@@ -41,8 +41,7 @@ class EquipmentScreen(BasicView):
 
         self.__dragging = False
         self.__drag_index = 0
-        # anzahl der dragable elemente!
-        self.__offset = [[0, 0]] * 5
+
         # map from GadgetEnum -> UUID (char)
         self.gadget_char_map = {}
         # todo remove
@@ -192,3 +191,6 @@ class EquipmentScreen(BasicView):
                     pygame.image.load(GADGET_PATH_LIST[gad]),
                     gad
                 ))
+
+        # anzahl der dragable elemente!
+        self.__offset = [[0, 0]] * len(self.gadgets)
