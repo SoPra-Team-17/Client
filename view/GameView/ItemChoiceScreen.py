@@ -1,3 +1,6 @@
+"""
+Implements the screen in which the item choice is visualized
+"""
 import logging
 import pygame_gui
 import pygame
@@ -8,6 +11,8 @@ from view.GameView.Visuals.ItemChoice.VisualGadget import GADGET_NAME_LIST, GADG
 from view.GameView.Visuals.ItemChoice.VisualCharacter import CHAR_PATH_LIST
 from controller.ControllerView import ControllerGameView
 
+__author__ = "Marco Deuscher"
+__date__ = "08.05.2020 (doc creation)"
 
 class ItemChoiceScreen(BasicView):
 
@@ -62,7 +67,7 @@ class ItemChoiceScreen(BasicView):
 
         self._init_ui_elements()
 
-        logging.info("Lobbyscreen init done")
+        logging.info("Itemchoice init done")
 
     def draw(self) -> None:
         self.manager.update(1 / self.settings.frame_rate)
@@ -86,7 +91,7 @@ class ItemChoiceScreen(BasicView):
             self.controller.to_main_menu()
 
     def start_game_pressed(self) -> None:
-        self.parent_view.to_playing_field()
+        self.parent_view.to_equipment()
 
     def selected_item(self, element) -> None:
         """
@@ -124,8 +129,8 @@ class ItemChoiceScreen(BasicView):
 
         self._create_selection_buttons(len(offeredGadgets), len(offeredCharacters))
 
+        # todo might have different lens
         for idx, (gad, char_id) in enumerate(zip(offeredGadgets, offeredCharacters)):
-            print(char_id)
             self.gadget_img_list[idx].normal_image = pygame.image.load(GADGET_PATH_LIST[gad])
             self.gadget_img_list[idx].hovered_image = self.font.render(GADGET_NAME_LIST[idx], True, (255, 255, 255))
             self.gadget_img_list[idx].rebuild()
@@ -215,7 +220,6 @@ class ItemChoiceScreen(BasicView):
             gadget.hovered_image = text
             gadget.rebuild()
 
-        print("Test12")
 
     def _init_ui_elements(self) -> None:
         self.gadget_img_list, self.char_img_list = [], []

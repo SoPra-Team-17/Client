@@ -7,6 +7,7 @@ from view.BasicView import BasicView
 from view.GameView.GameViewController import GameViewController
 from view.GameView.HUDView import HUDView
 from view.GameView.ItemChoiceScreen import ItemChoiceScreen
+from view.GameView.EquipmentScreen import EquipmentScreen
 from view.ViewSettings import ViewSettings
 from controller.ControllerView import ControllerGameView
 
@@ -24,6 +25,7 @@ class GameView(BasicView):
         self.game_view_controller = GameViewController(self, settings)
         self.hud_view = HUDView(self.window, self.controller, self.settings)
         self.item_choice_screen = ItemChoiceScreen(self.window, self.controller, self, self.settings)
+        self.equipment_screen = EquipmentScreen(self.window, self.controller, self, self.settings)
 
         self.active_views = [self.item_choice_screen]
 
@@ -53,3 +55,6 @@ class GameView(BasicView):
 
     def to_item_choice(self) -> None:
         self.active_views = [self.item_choice_screen]
+
+    def to_equipment(self) -> None:
+        self.active_views = [self.equipment_screen]
