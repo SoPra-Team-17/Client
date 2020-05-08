@@ -1,7 +1,0 @@
-[submodule "extern/LibClient"]
-	path = extern/LibClient
-	url = https://github.com/SoPra-Team-17/LibClient
-
-[submodule "extern/LibCommon"]
-	path = extern/LibComon
-	url = https://github.com/SoPra-Team-17/LibCommon

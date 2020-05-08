@@ -43,7 +43,7 @@ class DrawableMap:
         return len(self._list)
 
     def __repr__(self) -> string:
-        return f"DawableList Length: {self.__len__()}"
+        return f"DrawableList Length: {self.__len__()}"
 
     def __contains__(self, item: Drawable) -> bool:
         """

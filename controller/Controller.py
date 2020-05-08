@@ -104,6 +104,9 @@ class Controller(ControllerGameView, ControllerMainMenu, ControllerLobby):
     def connect_to_server(self, servername: str, port: int) -> bool:
         return self.lib_client_handler.connect(servername, port)
 
+    def disconnect_from_server(self) -> None:
+        self.lib_client_handler.disconnect()
+
     def send_reconnect(self) -> bool:
         return self.lib_client_handler.sendReconnect()
 

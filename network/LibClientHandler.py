@@ -32,8 +32,8 @@ class LibClientHandler:
         else:
             raise TypeError("Invalid Servername or Port type")
 
-    def disconnect(self) -> bool:
-        return self.lib_client.network.disconnect()
+    def disconnect(self) -> None:
+        self.lib_client.network.disconnect()
 
     def sendHello(self, name: str, role: cppyy.gbl.spy.network.RoleEnum) -> bool:
         # instance of spy.network.RoleEnum is represented as int!
@@ -47,7 +47,7 @@ class LibClientHandler:
         return self.lib_client.network.sendReconnect()
 
     def sendItemChoice(self, choice: (cppyy.gbl.spy.util.UUID, cppyy.gbl.spy.gadget.GadgetEnum)) -> bool:
-        if isinstance(choice, (cppyy.gbl.spy.utl.UUID, cppyy.gbl.spy.gadget.GadgetEnum)):
+        if isinstance(choice, (cppyy.gbl.spy.util.UUID, int)):
             return self.lib_client.network.sendItemChoice(choice)
         else:
             raise TypeError("Invalid Choice type")
@@ -67,7 +67,7 @@ class LibClientHandler:
 
     def sendRequestGamePause(self, gamePause: bool) -> bool:
         if isinstance(gamePause, bool):
-            self.lib_client.network.sendRequestGamePause(gamePause)
+            return self.lib_client.network.sendRequestGamePause(gamePause)
         else:
             raise TypeError("Invalid gamePause type (not bool)")
 

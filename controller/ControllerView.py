@@ -39,6 +39,10 @@ class ControllerGameView(ABC):
         pass
 
     @abstractmethod
+    def send_reconnect(self) -> bool:
+        pass
+
+    @abstractmethod
     def send_item_choice(self, choice) -> bool:
         pass
 
@@ -84,6 +88,13 @@ class ControllerLobby(ABC):
 
     @abstractmethod
     def connect_to_server(self, servername: str, port: int) -> bool:
+        """
+        Interface to network
+        :return:    None
+        """
+
+    @abstractmethod
+    def disconnect_from_server(self) -> None:
         """
         Interface to network
         :return:    None

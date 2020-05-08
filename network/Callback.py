@@ -11,7 +11,7 @@ class Callback(cppyy.gbl.libclient.Callback):
     Implements a simple callback class which itself calls the controller
     """
 
-    def __init__(self, ):
+    def __init__(self):
         pass
 
     def on_hello_reply(self) -> None:

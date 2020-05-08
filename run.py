@@ -1,7 +1,6 @@
 """
 Initializes logging and cppyy. Creates Controller and enters main loop
 """
-import os
 import logging
 import sys
 
