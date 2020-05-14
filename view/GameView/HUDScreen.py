@@ -2,7 +2,6 @@ import logging
 import pygame_gui
 import pygame
 
-
 from view.BasicView import BasicView
 from view.ViewSettings import ViewSettings
 from controller.ControllerView import ControllerGameView
@@ -25,7 +24,8 @@ class HUDScreen(BasicView):
             manager=self.manager
         )
 
-        self.__padding = self.container.rect.width / 10
+        # padding to split the HUDScreen in half
+        self.__padding = self.container.rect.width / 2
         self.__buttonSize = (self.container.rect.width / 3, self.container.rect.width / 12)
 
         self.background = pygame.Surface((self.container.rect.width, self.container.rect.height))
@@ -73,8 +73,8 @@ class HUDScreen(BasicView):
             # changed UIImage to UIButton
             self.char_image_list.append(
                 pygame_gui.elements.UIButton(
-                    # TODO: button-size responsive to window-size
-                    relative_rect=pygame.Rect((idx * (128 + 15), 0), self.test_surface.get_size()),
+                    # size of character-buttons fix, character-buttons distributed on the left half of the HUDScreen
+                    relative_rect=pygame.Rect((idx * (128 + (self.__padding - 128 * 6) / 5), 0), self.test_surface.get_size()),
                     text="Character",
                     manager=self.manager,
                     container=self.container,
