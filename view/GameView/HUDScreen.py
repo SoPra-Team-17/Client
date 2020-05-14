@@ -27,6 +27,7 @@ class HUDScreen(BasicView):
         # padding to split the HUDScreen in half
         self.__padding = self.container.rect.width / 2
         self.__buttonSize = (self.container.rect.width / 3, self.container.rect.width / 12)
+        self.font = pygame.font.Font("assets/GameView/Montserrat-Regular.ttf", 20)
 
         self.background = pygame.Surface((self.container.rect.width, self.container.rect.height))
         self.background.fill(self.manager.ui_theme.get_colour(None, None, "dark_bg"))
@@ -60,22 +61,12 @@ class HUDScreen(BasicView):
         self.health_bar_list = []
 
         for idx in range(6):
-            # old code
-            """self.char_image_list.append(
-                pygame_gui.elements.UIImage(
-                    relative_rect=pygame.Rect((idx * (128 + 15), 0), self.test_surface.get_size()),
-                    image_surface=self.test_surface,
-                    manager=self.manager,
-                    container=self.container,
-                    object_id=f"#char_image0{idx}"
-                )
-            )"""
             # changed UIImage to UIButton
             self.char_image_list.append(
                 pygame_gui.elements.UIButton(
                     # size of character-buttons fix, character-buttons distributed on the left half of the HUDScreen
                     relative_rect=pygame.Rect((idx * (128 + (self.__padding - 128 * 6) / 5), 0), self.test_surface.get_size()),
-                    text="Character",
+                    text="",
                     manager=self.manager,
                     container=self.container,
                     object_id=f"#char_image0{idx}"
@@ -83,7 +74,7 @@ class HUDScreen(BasicView):
             )
             self.health_bar_list.append(
                 pygame_gui.elements.UIScreenSpaceHealthBar(
-                    relative_rect=pygame.Rect((idx * (128 + 15), 150), (128, 25)),
+                    relative_rect=pygame.Rect((idx * (128 + (self.__padding - 128 * 6) / 5), 150), (128, 25)),
                     manager=self.manager,
                     container=self.container,
                     object_id=f"#health_bar0{idx}"
@@ -93,9 +84,11 @@ class HUDScreen(BasicView):
 
         # loading sample image on UIButton
         # TODO: loading personal character-information by hovering over a button
+        text = self.font.render("HP: 42", True, (255, 255, 255))
         test_char = pygame.image.load("assets/GameView/trash.png").convert_alpha()
         for char in self.char_image_list:
             char.normal_image = test_char
+            char.hovered_image = text
             char.rebuild()
 
         ip = 123
@@ -105,14 +98,14 @@ class HUDScreen(BasicView):
         self.status_textbox = pygame_gui.elements.UITextBox(
             html_text=f"<strong>Intelligence Points:</strong>{ip}<br><br><strong>Movement Points:</strong>{mp}<br><br>" \
                       f"<strong>Action Points:</strong>{ap}<br><br><strong>Chips:</strong>{chips}",
-            relative_rect=pygame.Rect((len(self.char_image_list) * (128 + 15), 0), (300, 175)),
+            relative_rect=pygame.Rect((len(self.char_image_list) * (128 + (self.__padding - 128 * 6) / 5), 0), (300, 175)),
             manager=self.manager,
             container=self.container,
             object_id="#status_textbox"
         )
 
         self.menu_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect((len(self.char_image_list) * (128 + 15) + 315, 100), (128, 25)),
+            relative_rect=pygame.Rect((self.container.rect.width - 128, 100), (128, 25)),
             text="Menu",
             manager=self.manager,
             container=self.container,
