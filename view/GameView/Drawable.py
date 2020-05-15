@@ -89,8 +89,7 @@ class FieldMap:
         # transform mouse pos to world coords
         xt, yt = Transformations.trafo_window_to_world_coords(pos[0], pos[1], camOffset[0], camOffset[1])
 
-        # todo hardcoded check if inside field!
-        if xt < 0 or xt >= 50 or yt < 0 or yt >= 50:
+        if xt < 0 or xt >= self.map.dims[0] or yt < 0 or yt >= self.map.dims[1]:
             return
         selected = WorldPoint(xt, yt, 0)
         if selected != self.__selected_coords:
@@ -98,8 +97,8 @@ class FieldMap:
             self.map[self.__selected_coords].selected(True)
         else:
             self.map[self.__selected_coords].selected(False)
+            # todo point (0,0,0) will not work properly
             self.__selected_coords = WorldPoint()
-
 
 class Block(Drawable):
     def __init__(self, window: pygame.display, pos: WorldPoint, assets: AssetStorage) -> None:

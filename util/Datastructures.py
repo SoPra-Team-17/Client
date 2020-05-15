@@ -15,7 +15,7 @@ class DrawableMap:
 
     def __init__(self, dims: Tuple[int, int, int] = (100, 100, 3)) -> None:
         self.list = [None] * np.array(dims).prod()
-        self._dims = dims
+        self.dims = dims
 
     def __getitem__(self, item: WorldPoint):
         """
@@ -58,4 +58,4 @@ class DrawableMap:
         :param item:    input/index WorldPoint
         :return:        index in list
         """
-        return item.x + item.y * self._dims[0] + item.z * self._dims[0] * self._dims[1]
+        return item.x + item.y * self.dims[0] + item.z * self.dims[0] * self.dims[1]

@@ -46,7 +46,7 @@ class PlayingFieldScreen(BasicView):
         self.camera = self.camera = Camera(camera_speed=.5)
 
 
-        map = DrawableMap()
+        map = DrawableMap((50, 50, 3))
         create_playing_field(map, self.window, assets=self.asset_storage)
 
         self.map = FieldMap(settings)
