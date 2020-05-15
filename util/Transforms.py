@@ -22,6 +22,6 @@ class Transformations:
         # parameter for tilesize!
         b = h = 64
 
-        xTrans = int((1 / b * x + 2 / b * y - offsetX) // 1 - 24)
-        yTrans = int((-1 / h * x + 2 / h * y - offsetY) // 1 + 7)
+        xTrans = int((1 / b * x + 2 / b * y + offsetX) // 1 - 24)
+        yTrans = int((-1 / h * x + 2 / h * y + offsetY) // 1 + 7)
         return xTrans, yTrans

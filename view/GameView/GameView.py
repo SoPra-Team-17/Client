@@ -4,7 +4,7 @@ Implements interface to Gameview between controller and view
 import pygame
 
 from view.BasicView import BasicView
-from view.GameView.GameViewController import GameViewController
+from view.GameView.PlayingFieldScreen import PlayingFieldScreen
 from view.GameView.HUDView import HUDView
 from view.GameView.ItemChoiceScreen import ItemChoiceScreen
 from view.GameView.EquipmentScreen import EquipmentScreen
@@ -22,7 +22,7 @@ class GameView(BasicView):
     def __init__(self, window: pygame.display, controller: ControllerGameView, settings: ViewSettings) -> None:
         super().__init__(window, controller, settings)
 
-        self.game_view_controller = GameViewController(self, settings)
+        self.game_view_controller = PlayingFieldScreen(self.window, self.controller, self, self.settings)
         self.hud_view = HUDView(self.window, self.controller, self.settings)
         self.item_choice_screen = ItemChoiceScreen(self.window, self.controller, self, self.settings)
         self.equipment_screen = EquipmentScreen(self.window, self.controller, self, self.settings)

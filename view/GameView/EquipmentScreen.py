@@ -98,7 +98,7 @@ class EquipmentScreen(BasicView):
             self.controller.to_main_menu()
 
     def continue_pressed(self):
-        if len(self.gadgets) != 0:
+        if len(self.gadgets) != 0 and not self.__debug:
             logging.info("Not all gadgets owned by a character")
             return
 

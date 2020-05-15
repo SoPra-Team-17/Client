@@ -9,6 +9,7 @@ from view.GameView.AssetStorage import AssetStorage
 from view.ViewSettings import ViewSettings
 from util.Transforms import Transformations
 from util.Coordinates import WorldPoint
+from util.Datastructures import DrawableMap
 
 __author__ = "Marco Deuscher"
 __date__ = "25.04.2020 (date of doc. creation)"
@@ -29,42 +30,75 @@ class Drawable(ABC):
     def hovering(self, focus: bool = False) -> None:
         pass
 
+    @abstractmethod
+    def selected(self, selected: bool = False) -> None:
+        pass
+
     def __nearness__(self) -> int:
         return self.point.x + self.point.y + self.point.z
 
 
-class DrawableGroup:
-
+class FieldMap:
     def __init__(self, settings: ViewSettings) -> None:
-        self.list = []
+        self.map = DrawableMap()
         self.settings = settings
 
-    def add(self, drawable: Drawable) -> None:
-        self.list.append(drawable)
+        self.__hovered_coords = WorldPoint()
+        self.__selected_coords = WorldPoint()
 
-    def translation(self, offSet: Tuple[float, float]) -> None:
-        for drawable in self.list:
-            drawable.point.x += offSet[0]
-            drawable.point.y += offSet[1]
+    def translation(self, offset: Tuple[float, float]) -> None:
+        for drawable in self.map.list:
+            if drawable is not None:
+                drawable.point.x += offset[0]
+                drawable.point.y += offset[1]
 
     def sort(self) -> None:
-        self.list.sort(key=lambda drawable: drawable.nearness)
+        """
+        todo ich glaube mit der neuen Datenstruktur ist das sortieren nicht mehr notwendig!
+        :return:
+        """
+        self.map.list.sort(key=lambda drawable: drawable.nearness if drawable is not None else 9999999)
 
     def draw(self, window: pygame.display, camOffset: Tuple[float, float]) -> None:
-        self.sort()
-        for drawable in self.list:
-            drawable.draw(window, camOffset, self.settings)
+        # self.sort() --> siehe sort comment
+        for drawable in self.map.list:
+            if drawable is not None:
+                drawable.draw(window, camOffset, self.settings)
 
     def highlight_drawable_in_focus(self, camOffset: Tuple[float, float]) -> None:
         pos = pygame.mouse.get_pos()
         # transform mouse pos to world coords
-        xt, yt = Transformations.trafo_window_to_world_coords(pos[0], pos[1], -camOffset[0], -camOffset[1])
-        # todo create map to access in O(1) instead of O(n)
-        for drawable in self.list:
-            if drawable.point.x == xt and drawable.point.y == yt and drawable.point.z == 0:
-                drawable.hovering(focus=True)
-            else:
-                drawable.hovering(focus=False)
+        xt, yt = Transformations.trafo_window_to_world_coords(pos[0], pos[1], camOffset[0], camOffset[1])
+
+        # todo hardcoded check if inside field!
+        if xt < 0 or xt >= 50 or yt < 0 or yt >= 50:
+            return
+
+        if self.__selected_coords != self.__hovered_coords:
+            self.map[self.__hovered_coords].hovering(False)
+
+        self.__hovered_coords = WorldPoint(xt, yt, 0)
+
+        if self.__selected_coords != self.__hovered_coords:
+            self.map[self.__hovered_coords].hovering(True)
+
+    def select_block(self, camOffset: Tuple[float, float]) -> None:
+        self.map[self.__selected_coords].selected(False)
+
+        pos = pygame.mouse.get_pos()
+        # transform mouse pos to world coords
+        xt, yt = Transformations.trafo_window_to_world_coords(pos[0], pos[1], camOffset[0], camOffset[1])
+
+        # todo hardcoded check if inside field!
+        if xt < 0 or xt >= 50 or yt < 0 or yt >= 50:
+            return
+        selected = WorldPoint(xt, yt, 0)
+        if selected != self.__selected_coords:
+            self.__selected_coords = WorldPoint(xt, yt, 0)
+            self.map[self.__selected_coords].selected(True)
+        else:
+            self.map[self.__selected_coords].selected(False)
+            self.__selected_coords = WorldPoint()
 
 
 class Block(Drawable):
@@ -75,6 +109,7 @@ class Block(Drawable):
 
         self.block = self.asset_storage.block_assets.block_image
         self.hovered_image = self.asset_storage.block_assets.hovered_image
+        self.selected_image = self.asset_storage.block_assets.selected_image
 
         self.current_image = self.block
 
@@ -106,5 +141,11 @@ class Block(Drawable):
     def hovering(self, focus: bool = False) -> None:
         if focus:
             self.current_image = self.hovered_image
+        else:
+            self.current_image = self.block
+
+    def selected(self, selected: bool = False) -> None:
+        if selected:
+            self.current_image = self.selected_image
         else:
             self.current_image = self.block

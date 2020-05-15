@@ -18,14 +18,6 @@ class DrawableAssets(ABC):
     :todo animationen können auch hier gemacht werden
     """
 
-    @abstractmethod
-    def get_standard_image(self):
-        pass
-
-    @abstractmethod
-    def get_hovered_image(self):
-        pass
-
 
 class BlockAssets(DrawableAssets):
     def __init__(self):
@@ -36,11 +28,9 @@ class BlockAssets(DrawableAssets):
         self.hovered_image.fill((0, 0, 0, 255), None, pygame.BLEND_RGBA_MULT)
         self.hovered_image.fill((0, 255, 0, 0), None, pygame.BLEND_RGBA_ADD)
 
-    def get_standard_image(self):
-        return self.block_image
-
-    def get_hovered_image(self):
-        return self.hovered_image
+        self.selected_image = self.block_image.copy()
+        self.selected_image.fill((0, 0, 0, 255), None, pygame.BLEND_RGBA_MULT)
+        self.selected_image.fill((255, 255, 0, 0), None, pygame.BLEND_RGBA_ADD)
 
 
 class AssetStorage():
