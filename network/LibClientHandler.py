@@ -8,6 +8,7 @@ cppyy.add_include_path("/usr/local/include/SopraNetwork")
 
 cppyy.include("LibClient.hpp")
 cppyy.include("util/UUID.hpp")
+cppyy.include("datatypes/gameplay/BaseOperation.hpp")
 
 
 class LibClientHandler:
@@ -20,11 +21,11 @@ class LibClientHandler:
         self.callback = Callback()
         self.make_shared_callback = cppyy.py_make_shared(Callback)
         self.make_shared_model = cppyy.py_make_shared(cppyy.gbl.libclient.Model)
-        model = cppyy.gbl.libclient.Model()
-        network = cppyy.gbl.libclient.Network(self.make_shared_callback(self.callback), self.make_shared_model(model))
-        self.lib_client = cppyy.gbl.libclient.LibClient(self.make_shared_callback(self.callback))
+        #model = cppyy.gbl.libclient.Model()
+        #network = cppyy.gbl.libclient.Network(self.make_shared_callback(self.callback), self.make_shared_model(model))
+        #self.lib_client = cppyy.gbl.libclient.LibClient(self.make_shared_callback(self.callback))
 
-        del network, model
+        #del network, model
 
     def connect(self, servername: str, port: int) -> bool:
         if isinstance(servername, str) and isinstance(port, int):
@@ -59,8 +60,8 @@ class LibClientHandler:
         else:
             raise TypeError("Invalid equipment map")
 
-    def sendGameOperation(self, operation: cppyy.gbl.spy.gameplay.Operation) -> bool:
-        if isinstance(operation, cppyy.gbl.spy.gameplay.Operation):
+    def sendGameOperation(self, operation: cppyy.gbl.spy.gameplay.BaseOperation) -> bool:
+        if isinstance(operation, cppyy.gbl.spy.gameplay.BaseOperation):
             return self.lib_client.network.sendGameOperation(operation)
         else:
             raise TypeError("Invalid operation type")
