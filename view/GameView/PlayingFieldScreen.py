@@ -12,6 +12,7 @@ from view.ViewSettings import ViewSettings
 from util.Transforms import Transformations
 from util.Coordinates import WorldPoint
 from util.Datastructures import DrawableMap
+from network.NetworkEvent import NETWORK_EVENT, NETWORK_EVENT_MESSAGE_TYPES
 
 __author__ = "Marco Deuscher"
 __date__ = "25.04.2020 (date of doc. creation)"
@@ -26,11 +27,11 @@ def create_playing_field(map, assets: AssetStorage) -> None:
     :return:
     """
 
-    map[WorldPoint(0, 0, 1)] = Block(WorldPoint(0, 0, 1), assets)
-    map[WorldPoint(0, 0, 2)] = Block(WorldPoint(0, 0, 2), assets)
+    map[WorldPoint(0, 0, 1)] = Wall(WorldPoint(0, 0, 1), assets)
+    map[WorldPoint(0, 0, 2)] = Wall(WorldPoint(0, 0, 2), assets)
 
-    map[WorldPoint(3, 2, 1)] = Block(WorldPoint(3, 2, 1), assets)
-    map[WorldPoint(3, 2, 2)] = Block(WorldPoint(3, 2, 2), assets)
+    map[WorldPoint(3, 2, 1)] = Wall(WorldPoint(3, 2, 1), assets)
+    map[WorldPoint(3, 2, 2)] = Wall(WorldPoint(3, 2, 2), assets)
 
     map[WorldPoint(4, 4, 1)] = Fireplace(WorldPoint(4, 4, 1), assets)
 
@@ -42,9 +43,23 @@ def create_playing_field(map, assets: AssetStorage) -> None:
 
     map[WorldPoint(6, 0, 1)] = Gadget(WorldPoint(6, 0, 1), assets)
 
+    map[WorldPoint(6, 6, 1)] = BarTable(WorldPoint(6, 6, 1), assets)
+
+    map[WorldPoint(7, 2, 1)] = Safe(WorldPoint(7, 2, 1), assets)
+
     for i in range(0, 50, 1):
         for j in range(0, 50, 1):
-            map[WorldPoint(i, j, 0)] = Block(WorldPoint(i, j, 0), assets)
+            map[WorldPoint(i, j, 0)] = Floor(WorldPoint(i, j, 0), assets)
+
+    for x in range(50):
+        map[WorldPoint(x, -1, 1)] = Wall(WorldPoint(x, -1, 0), assets)
+        map[WorldPoint(x, -1, 1)] = Wall(WorldPoint(x, -1, 1), assets)
+        map[WorldPoint(x, -1, 2)] = Wall(WorldPoint(x, -1, 2), assets)
+
+    for y in range(50):
+        map[WorldPoint(-1, y, 0)] = Wall(WorldPoint(-1, y, 0), assets)
+        map[WorldPoint(-1, y, 1)] = Wall(WorldPoint(-1, y, 1), assets)
+        map[WorldPoint(-1, y, 2)] = Wall(WorldPoint(-1, y, 2), assets)
 
 
 class PlayingFieldScreen(BasicView):
@@ -88,3 +103,66 @@ class PlayingFieldScreen(BasicView):
             print(f"PosX: {xTrans}\tPosY: {yTrans}")
 
             self.map.select_block(self.camera.getTrans())
+
+        if event.type == pygame.USEREVENT and event.user_type == NETWORK_EVENT:
+            if event.message_type == "GameStatus":
+                self.update_playingfield()
+
+    def update_playingfield(self) -> None:
+        """
+        This method is called when a updated playing field is received over the network (Game Status message)
+        :return:    None
+        """
+        import cppyy
+        state = self.controller.lib_client_handler.lib_client.getState()
+        field_map = state.getMap()
+
+        n_rows = field_map.getNumberOfRows()
+        n_cols = field_map.getRowLength()
+
+        # wall around field
+        for x in range(n_rows):
+            self.map.map[WorldPoint(x, -1, 1)] = Wall(WorldPoint(x, -1, 0), self.asset_storage)
+            self.map.map[WorldPoint(x, -1, 1)] = Wall(WorldPoint(x, -1, 1), self.asset_storage)
+            self.map.map[WorldPoint(x, -1, 2)] = Wall(WorldPoint(x, -1, 2), self.asset_storage)
+
+        for y in range(n_cols):
+            self.map.map[WorldPoint(-1, y, 0)] = Wall(WorldPoint(-1, y, 0), self.asset_storage)
+            self.map.map[WorldPoint(-1, y, 1)] = Wall(WorldPoint(-1, y, 1), self.asset_storage)
+            self.map.map[WorldPoint(-1, y, 2)] = Wall(WorldPoint(-1, y, 2), self.asset_storage)
+
+        # todo check if coords are right
+        for x in range(n_rows):
+            for y in range(n_cols):
+                # add floor --> I don't think this has to be done on each update! todo
+                self.map.map[WorldPoint(x, y, z=0)] = Floor(WorldPoint(x, y, z=0), self.asset_storage)
+
+                field = field_map.getField(x, y)
+
+                state = field.getFieldState()
+                switcher = {
+                    cppyy.gbl.spy.scenario.FieldStateEnum.BAR_TABLE: BarTable,
+                    cppyy.gbl.spy.scenario.FieldStateEnum.ROULETTE_TABLE: RouletteTable,
+                    cppyy.gbl.spy.scenario.FieldStateEnum.WALL: Wall,
+                    cppyy.gbl.spy.scenario.FieldStateEnum.FREE: None,
+                    cppyy.gbl.spy.scenario.FieldStateEnum.BAR_SEAT: BarSeat,
+                    cppyy.gbl.spy.scenario.FieldStateEnum.SAFE: Safe,
+                    cppyy.gbl.spy.scenario.FieldStateEnum.FIREPLACE: Fireplace
+                }
+                try:
+                    self.map.map[WorldPoint(x, y, z=1)] = switcher.get(state)(WorldPoint(x, y, z=1), self.asset_storage)
+                except TypeError:
+                    logging.error("Unable to find correct element in dict")
+
+                # check if field has gadget
+                if field.getGadget().has_value():
+                    self.map.map[WorldPoint(x, y, z=1)] = Gadget(WorldPoint(x, y, z=1), self.asset_storage)
+
+        # add characters
+        for char in state.getCharacters():
+            if not char.getCoordinates().has_value():
+                continue
+            point = char.getCoordinates().value()
+
+            self.map.map[WorldPoint(point.x, point.y, z=1)] = Character(WorldPoint(point.x, point.y, z=1),
+                                                                        self.asset_storage)
