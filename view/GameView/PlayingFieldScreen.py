@@ -150,7 +150,9 @@ class PlayingFieldScreen(BasicView):
                     cppyy.gbl.spy.scenario.FieldStateEnum.FIREPLACE: Fireplace
                 }
                 try:
-                    self.map.map[WorldPoint(x, y, z=1)] = switcher.get(state)(WorldPoint(x, y, z=1), self.asset_storage)
+                    if state is not None:
+                        self.map.map[WorldPoint(x, y, z=1)] = switcher.get(state)(WorldPoint(x, y, z=1),
+                                                                                  self.asset_storage)
                 except TypeError:
                     logging.error("Unable to find correct element in dict")
 
