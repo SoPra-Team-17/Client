@@ -17,14 +17,27 @@ __date__ = "25.04.2020 (date of doc. creation)"
 
 class Drawable(ABC):
 
-    def __init__(self, pos: WorldPoint = None, asset_storage: AssetStorage = None):
-        self.nearness = 0
+    def __init__(self, pos: WorldPoint = None, asset_storage: AssetStorage = None, size: Tuple[int, int] = (64, 64)):
+        self.current_image = None
         self.asset_storage = asset_storage
         self.point = WorldPoint() if pos is None else pos
+        self.__TILEHEIGHT, self.__TILEWIDTH = size
 
-    @abstractmethod
     def draw(self, window: pygame.display, camOffset: Tuple[float, float], settings: ViewSettings) -> None:
-        pass
+        """
+        Draw individual Block
+        :note see that camera offset is now used in drawing function to keep field coords consistent
+        :param settings:        settings object, containing window size, fps, etc.
+        :param window:          pygame display in which the block is drawn
+        :param camOffset:       camera perspective
+        :return:                None
+        """
+        v_x, v_y = Transformations.trafo_draw_to_screen((self.point.x, self.point.y, self.point.z), camOffset,
+                                                        (self.__TILEHEIGHT, self.__TILEWIDTH), window)
+
+        # only draw block, when still inside visible window! accout for block size so block is not clipped on the edge
+        if -64 <= v_x <= settings.window_width + 64 and -64 <= v_y <= settings.window_height:
+            window.blit(self.current_image, (v_x, v_y))
 
     @abstractmethod
     def hovering(self, focus: bool = False) -> None:
@@ -100,11 +113,10 @@ class FieldMap:
             # todo point (0,0,0) will not work properly
             self.__selected_coords = WorldPoint()
 
-class Block(Drawable):
-    def __init__(self, window: pygame.display, pos: WorldPoint, assets: AssetStorage) -> None:
-        super(Block, self).__init__(pos, assets)
 
-        self.window = window
+class Block(Drawable):
+    def __init__(self, pos: WorldPoint, assets: AssetStorage) -> None:
+        super(Block, self).__init__(pos, assets, (64, 64))
 
         self.block = self.asset_storage.block_assets.block_image
         self.hovered_image = self.asset_storage.block_assets.hovered_image
@@ -112,39 +124,79 @@ class Block(Drawable):
 
         self.current_image = self.block
 
-        self.__TILEWIDTH = 64
-        self.__TILEHEIGHT = 64
-
-    def draw(self, window: pygame.display, camOffset: Tuple[float, float], settings: ViewSettings) -> None:
-        """
-        Draw individual Block
-        :note see that camera offset is now used in drawing function to keep field coords consistent
-        :param settings:        settings object, containing window size, fps, etc.
-        :param window:          pygame display in which the block is drawn
-        :param camOffset:       camera perspective
-        :return:                None
-        """
-        self.nearness = self.__nearness__()
-        m_x = window.get_rect().centerx
-        m_y = window.get_rect().centery
-        v_x = (self.point.x - camOffset[0]) * self.__TILEWIDTH / 2 - (
-                self.point.y - camOffset[1]) * self.__TILEHEIGHT / 2 + m_x
-        v_y = (self.point.x - camOffset[0]) * self.__TILEWIDTH / 4 + (
-                self.point.y - camOffset[
-            1]) * self.__TILEHEIGHT / 4 - self.point.z * self.__TILEHEIGHT / 2 + m_y / 2
-
-        # only draw block, when still inside visible window! accout for block size so block is not clipped on the edge
-        if -64 <= v_x <= settings.window_width + 64 and -64 <= v_y <= settings.window_height:
-            self.window.blit(self.current_image, (v_x, v_y))
-
     def hovering(self, focus: bool = False) -> None:
-        if focus:
-            self.current_image = self.hovered_image
-        else:
-            self.current_image = self.block
+        self.current_image = self.hovered_image if focus else self.block
 
     def selected(self, selected: bool = False) -> None:
-        if selected:
-            self.current_image = self.selected_image
-        else:
-            self.current_image = self.block
+        self.current_image = self.selected_image if selected else self.block
+
+class Fireplace(Drawable):
+
+    def __init__(self, pos: WorldPoint, assets: AssetStorage) -> None:
+        super(Fireplace, self).__init__(pos, assets, (64, 64))
+
+        self.block = assets.fireplace_assets.block_image
+        self.current_image = self.block
+
+    def hovering(self, focus: bool = False) -> None:
+        pass
+
+    def selected(self, selected: bool = False) -> None:
+        pass
+
+
+class RouletteTable(Drawable):
+    def __init__(self, pos: WorldPoint, assets: AssetStorage) -> None:
+        super(RouletteTable, self).__init__(pos, assets, (64, 64))
+
+        self.block = assets.roulettetable_assets.block_image
+        self.current_image = self.block
+
+    def hovering(self, focus: bool = False) -> None:
+        pass
+
+    def selected(self, selected: bool = False) -> None:
+        pass
+
+
+class BarSeat(Drawable):
+    def __init__(self, pos: WorldPoint, assets: AssetStorage) -> None:
+        super(BarSeat, self).__init__(pos, assets, (64, 64))
+
+        self.block = self.asset_storage.barseat_assets.block_image
+
+        self.current_image = self.block
+
+    def hovering(self, focus: bool = False) -> None:
+        pass
+
+    def selected(self, selected: bool = False) -> None:
+        pass
+
+
+class Character(Drawable):
+    def __init__(self, pos: WorldPoint, assets: AssetStorage) -> None:
+        super(Character, self).__init__(pos, assets, (64, 64))
+
+        self.block = self.asset_storage.character_assets.block_image
+        self.current_image = self.block
+
+    def hovering(self, focus: bool = False) -> None:
+        pass
+
+    def selected(self, selected: bool = False) -> None:
+        pass
+
+
+class Gadget(Drawable):
+    def __init__(self, pos: WorldPoint, assets: AssetStorage) -> None:
+        super(Gadget, self).__init__(pos, assets, (64, 64))
+
+        self.block = self.asset_storage.gadget_assets.block_image
+        self.current_image = self.block
+
+    def hovering(self, focus: bool = False) -> None:
+        pass
+
+    def selected(self, selected: bool = False) -> None:
+        pass

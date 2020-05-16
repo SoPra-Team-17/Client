@@ -5,7 +5,7 @@ import logging
 import pygame
 
 from view.BasicView import BasicView
-from view.GameView.Drawable import Block, FieldMap
+from view.GameView.Drawable import *
 from view.GameView.Camera import Camera
 from view.GameView.AssetStorage import AssetStorage
 from view.ViewSettings import ViewSettings
@@ -17,7 +17,7 @@ __author__ = "Marco Deuscher"
 __date__ = "25.04.2020 (date of doc. creation)"
 
 
-def create_playing_field(map, window: pygame.display, assets: AssetStorage) -> None:
+def create_playing_field(map, assets: AssetStorage) -> None:
     """
     Methode used for testing, generates basic field to test transformations and so on
     :todo can be deleted as soon as scenario files can be read in
@@ -26,10 +26,25 @@ def create_playing_field(map, window: pygame.display, assets: AssetStorage) -> N
     :return:
     """
 
+    map[WorldPoint(0, 0, 1)] = Block(WorldPoint(0, 0, 1), assets)
+    map[WorldPoint(0, 0, 2)] = Block(WorldPoint(0, 0, 2), assets)
+
+    map[WorldPoint(3, 2, 1)] = Block(WorldPoint(3, 2, 1), assets)
+    map[WorldPoint(3, 2, 2)] = Block(WorldPoint(3, 2, 2), assets)
+
+    map[WorldPoint(4, 4, 1)] = Fireplace(WorldPoint(4, 4, 1), assets)
+
+    map[WorldPoint(2, 4, 1)] = RouletteTable(WorldPoint(2, 4, 1), assets)
+
+    map[WorldPoint(0, 4, 1)] = BarSeat(WorldPoint(0, 4, 1), assets)
+
+    map[WorldPoint(4, 0, 1)] = Character(WorldPoint(4, 0, 1), assets)
+
+    map[WorldPoint(6, 0, 1)] = Gadget(WorldPoint(6, 0, 1), assets)
+
     for i in range(0, 50, 1):
         for j in range(0, 50, 1):
-            # group.add(Block(window, WorldPoint(i, j, 0), assets))
-            map[WorldPoint(i, j, 0)] = Block(window, WorldPoint(i, j, 0), assets)
+            map[WorldPoint(i, j, 0)] = Block(WorldPoint(i, j, 0), assets)
 
 
 class PlayingFieldScreen(BasicView):
@@ -45,15 +60,18 @@ class PlayingFieldScreen(BasicView):
         self.asset_storage = AssetStorage()
         self.camera = self.camera = Camera(camera_speed=.5)
 
-
         map = DrawableMap((50, 50, 3))
-        create_playing_field(map, self.window, assets=self.asset_storage)
+        create_playing_field(map, assets=self.asset_storage)
+
+        self.background_image = pygame.image.load("assets/GameView/background.png")
+        self.background_image = pygame.transform.scale(self.background_image, (1920, 1080))
 
         self.map = FieldMap(settings)
         self.map.map = map
 
     def draw(self):
         self.camera.move_camera(pygame.key.get_pressed())
+        self.window.blit(self.background_image, (0, 0))
         self.map.highlight_drawable_in_focus(self.camera.getTrans())
         self.map.draw(self.window, self.camera.getTrans())
 
@@ -70,4 +88,3 @@ class PlayingFieldScreen(BasicView):
             print(f"PosX: {xTrans}\tPosY: {yTrans}")
 
             self.map.select_block(self.camera.getTrans())
-

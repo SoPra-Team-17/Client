@@ -21,7 +21,7 @@ class DrawableAssets(ABC):
 
 class BlockAssets(DrawableAssets):
     def __init__(self):
-        self.block_image = pygame.image.load("assets/GameView/block.png").convert_alpha()
+        self.block_image = pygame.image.load("assets/PolyPixel2D/assets_1024x1024/isometric_0057.png").convert_alpha()
         self.block_image = pygame.transform.scale(self.block_image, (64, 64))
 
         self.hovered_image = self.block_image.copy()
@@ -33,7 +33,42 @@ class BlockAssets(DrawableAssets):
         self.selected_image.fill((255, 255, 0, 0), None, pygame.BLEND_RGBA_ADD)
 
 
+class FireplaceAsset(DrawableAssets):
+    def __init__(self):
+        self.block_image = pygame.image.load("assets/GameView/Lamp.png").convert_alpha()
+        self.block_image = pygame.transform.scale(self.block_image, (64, 64))
+
+
+class RouletteTableAsset(DrawableAssets):
+    def __init__(self):
+        self.block_image = pygame.image.load("assets/PolyPixel2D/assets_1024x1024/isometric_0037.png").convert_alpha()
+        self.block_image = pygame.transform.scale(self.block_image, (64, 64))
+
+
+class BarSeatAsset(DrawableAssets):
+    def __init__(self):
+        self.block_image = pygame.image.load("assets/GameView/Chair1.png").convert_alpha()
+        self.block_image = pygame.transform.scale(self.block_image, (64, 64))
+
+
+class CharacterAsset(DrawableAssets):
+    def __init__(self):
+        self.block_image = pygame.image.load("assets/GameView/test.png").convert_alpha()
+        self.block_image = pygame.transform.scale(self.block_image, (64, 128))
+
+
+class GadgetAsset(DrawableAssets):
+    def __init__(self):
+        self.block_image = self.block_image = pygame.image.load("assets/PolyPixel2D/assets_1024x1024/isometric_0048.png").convert_alpha()
+        self.block_image = pygame.transform.scale(self.block_image, (64, 64))
+
+
 class AssetStorage():
 
     def __init__(self):
         self.block_assets = BlockAssets()
+        self.fireplace_assets = FireplaceAsset()
+        self.roulettetable_assets = RouletteTableAsset()
+        self.barseat_assets = BarSeatAsset()
+        self.character_assets = CharacterAsset()
+        self.gadget_assets = GadgetAsset()
