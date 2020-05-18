@@ -59,9 +59,9 @@ class Controller(ControllerGameView, ControllerMainMenu, ControllerLobby):
         initializes all other components
         Calls init of view
         """
+
         # initialize components (model,view,self)
         logging.info("Controller init done")
-        print("123")
 
     def loop(self) -> None:
         """

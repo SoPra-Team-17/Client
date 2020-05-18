@@ -21,11 +21,7 @@ class LibClientHandler:
         self.callback = Callback()
         self.make_shared_callback = cppyy.py_make_shared(Callback)
         self.make_shared_model = cppyy.py_make_shared(cppyy.gbl.libclient.Model)
-        #model = cppyy.gbl.libclient.Model()
-        #network = cppyy.gbl.libclient.Network(self.make_shared_callback(self.callback), self.make_shared_model(model))
         self.lib_client = cppyy.gbl.libclient.LibClient(self.make_shared_callback(self.callback))
-
-        #del network, model
 
     def connect(self, servername: str, port: int) -> bool:
         if isinstance(servername, str) and isinstance(port, int):
@@ -48,14 +44,18 @@ class LibClientHandler:
         return self.lib_client.network.sendReconnect()
 
     def sendItemChoice(self, choice: (cppyy.gbl.spy.util.UUID, cppyy.gbl.spy.gadget.GadgetEnum)) -> bool:
-        if isinstance(choice, (cppyy.gbl.spy.util.UUID, int)):
+        if isinstance(choice, int):
+            # convert to gadget type!
+            return self.lib_client.network.sendItemChoice(cppyy.gbl.spy.gadget.GadgetEnum(choice))
+        elif isinstance(choice, (cppyy.gbl.spy.util.UUID)):
             return self.lib_client.network.sendItemChoice(choice)
         else:
             raise TypeError("Invalid Choice type")
 
     def sendEquipmentChoice(self, equipMap: dict) -> bool:
         # todo test if this works!
-        if isinstance(equipMap, dict) and isinstance(equipMap.keys()[0], int) and isinstance(equipMap.values()[0], cppyy.gbl.spy.util.UUID):
+        if isinstance(equipMap, dict) and isinstance(equipMap.keys()[0], int) and isinstance(equipMap.values()[0],
+                                                                                             cppyy.gbl.spy.util.UUID):
             return self.lib_client.network.sendEquipmentChoice(equipMap)
         else:
             raise TypeError("Invalid equipment map")

@@ -10,9 +10,11 @@ from view.ViewSettings import ViewSettings
 from view.GameView.Visuals.ItemChoice.VisualGadget import GADGET_NAME_LIST, GADGET_PATH_LIST
 from view.GameView.Visuals.ItemChoice.VisualCharacter import CHAR_PATH_LIST
 from controller.ControllerView import ControllerGameView
+from network.NetworkEvent import NETWORK_EVENT
 
 __author__ = "Marco Deuscher"
 __date__ = "08.05.2020 (doc creation)"
+
 
 class ItemChoiceScreen(BasicView):
 
@@ -87,6 +89,11 @@ class ItemChoiceScreen(BasicView):
             except TypeError:
                 self.selected_item(event.ui_element)
 
+        if event.type == pygame.USEREVENT and event.user_type == NETWORK_EVENT:
+            if event.message_type == "RequestItemChoice":
+                logging.info("Update selection based on new Item Choices")
+                self.update_selection()
+
         if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
             self.controller.to_main_menu()
 
@@ -135,7 +142,7 @@ class ItemChoiceScreen(BasicView):
             self.gadget_img_list[idx].hovered_image = self.font.render(GADGET_NAME_LIST[idx], True, (255, 255, 255))
             self.gadget_img_list[idx].rebuild()
 
-            self.gadget_name_list[idx].text = GADGET_NAME_LIST[gad]
+            self.gadget_name_list[idx].set_text(GADGET_NAME_LIST[gad])
             self.gadget_name_list[idx].rebuild()
 
             # todo: img and text has to be set for characters!
@@ -146,7 +153,7 @@ class ItemChoiceScreen(BasicView):
                     gender = char.getGender()
                     feature_list = char.getFeatures()
 
-                    self.char_name_list[idx] = name
+                    self.char_name_list[idx].set_text(name)
                     self.char_name_list[idx].rebuild()
 
                     self.char_img_list[idx].normal_image = pygame.image.load(CHAR_PATH_LIST[0])
@@ -156,75 +163,65 @@ class ItemChoiceScreen(BasicView):
                     self.char_img_list[idx].rebuild()
 
     def _create_selection_buttons(self, gadget_len, char_len) -> None:
-        self.char_img_list, self.gadget_img_list = [], []
-        self.char_name_list, self.gadget_name_list = [], []
+        for img, name in zip(self.char_img_list, self.char_name_list):
+            img.kill()
+            name.kill()
+
+        for img, name in zip(self.gadget_img_list, self.gadget_name_list):
+            img.kill()
+            name.kill()
+
+        self.char_name_list.clear()
+        self.char_img_list.clear()
+        self.gadget_name_list.clear()
+        self.gadget_img_list.clear()
+
 
         for i in range(char_len):
-            self.char_img_list.append(
-                pygame_gui.elements.UIButton(
-                    relative_rect=pygame.Rect((self.__img_pad * len(self.char_img_container.elements), 0),
-                                              self.__img_size),
-                    text="",
-                    manager=self.manager,
-                    container=self.char_img_container,
-                    object_id=f"#char_img0{i}"
-                )
-            )
-            self.char_name_list.append(
-                pygame_gui.elements.UILabel(
-                    relative_rect=pygame.Rect(
-                        (self.__img_pad * len(self.char_name_container.elements), self.__img_size[0]),
-                        self.__img_size),
-                    text=f"TestChar{i}",
-                    manager=self.manager,
-                    container=self.char_name_container,
-                    object_id=f"#name_label0{i}"
-                )
-            )
+            self.char_img_list.append(pygame_gui.elements.UIButton(
+                relative_rect=pygame.Rect((self.__img_pad * len(self.char_img_list), 0),
+                                          self.__img_size),
+                text="",
+                manager=self.manager,
+                container=self.char_img_container,
+                object_id=f"#char_img0{i}"
+            ))
 
-        for i in range(gadget_len):
-            self.gadget_img_list.append(
-                pygame_gui.elements.UIButton(
-                    relative_rect=pygame.Rect((self.__img_pad * len(self.gadget_img_container.elements), 0),
+            self.char_name_list.append(pygame_gui.elements.UILabel(
+                relative_rect=pygame.Rect(
+                    (self.__img_pad * len(self.char_name_list), self.__img_size[0]),
+                    self.__img_size),
+                text=f"TestChar{i}",
+                manager=self.manager,
+                container=self.char_name_container,
+                object_id=f"#name_label0{i}"
+            ))
+
+            for i in range(gadget_len):
+                self.gadget_img_list.append(pygame_gui.elements.UIButton(
+                    relative_rect=pygame.Rect((self.__img_pad * len(self.gadget_img_list), 0),
                                               self.__img_size),
                     text="",
                     manager=self.manager,
                     container=self.gadget_img_container,
                     object_id=f"#gadget_img0{i}"
-                )
-            )
-            self.gadget_name_list.append(
-                pygame_gui.elements.UILabel(
+                ))
+                self.gadget_name_list.append(pygame_gui.elements.UILabel(
                     relative_rect=pygame.Rect(
-                        (self.__img_pad * len(self.gadget_name_container.elements), self.__img_size[0]),
+                        (self.__img_pad * len(self.gadget_name_list), self.__img_size[0]),
                         self.__img_size),
-                    text=f"TestGadget{i}",
+                    text=f"",
                     manager=self.manager,
                     container=self.gadget_name_container,
                     object_id=f"#name_label0{i}"
-                )
-            )
-
-        text = self.font.render("Text23", True, (255, 255, 255))
-
-        # todo can later be removed! just for testing
-        test_char = pygame.image.load("assets/GameView/trash.png").convert_alpha()
-        test_gadget = pygame.image.load("assets/GameView/axe.png").convert_alpha()
-        for char in self.char_img_list:
-            char.normal_image = test_char
-            char.hovered_image = text
-            char.rebuild()
-
-        for gadget in self.gadget_img_list:
-            gadget.normal_image = test_gadget
-            gadget.hovered_image = text
-            gadget.rebuild()
+                ))
 
 
     def _init_ui_elements(self) -> None:
-        self.gadget_img_list, self.char_img_list = [], []
-        self.gadget_name_list, self.char_name_list = [], []
-        self._create_selection_buttons(3, 2)
+        self.gadget_img_list = []
+        self.gadget_name_list = []
+        self.char_img_list = []
+        self.char_name_list = []
 
         self.start_game_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect((0, self.__padding * len(self.bottom_container.elements)), self.__button_size),
