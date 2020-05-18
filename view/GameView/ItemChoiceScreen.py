@@ -93,6 +93,9 @@ class ItemChoiceScreen(BasicView):
             if event.message_type == "RequestItemChoice":
                 logging.info("Update selection based on new Item Choices")
                 self.update_selection()
+            elif event.message_type == "RequestEquipmentChoice":
+                logging.info("Entering equipment choice phase")
+                self.parent_view.to_equipment()
 
         if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
             self.controller.to_main_menu()
@@ -134,10 +137,13 @@ class ItemChoiceScreen(BasicView):
         offeredCharacters = self.controller.lib_client_handler.lib_client.getOfferedCharacters()
         offeredGadgets = self.controller.lib_client_handler.lib_client.getOfferedGadgets()
 
+        print(f"Len offeredgadgets {len(offeredGadgets)}")
+        print(f"Len offered chars {len(offeredCharacters)}")
+
         self._create_selection_buttons(len(offeredGadgets), len(offeredCharacters))
 
         # todo might have different lens
-        for idx, (gad, char_id) in enumerate(zip(offeredGadgets, offeredCharacters)):
+        for idx, gad in enumerate(offeredGadgets):
             self.gadget_img_list[idx].normal_image = pygame.image.load(GADGET_PATH_LIST[gad])
             self.gadget_img_list[idx].hovered_image = self.font.render(GADGET_NAME_LIST[idx], True, (255, 255, 255))
             self.gadget_img_list[idx].rebuild()
@@ -145,6 +151,7 @@ class ItemChoiceScreen(BasicView):
             self.gadget_name_list[idx].set_text(GADGET_NAME_LIST[gad])
             self.gadget_name_list[idx].rebuild()
 
+        for idx, char_id in enumerate(offeredCharacters):
             # todo: img and text has to be set for characters!
             for char in self.controller.lib_client_handler.lib_client.getCharacterSettings():
                 if char_id == char.getCharacterId():
@@ -176,7 +183,6 @@ class ItemChoiceScreen(BasicView):
         self.gadget_name_list.clear()
         self.gadget_img_list.clear()
 
-
         for i in range(char_len):
             self.char_img_list.append(pygame_gui.elements.UIButton(
                 relative_rect=pygame.Rect((self.__img_pad * len(self.char_img_list), 0),
@@ -197,25 +203,24 @@ class ItemChoiceScreen(BasicView):
                 object_id=f"#name_label0{i}"
             ))
 
-            for i in range(gadget_len):
-                self.gadget_img_list.append(pygame_gui.elements.UIButton(
-                    relative_rect=pygame.Rect((self.__img_pad * len(self.gadget_img_list), 0),
-                                              self.__img_size),
-                    text="",
-                    manager=self.manager,
-                    container=self.gadget_img_container,
-                    object_id=f"#gadget_img0{i}"
-                ))
-                self.gadget_name_list.append(pygame_gui.elements.UILabel(
-                    relative_rect=pygame.Rect(
-                        (self.__img_pad * len(self.gadget_name_list), self.__img_size[0]),
-                        self.__img_size),
-                    text=f"",
-                    manager=self.manager,
-                    container=self.gadget_name_container,
-                    object_id=f"#name_label0{i}"
-                ))
-
+        for i in range(gadget_len):
+            self.gadget_img_list.append(pygame_gui.elements.UIButton(
+                relative_rect=pygame.Rect((self.__img_pad * len(self.gadget_img_list), 0),
+                                          self.__img_size),
+                text="",
+                manager=self.manager,
+                container=self.gadget_img_container,
+                object_id=f"#gadget_img0{i}"
+            ))
+            self.gadget_name_list.append(pygame_gui.elements.UILabel(
+                relative_rect=pygame.Rect(
+                    (self.__img_pad * len(self.gadget_name_list), self.__img_size[0]),
+                    self.__img_size),
+                text=f"",
+                manager=self.manager,
+                container=self.gadget_name_container,
+                object_id=f"#name_label0{i}"
+            ))
 
     def _init_ui_elements(self) -> None:
         self.gadget_img_list = []

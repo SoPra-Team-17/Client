@@ -53,12 +53,8 @@ class LibClientHandler:
             raise TypeError("Invalid Choice type")
 
     def sendEquipmentChoice(self, equipMap: dict) -> bool:
-        # todo test if this works!
-        if isinstance(equipMap, dict) and isinstance(equipMap.keys()[0], int) and isinstance(equipMap.values()[0],
-                                                                                             cppyy.gbl.spy.util.UUID):
-            return self.lib_client.network.sendEquipmentChoice(equipMap)
-        else:
-            raise TypeError("Invalid equipment map")
+        # todo test if this works and check type!
+        return self.lib_client.network.sendEquipmentChoice(equipMap)
 
     def sendGameOperation(self, operation: cppyy.gbl.spy.gameplay.BaseOperation) -> bool:
         if isinstance(operation, cppyy.gbl.spy.gameplay.BaseOperation):

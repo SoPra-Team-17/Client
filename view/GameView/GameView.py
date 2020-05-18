@@ -55,6 +55,8 @@ class GameView(BasicView):
 
     def to_item_choice(self) -> None:
         self.active_views = [self.item_choice_screen]
+        self.item_choice_screen.update_selection()
 
     def to_equipment(self) -> None:
         self.active_views = [self.equipment_screen]
+        self.equipment_screen.update_selection()

@@ -5,7 +5,7 @@ import sys
 import logging
 import pygame
 import cppyy
-from cppyy.gbl.std import map
+from cppyy.gbl.std import map, pair, set
 
 from view.ViewSettings import ViewSettings
 from view.MainMenu.MainMenu import MainMenu
@@ -19,6 +19,8 @@ cppyy.add_include_path("/usr/local/include/SopraCommon")
 cppyy.add_include_path("/usr/local/include/SopraNetwork")
 
 cppyy.include("network/RoleEnum.hpp")
+cppyy.include("util/UUID.hpp")
+cppyy.include("datatypes/gadgets/GadgetEnum.hpp")
 
 __author__ = "Marco Deuscher"
 __date__ = "25.04.2020 (date of doc. creation)"
@@ -59,7 +61,6 @@ class Controller(ControllerGameView, ControllerMainMenu, ControllerLobby):
         initializes all other components
         Calls init of view
         """
-
         # initialize components (model,view,self)
         logging.info("Controller init done")
 
@@ -91,6 +92,7 @@ class Controller(ControllerGameView, ControllerMainMenu, ControllerLobby):
 
     def to_game_view(self) -> None:
         self.activeViews = [self.gameView]
+        self.gameView.to_item_choice()
 
     def exit_game(self) -> None:
         logging.info("Exit from MainMenu")
@@ -126,10 +128,13 @@ class Controller(ControllerGameView, ControllerMainMenu, ControllerLobby):
         return self.lib_client_handler.sendItemChoice(choice)
 
     def send_equipment_choice(self, equipMap) -> bool:
-        # convert to c++ map (gadgetenum as int)
-        map_cpp = map[int, cppyy.gbl.spy.util.UUID]
-        for (gad, char) in equipMap.items():
-            map[gad] = char
+        print(equipMap)
+
+        map_cpp = map[cppyy.gbl.spy.util.UUID, set[cppyy.gbl.spy.gadget.GadgetEnum]]()
+        for (char, gad_list) in equipMap.items():
+            s = set[cppyy.gbl.spy.gadget.GadgetEnum](gad_list)
+            p = pair[cppyy.gbl.spy.util.UUID, set[cppyy.gbl.spy.gadget.GadgetEnum]](char, s)
+            map_cpp.insert(p)
         return self.lib_client_handler.sendEquipmentChoice(map_cpp)
 
     def send_game_operation(self, operation) -> bool:

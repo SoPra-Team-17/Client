@@ -5,7 +5,6 @@ import pygame
 from view.BasicView import BasicView
 from view.ViewSettings import ViewSettings
 from controller.ControllerView import ControllerLobby
-from network.NetworkEvent import NETWORK_EVENT
 
 
 class LobbyScreen(BasicView):
@@ -51,11 +50,6 @@ class LobbyScreen(BasicView):
     def receive_event(self, event: pygame.event.Event) -> None:
         self.manager.process_events(event)
 
-        if event.type == pygame.USEREVENT and event.user_type == NETWORK_EVENT:
-            if event.message_type == "RequestItemChoice":
-                logging.info("Go to Item Choice Phase")
-                self.controller.to_game_view()
-                self.controller.gameView.item_choice_screen.update_selection()
 
         if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_PRESSED:
             switcher = {

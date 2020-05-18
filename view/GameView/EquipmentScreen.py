@@ -11,6 +11,7 @@ from view.ViewSettings import ViewSettings
 from view.GameView.Visuals.ItemChoice.VisualCharacter import CHAR_PATH_LIST
 from view.GameView.Visuals.ItemChoice.VisualGadget import GADGET_NAME_LIST, GADGET_PATH_LIST
 from controller.ControllerView import ControllerGameView
+from network.NetworkEvent import NETWORK_EVENT
 
 __author__ = "Marco Deuscher"
 __date__ = "08.05.2020 (creation)"
@@ -45,7 +46,7 @@ class EquipmentScreen(BasicView):
         # map from GadgetEnum -> UUID (char)
         self.gadget_char_map = {}
         # todo remove
-        self.__debug = True
+        self.__debug = False
 
         self.manager = self.manager = pygame_gui.UIManager((self.settings.window_width, self.settings.window_height),
                                                            "assets/GameView/GameViewTheme.json")
@@ -85,27 +86,60 @@ class EquipmentScreen(BasicView):
         if len(self.gadgets) != 0:
             self._drag_and_drop(event)
 
+        if event.type == pygame.USEREVENT and event.user_type == NETWORK_EVENT:
+            if event.message_type == "RequestItemChoice":
+                logging.info("Go to Item Choice Phase")
+                self.controller.to_game_view()
+
         if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_PRESSED:
-            switcher = {
-                self.continue_button: self.continue_pressed,
-            }
-            try:
-                switcher.get(event.ui_element)()
-            except TypeError:
-                logging.warning("Could not find UI element in dict")
+            self.continue_pressed()
 
         if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
             self.controller.to_main_menu()
 
-    def continue_pressed(self):
+    def continue_pressed(self) -> None:
         if len(self.gadgets) != 0 and not self.__debug:
             logging.info("Not all gadgets owned by a character")
             return
 
-        print(self.gadget_char_map)
-        # todo uncomment for network connection!
-        self.controller.send_equipment_choice(self.gadget_char_map)
+        # convert map to uuid -> gadget
+        network_map = {}
+        for key, val in self.gadget_char_map.items():
+            if val in network_map:
+                network_map[val].append(key)
+            else:
+                network_map[val] = [key]
+
+        self.controller.send_equipment_choice(network_map)
         self.parent_view.to_playing_field()
+
+    def update_selection(self) -> None:
+        selected_characters = self.controller.lib_client_handler.lib_client.getChosenCharacters()
+        selected_gadgets = self.controller.lib_client_handler.lib_client.getChosenGadgets()
+
+        print(selected_characters)
+        print(selected_gadgets)
+
+        for idx in range(selected_characters.size()):
+            self.characters.append(DrawableImage(pygame.Rect(
+                (self.settings.window_width * .1 + idx * self.__img_pad,
+                 self.settings.window_height * .1),
+                (128, 128)),
+                # todo update assets
+                pygame.image.load(CHAR_PATH_LIST[0]),
+                selected_characters[idx]
+            ))
+
+        for idx in range(selected_gadgets.size()):
+            self.gadgets.append(DrawableImage(pygame.Rect(
+                (self.settings.window_width * .1 + idx * self.__img_pad, self.settings.window_height * .45),
+                (128, 128)),
+                pygame.image.load(GADGET_PATH_LIST[selected_gadgets[idx]]),
+                selected_gadgets[idx]
+            ))
+
+        # anzahl der dragable elemente!
+        self.__offset = [[0, 0]] * len(self.gadgets)
 
     def _drag_and_drop(self, event):
         # drag and drop
@@ -170,27 +204,6 @@ class EquipmentScreen(BasicView):
                      self.settings.window_height * .1),
                     (128, 128)),
                     pygame.image.load("assets/GameView/trash.png"), idx+10))
-        else:
-            selected_characters = self.controller.lib_client_handler.lib_client.getChosenCharacters()
-            selected_gadgets = self.controller.lib_client_handler.lib_client.getChosenGadgets()
 
-            for idx, char in selected_characters:
-                self.characters.append(DrawableImage(pygame.Rect(
-                    (self.settings.window_width * .1 + idx * self.__img_pad,
-                     self.settings.window_height * .1),
-                    (128, 128)),
-                    # todo update assets
-                    pygame.image.load(CHAR_PATH_LIST[0]),
-                    char
-                ))
-
-            for idx, gad in selected_gadgets:
-                self.gadgets.append(DrawableImage(pygame.Rect(
-                    (self.settings.window_width * .1 + idx * self.__img_pad, self.settings.window_height * .45),
-                    (128, 128)),
-                    pygame.image.load(GADGET_PATH_LIST[gad]),
-                    gad
-                ))
-
-        # anzahl der dragable elemente!
-        self.__offset = [[0, 0]] * len(self.gadgets)
+            # anzahl der dragable elemente!
+            self.__offset = [[0, 0]] * len(self.gadgets)
