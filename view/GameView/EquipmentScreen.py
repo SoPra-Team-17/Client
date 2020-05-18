@@ -104,7 +104,7 @@ class EquipmentScreen(BasicView):
 
         print(self.gadget_char_map)
         # todo uncomment for network connection!
-        # self.controller.send_equipment_choice(self.gadget_char_map)
+        self.controller.send_equipment_choice(self.gadget_char_map)
         self.parent_view.to_playing_field()
 
     def _drag_and_drop(self, event):

@@ -1,4 +1,6 @@
+import logging
 import cppyy
+
 
 from network.NetworkEvent import create_network_event
 
@@ -11,44 +13,60 @@ class Callback(cppyy.gbl.libclient.Callback):
     Implements a simple callback class which itself calls the controller
     """
 
-    def __init__(self):
-        pass
-
-    def on_hello_reply(self) -> None:
+    def onHelloReply(self) -> None:
+        logging.info("Received Hello Reply")
         create_network_event({"message_type": "HelloReply"})
 
-    def on_game_started(self) -> None:
+    def onGameStarted(self) -> None:
+        logging.info("Received GameStarted")
         create_network_event({"message_type": "GameStarted"})
 
-    def on_request_choice(self) -> None:
+    def onRequestItemChoice(self) -> None:
+        logging.info("Received Request Item Choice")
         create_network_event({"message_type": "RequestItemChoice"})
 
-    def on_request_equipment_choice(self) -> None:
+    def onRequestEquipmentChoice(self) -> None:
+        logging.info("Received Request Equipment Choice")
         create_network_event({"message_type": "RequestEquipmentChoice"})
 
-    def on_game_status(self) -> None:
+    def onGameStatus(self) -> None:
+        logging.info("Received Game Status")
         create_network_event({"message_type": "GameStatus"})
 
-    def on_request_game_operation(self) -> None:
+    def onRequestGameOperation(self) -> None:
+        logging.info("Received Request Game Operation")
         create_network_event({"message_type": "RequestGameOperation"})
 
-    def on_statistics(self) -> None:
+    def onStatistics(self) -> None:
+        logging.info("Received Statistics")
         create_network_event({"message_type": "Statistics"})
 
-    def on_game_left(self) -> None:
+    def onGameLeft(self) -> None:
+        logging.info("Received Game Left")
         create_network_event({"message_type": "GameLeft"})
 
-    def on_game_pause(self) -> None:
+    def onGamePause(self) -> None:
+        logging.info("Received Game Pause")
         create_network_event({"message_type": "GamePause"})
 
-    def on_meta_information(self) -> None:
+    def onMetaInformation(self) -> None:
+        logging.info("Received Meta Information")
         create_network_event({"message_type": "MetaInformation"})
 
-    def on_strike(self) -> None:
+    def onStrike(self) -> None:
+        logging.info("Received Strike")
         create_network_event({"message_type": "Strike"})
 
-    def on_error_message(self) -> None:
+    def onError(self) -> None:
+        logging.info("Received Error")
         create_network_event({"message_type": "Error"})
 
-    def on_replay(self) -> None:
+    def onReplay(self) -> None:
+        logging.info("Received Replay")
         create_network_event({"message_type": "Replay"})
+
+    def connectionLost(self) -> None:
+        logging.info("Received Connectin lost")
+
+    def wrongDestination(self) -> None:
+        logging.info("Received Wrong Destination")

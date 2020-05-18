@@ -23,7 +23,7 @@ class LibClientHandler:
         self.make_shared_model = cppyy.py_make_shared(cppyy.gbl.libclient.Model)
         #model = cppyy.gbl.libclient.Model()
         #network = cppyy.gbl.libclient.Network(self.make_shared_callback(self.callback), self.make_shared_model(model))
-        #self.lib_client = cppyy.gbl.libclient.LibClient(self.make_shared_callback(self.callback))
+        self.lib_client = cppyy.gbl.libclient.LibClient(self.make_shared_callback(self.callback))
 
         #del network, model
 
