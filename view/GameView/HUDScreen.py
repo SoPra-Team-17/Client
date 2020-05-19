@@ -65,11 +65,11 @@ class HUDScreen(BasicView):
 
         # testing if character button idx is hovered, to show private_textbox
         # TODO: fix bug: "private_textbox always appears on character button 5"
-        for idx in range(5):
+        for button in self.char_image_list:
             # if the mouse is hovering over a character button and there is no private_textbox
-            if self.char_image_list[idx].check_hover(1, False) and self.private_textbox is None:
-                self._init_private_textbox(idx)
-            elif not (self.char_image_list[idx].check_hover(1, False)) and self.private_textbox:
+            if button.check_hover(1, False) and self.private_textbox is None:
+                self._init_private_textbox(self.char_image_list.index(button))
+            elif not (button.check_hover(1, False)) and self.private_textbox:
                 self.private_textbox.kill()
                 self.private_textbox = None
 
@@ -102,8 +102,6 @@ class HUDScreen(BasicView):
                 )
             )
 
-            # TODO: implementing dropdown action_bar_list with all actions a character can perform
-
         # loading sample image on character buttons
         for char in self.char_image_list:
             char.normal_image = self.test_surface
@@ -120,6 +118,42 @@ class HUDScreen(BasicView):
             manager=self.manager,
             container=self.container,
             object_id="#status_textbox"
+        )
+
+        # implementing a dropdown action_bar with all actions a character can perform
+        # TODO: fix dropdown menu to a callable object
+        self.action_bar = pygame_gui.elements.UIDropDownMenu(
+            options_list=["Gadget, Roulette, Pour Cocktail, Sipping Cocktail, Spy, Look into Safe"],
+            starting_option="Gadget action",
+            relative_rect=pygame.Rect((self.container.rect.width - 3 * self.__padding - self.__distance, 0), (2 * self.__padding, 25)),
+            manager=self.manager,
+            container=self.container,
+            object_id="#action_bar",
+        )
+
+        self.action_bar_closed = pygame_gui.elements.ui_drop_down_menu.UIClosedDropDownState(
+            drop_down_menu_ui=self.action_bar,
+            selected_option="Gadget",
+            base_position_rect=pygame.Rect((self.container.rect.width - 3 * self.__padding - self.__distance, 0), (2 * self.__padding, 25)),
+            open_button_width=25,
+            expand_direction="down",
+            manager=self.manager,
+            container=self.container,
+            object_ids=["#action_bar"],
+            element_ids=["#action_bar_closed"],
+        )
+
+        self.action_bar_expanded = pygame_gui.elements.ui_drop_down_menu.UIExpandedDropDownState(
+            drop_down_menu_ui=self.action_bar,
+            options_list=["Gadget, Roulette, Pour Cocktail, Sipping Cocktail, Spy, Look into Safe"],
+            selected_option="Gadget",
+            base_position_rect=pygame.Rect((self.container.rect.width - 3 * self.__padding - self.__distance, 0), (2 * self.__padding, 25)),
+            close_button_width=25,
+            expand_direction="down",
+            manager=self.manager,
+            container=self.container,
+            object_ids=["#action_bar"],
+            element_ids=["#action_bar_expanded"],
         )
 
         self.menu_button = pygame_gui.elements.UIButton(
