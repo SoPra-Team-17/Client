@@ -75,7 +75,7 @@ class HUDScreen(BasicView):
                 logging.warning("UI-Element is not callable.")
 
         # testing if character button idx is hovered, to show private_textbox
-        # TODO: fix bug: "private_textbox always appears on character button 5"
+        # TODO: fix bug: "strange behavior on character button no. 1"
         for button in self.char_image_list:
             # if the mouse is hovering over a character button and there is no private_textbox
             if button.check_hover(1, False) and self.private_textbox is None:
@@ -133,11 +133,13 @@ class HUDScreen(BasicView):
         )
 
         # implementing a dropdown action_bar with all actions a character can perform
-        # TODO: fix dropdown menu to a callable object and check if action_bar_closed and action_bar_expanded are necessary
+        # TODO: fix dropdown menu to a callable object and check if action_bar_closed
+        #  and action_bar_expanded are necessary
         self.action_bar = pygame_gui.elements.UIDropDownMenu(
             options_list=["Gadget, Roulette, Pour Cocktail, Sip Cocktail, Spy, Look into Safe"],
             starting_option="Gadget action",
-            relative_rect=pygame.Rect((self.container.rect.width - 3 * self.__padding - self.__distance, 0), (2 * self.__padding, 25)),
+            relative_rect=pygame.Rect((self.container.rect.width - 3 * self.__padding - self.__distance, 0),
+                                      (2 * self.__padding, 25)),
             manager=self.manager,
             container=self.container,
             object_id="#action_bar",
@@ -146,7 +148,8 @@ class HUDScreen(BasicView):
         self.action_bar_closed = pygame_gui.elements.ui_drop_down_menu.UIClosedDropDownState(
             drop_down_menu_ui=self.action_bar,
             selected_option="Gadget",
-            base_position_rect=pygame.Rect((self.container.rect.width - 3 * self.__padding - self.__distance, 0), (2 * self.__padding, 25)),
+            base_position_rect=pygame.Rect((self.container.rect.width - 3 * self.__padding - self.__distance, 0),
+                                           (2 * self.__padding, 25)),
             open_button_width=25,
             expand_direction="down",
             manager=self.manager,
@@ -159,7 +162,8 @@ class HUDScreen(BasicView):
             drop_down_menu_ui=self.action_bar,
             options_list=["Gadget, Roulette, Pour Cocktail, Sipping Cocktail, Spy, Look into Safe"],
             selected_option="Gadget",
-            base_position_rect=pygame.Rect((self.container.rect.width - 3 * self.__padding - self.__distance, 0), (2 * self.__padding, 25)),
+            base_position_rect=pygame.Rect((self.container.rect.width - 3 * self.__padding - self.__distance, 0),
+                                           (2 * self.__padding, 25)),
             close_button_width=25,
             expand_direction="down",
             manager=self.manager,
