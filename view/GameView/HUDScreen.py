@@ -63,12 +63,24 @@ class HUDScreen(BasicView):
             }
             switcher.get(event.ui_element)()
 
+        if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_PRESSED:
+            switcher = {
+                # this should delete the dropdown menu by pressing the button
+                # TODO: exchange function kill() with a more sensible function
+                self.action_bar: self.action_bar.kill()
+            }
+            try:
+                switcher.get(event.ui_element)()
+            except TypeError:
+                logging.warning("UI-Element is not callable.")
+
         # testing if character button idx is hovered, to show private_textbox
         # TODO: fix bug: "private_textbox always appears on character button 5"
         for button in self.char_image_list:
             # if the mouse is hovering over a character button and there is no private_textbox
             if button.check_hover(1, False) and self.private_textbox is None:
                 self._init_private_textbox(self.char_image_list.index(button))
+                break
             elif not (button.check_hover(1, False)) and self.private_textbox:
                 self.private_textbox.kill()
                 self.private_textbox = None
@@ -121,9 +133,9 @@ class HUDScreen(BasicView):
         )
 
         # implementing a dropdown action_bar with all actions a character can perform
-        # TODO: fix dropdown menu to a callable object
+        # TODO: fix dropdown menu to a callable object and check if action_bar_closed and action_bar_expanded are necessary
         self.action_bar = pygame_gui.elements.UIDropDownMenu(
-            options_list=["Gadget, Roulette, Pour Cocktail, Sipping Cocktail, Spy, Look into Safe"],
+            options_list=["Gadget, Roulette, Pour Cocktail, Sip Cocktail, Spy, Look into Safe"],
             starting_option="Gadget action",
             relative_rect=pygame.Rect((self.container.rect.width - 3 * self.__padding - self.__distance, 0), (2 * self.__padding, 25)),
             manager=self.manager,
@@ -165,10 +177,8 @@ class HUDScreen(BasicView):
             object_id="#menu_button"
         )
 
-    # test_textbox to show private character information by hovering
+    # private_textbox to show private character information by hovering
     def _init_private_textbox(self, idx) -> None:
-
-        self.private_textbox_list = []
 
         self.private_textbox = pygame_gui.elements.UITextBox(
             html_text=f"<b>Health Points:</b>{42}",
