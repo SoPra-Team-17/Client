@@ -39,6 +39,12 @@ class HUDScreen(BasicView):
         self.test_surface = pygame.transform.scale(self.test_surface, (int(self.__padding), int(self.__padding)))
 
         self._init_ui_elements()
+        # initialising private_textbox to create the attribute in HUDScreen
+        self._init_private_textbox(0)
+        # kill private_textbox so that it does not appear on the screen
+        self.private_textbox.kill()
+        # set private_textbox to None as default value for receive_event method
+        self.private_textbox = None
 
     logging.info("HudScreen init done")
 
@@ -57,15 +63,15 @@ class HUDScreen(BasicView):
             }
             switcher.get(event.ui_element)()
 
-        # TODO: loading personal character-information by hovering over a character button
         # testing if character button idx is hovered, to show private_textbox
-        # currently the private_textbox is displayed, until you hover over a character button
-        # then the private_textbox is killed
+        # TODO: fix bug: "private_textbox always appears on character button 5"
         for idx in range(5):
-            if not(self.char_image_list[idx].check_hover(1, False)):
-                self.private_textbox.full_redraw()
-            else:
+            # if the mouse is hovering over a character button and there is no private_textbox
+            if self.char_image_list[idx].check_hover(1, False) and self.private_textbox is None:
+                self._init_private_textbox(idx)
+            elif not (self.char_image_list[idx].check_hover(1, False)) and self.private_textbox:
                 self.private_textbox.kill()
+                self.private_textbox = None
 
     def menu_button_pressed(self):
         self.controller.to_main_menu()
@@ -125,11 +131,15 @@ class HUDScreen(BasicView):
             object_id="#menu_button"
         )
 
-        # test_textbox to show private character information
+    # test_textbox to show private character information by hovering
+    def _init_private_textbox(self, idx) -> None:
+
+        self.private_textbox_list = []
+
         self.private_textbox = pygame_gui.elements.UITextBox(
-            html_text=f"<strong>Blabla</strong>{123}<br><br><Blabla</strong>{456}<br><br>" \
-                      f"<strong>Blabla</strong>{789}<br><br><strong>Blabla</strong>{101112}",
-            relative_rect=pygame.Rect((len(self.char_image_list) * (self.__padding + self.__distance) + 210, 0), (200, 175)),
+            html_text=f"<b>Health Points:</b>{42}",
+            relative_rect=pygame.Rect((idx * (self.__padding + self.__distance), 0),
+                                      (self.__padding, 175)),
             manager=self.manager,
             container=self.container,
             object_id="#private_textbox"
