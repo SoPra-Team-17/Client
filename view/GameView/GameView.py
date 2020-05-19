@@ -22,7 +22,7 @@ class GameView(BasicView):
     def __init__(self, window: pygame.display, controller: ControllerGameView, settings: ViewSettings) -> None:
         super().__init__(window, controller, settings)
 
-        self.game_view_controller = PlayingFieldScreen(self.window, self.controller, self, self.settings)
+        self.playing_field_screen = PlayingFieldScreen(self.window, self.controller, self, self.settings)
         self.hud_view = HUDView(self.window, self.controller, self.settings)
         self.item_choice_screen = ItemChoiceScreen(self.window, self.controller, self, self.settings)
         self.equipment_screen = EquipmentScreen(self.window, self.controller, self, self.settings)
@@ -51,7 +51,8 @@ class GameView(BasicView):
             view.receive_event(event)
 
     def to_playing_field(self) -> None:
-        self.active_views = [self.game_view_controller, self.hud_view]
+        self.active_views = [self.playing_field_screen, self.hud_view]
+        self.playing_field_screen.update_playingfield()
 
     def to_item_choice(self) -> None:
         self.active_views = [self.item_choice_screen]

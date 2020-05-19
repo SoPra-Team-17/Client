@@ -69,8 +69,6 @@ cd /tmp
 git clone https://github.com/SoPra-Team-17/LibClient.git
 cd LibClient
 git submodule update --init
-git checkout FeatureOptionalBugFix
-git submodule update --init
 mkdir build && cd build
 cmake ..
 make -j$(nproc)

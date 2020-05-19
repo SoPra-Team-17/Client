@@ -90,6 +90,9 @@ class EquipmentScreen(BasicView):
             if event.message_type == "RequestItemChoice":
                 logging.info("Go to Item Choice Phase")
                 self.controller.to_game_view()
+            elif event.message_type == "GameStatus":
+                logging.info("Go to playing field")
+                self.parent_view.to_playing_field()
 
         if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_PRESSED:
             self.continue_pressed()
@@ -99,7 +102,7 @@ class EquipmentScreen(BasicView):
 
     def continue_pressed(self) -> None:
         if len(self.gadgets) != 0 and not self.__debug:
-            logging.info("Not all gadgets owned by a character")
+            logging.warning(f"Not all gadgets owned by a character! {len(self.gadgets)} remaining")
             return
 
         # convert map to uuid -> gadget
@@ -110,15 +113,15 @@ class EquipmentScreen(BasicView):
             else:
                 network_map[val] = [key]
 
-        self.controller.send_equipment_choice(network_map)
-        self.parent_view.to_playing_field()
+        logging.info(f"Sending map to server\n{network_map}")
+
+        ret = self.controller.send_equipment_choice(network_map)
+        logging.info(f"Send equipment choice message successfull: {ret}")
+
 
     def update_selection(self) -> None:
         selected_characters = self.controller.lib_client_handler.lib_client.getChosenCharacters()
         selected_gadgets = self.controller.lib_client_handler.lib_client.getChosenGadgets()
-
-        print(selected_characters)
-        print(selected_gadgets)
 
         for idx in range(selected_characters.size()):
             self.characters.append(DrawableImage(pygame.Rect(
@@ -132,7 +135,7 @@ class EquipmentScreen(BasicView):
 
         for idx in range(selected_gadgets.size()):
             self.gadgets.append(DrawableImage(pygame.Rect(
-                (self.settings.window_width * .1 + idx * self.__img_pad, self.settings.window_height * .45),
+                (self.settings.window_width * .1 + idx * self.__img_pad * 3/4, self.settings.window_height * .45),
                 (128, 128)),
                 pygame.image.load(GADGET_PATH_LIST[selected_gadgets[idx]]),
                 selected_gadgets[idx]

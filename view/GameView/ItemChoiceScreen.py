@@ -88,6 +88,7 @@ class ItemChoiceScreen(BasicView):
                 switcher.get(event.ui_element)()
             except TypeError:
                 self.selected_item(event.ui_element)
+                self._kill_ui_elements()
 
         if event.type == pygame.USEREVENT and event.user_type == NETWORK_EVENT:
             if event.message_type == "RequestItemChoice":
@@ -130,22 +131,17 @@ class ItemChoiceScreen(BasicView):
 
     def update_selection(self) -> None:
         """
-        todo: für chars bekommt man eine UUID --> mit character settings aus helloReply kommt man auf den Rest
         call this method, when a ItemChoiceMessage is received!
         :return:    None
         """
         offeredCharacters = self.controller.lib_client_handler.lib_client.getOfferedCharacters()
         offeredGadgets = self.controller.lib_client_handler.lib_client.getOfferedGadgets()
 
-        print(f"Len offeredgadgets {len(offeredGadgets)}")
-        print(f"Len offered chars {len(offeredCharacters)}")
-
         self._create_selection_buttons(len(offeredGadgets), len(offeredCharacters))
 
-        # todo might have different lens
         for idx, gad in enumerate(offeredGadgets):
             self.gadget_img_list[idx].normal_image = pygame.image.load(GADGET_PATH_LIST[gad])
-            self.gadget_img_list[idx].hovered_image = self.font.render(GADGET_NAME_LIST[idx], True, (255, 255, 255))
+            self.gadget_img_list[idx].hovered_image = self.font.render(GADGET_NAME_LIST[gad], True, (255, 255, 255))
             self.gadget_img_list[idx].rebuild()
 
             self.gadget_name_list[idx].set_text(GADGET_NAME_LIST[gad])
@@ -170,18 +166,6 @@ class ItemChoiceScreen(BasicView):
                     self.char_img_list[idx].rebuild()
 
     def _create_selection_buttons(self, gadget_len, char_len) -> None:
-        for img, name in zip(self.char_img_list, self.char_name_list):
-            img.kill()
-            name.kill()
-
-        for img, name in zip(self.gadget_img_list, self.gadget_name_list):
-            img.kill()
-            name.kill()
-
-        self.char_name_list.clear()
-        self.char_img_list.clear()
-        self.gadget_name_list.clear()
-        self.gadget_img_list.clear()
 
         for i in range(char_len):
             self.char_img_list.append(pygame_gui.elements.UIButton(
@@ -235,3 +219,17 @@ class ItemChoiceScreen(BasicView):
             container=self.bottom_container,
             object_id="#start_game"
         )
+
+    def _kill_ui_elements(self) -> None:
+        for img, name in zip(self.char_img_list, self.char_name_list):
+            img.kill()
+            name.kill()
+
+        for img, name in zip(self.gadget_img_list, self.gadget_name_list):
+            img.kill()
+            name.kill()
+
+        self.char_name_list.clear()
+        self.char_img_list.clear()
+        self.gadget_name_list.clear()
+        self.gadget_img_list.clear()

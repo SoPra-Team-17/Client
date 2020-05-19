@@ -76,7 +76,7 @@ class PlayingFieldScreen(BasicView):
         self.camera = self.camera = Camera(camera_speed=.5)
 
         map = DrawableMap((50, 50, 3))
-        create_playing_field(map, assets=self.asset_storage)
+        # create_playing_field(map, assets=self.asset_storage)
 
         self.background_image = pygame.image.load("assets/GameView/background.png")
         self.background_image = pygame.transform.scale(self.background_image, (1920, 1080))
@@ -118,28 +118,34 @@ class PlayingFieldScreen(BasicView):
         field_map = state.getMap()
 
         n_rows = field_map.getNumberOfRows()
-        n_cols = field_map.getRowLength()
+
+        # todo expect rectangle shaped playing field
+        self.map.x_max = n_rows
+        self.map.y_max = field_map.getRowLength(0)
 
         # wall around field
+        for i in range(3):
+            self.map.map[WorldPoint(-1, -1, 0)] = Wall(WorldPoint(-1, -1, i), self.asset_storage)
+
         for x in range(n_rows):
             self.map.map[WorldPoint(x, -1, 1)] = Wall(WorldPoint(x, -1, 0), self.asset_storage)
             self.map.map[WorldPoint(x, -1, 1)] = Wall(WorldPoint(x, -1, 1), self.asset_storage)
             self.map.map[WorldPoint(x, -1, 2)] = Wall(WorldPoint(x, -1, 2), self.asset_storage)
 
-        for y in range(n_cols):
-            self.map.map[WorldPoint(-1, y, 0)] = Wall(WorldPoint(-1, y, 0), self.asset_storage)
-            self.map.map[WorldPoint(-1, y, 1)] = Wall(WorldPoint(-1, y, 1), self.asset_storage)
-            self.map.map[WorldPoint(-1, y, 2)] = Wall(WorldPoint(-1, y, 2), self.asset_storage)
+            for y in range(field_map.getRowLength(x)):
+                self.map.map[WorldPoint(-1, y, 0)] = Wall(WorldPoint(-1, y, 0), self.asset_storage)
+                self.map.map[WorldPoint(-1, y, 1)] = Wall(WorldPoint(-1, y, 1), self.asset_storage)
+                self.map.map[WorldPoint(-1, y, 2)] = Wall(WorldPoint(-1, y, 2), self.asset_storage)
 
         # todo check if coords are right
         for x in range(n_rows):
-            for y in range(n_cols):
+            for y in range(field_map.getRowLength(x)):
                 # add floor --> I don't think this has to be done on each update! todo
                 self.map.map[WorldPoint(x, y, z=0)] = Floor(WorldPoint(x, y, z=0), self.asset_storage)
 
                 field = field_map.getField(x, y)
 
-                state = field.getFieldState()
+                field_state = field.getFieldState()
                 switcher = {
                     cppyy.gbl.spy.scenario.FieldStateEnum.BAR_TABLE: BarTable,
                     cppyy.gbl.spy.scenario.FieldStateEnum.ROULETTE_TABLE: RouletteTable,
@@ -150,11 +156,11 @@ class PlayingFieldScreen(BasicView):
                     cppyy.gbl.spy.scenario.FieldStateEnum.FIREPLACE: Fireplace
                 }
                 try:
-                    if state is not None:
-                        self.map.map[WorldPoint(x, y, z=1)] = switcher.get(state)(WorldPoint(x, y, z=1),
-                                                                                  self.asset_storage)
+                    if field_state is not None:
+                        self.map.map[WorldPoint(x, y, z=1)] = switcher.get(field_state)(WorldPoint(x, y, z=1),
+                                                                                        self.asset_storage)
                 except TypeError:
-                    logging.error("Unable to find correct element in dict")
+                    pass
 
                 # check if field has gadget
                 if field.getGadget().has_value():

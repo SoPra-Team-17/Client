@@ -2,6 +2,8 @@
 Implements a Point in a 3D discrete coordinate system
 """
 
+import cppyy
+
 __author__ = "Marco Deuscher"
 __date__ = "25.04.2020 (date of doc. creation)"
 
@@ -17,3 +19,4 @@ class WorldPoint:
 
     def __repr__(self):
         return f"x: {self.x} y: {self.y} z: {self.z}"
+

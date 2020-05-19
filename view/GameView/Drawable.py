@@ -59,7 +59,12 @@ class FieldMap:
         self.__hovered_coords = WorldPoint()
         self.__selected_coords = WorldPoint()
 
+        # todo expect rectangle shaped playing fieldd D
+        self.x_max = 0
+        self.y_max = 0
+
     def translation(self, offset: Tuple[float, float]) -> None:
+        import itertools
         for drawable in self.map.list:
             if drawable is not None:
                 drawable.point.x += offset[0]
@@ -83,8 +88,7 @@ class FieldMap:
         # transform mouse pos to world coords
         xt, yt = Transformations.trafo_window_to_world_coords(pos[0], pos[1], camOffset[0], camOffset[1])
 
-        # todo hardcoded check if inside field!
-        if xt < 0 or xt >= 50 or yt < 0 or yt >= 50:
+        if xt < 0 or xt >= self.x_max or yt < 0 or yt >= self.y_max:
             return
 
         if self.__selected_coords != self.__hovered_coords:

@@ -128,13 +128,16 @@ class Controller(ControllerGameView, ControllerMainMenu, ControllerLobby):
         return self.lib_client_handler.sendItemChoice(choice)
 
     def send_equipment_choice(self, equipMap) -> bool:
-        print(equipMap)
-
         map_cpp = map[cppyy.gbl.spy.util.UUID, set[cppyy.gbl.spy.gadget.GadgetEnum]]()
         for (char, gad_list) in equipMap.items():
-            s = set[cppyy.gbl.spy.gadget.GadgetEnum](gad_list)
+            # for some reason this works and initialization with a list does not
+            s = set[cppyy.gbl.spy.gadget.GadgetEnum]()
+            for gad in gad_list:
+                s.insert(cppyy.gbl.spy.gadget.GadgetEnum(gad))
+
             p = pair[cppyy.gbl.spy.util.UUID, set[cppyy.gbl.spy.gadget.GadgetEnum]](char, s)
             map_cpp.insert(p)
+
         return self.lib_client_handler.sendEquipmentChoice(map_cpp)
 
     def send_game_operation(self, operation) -> bool:
