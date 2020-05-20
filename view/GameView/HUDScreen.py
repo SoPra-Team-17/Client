@@ -20,7 +20,7 @@ class HUDScreen(BasicView):
     __icon_size = 32
 
     def __init__(self, window: pygame.display, controller: ControllerGameView, settings: ViewSettings,
-                 parent: BasicView):
+                 parent: BasicView) -> None:
         super(HUDScreen, self).__init__(window, controller, settings)
 
         self.parent = parent
@@ -50,12 +50,15 @@ class HUDScreen(BasicView):
         # set private_textbox to None as default value for receive_event method
         self.private_textbox = None
 
-    logging.info("HudScreen init done")
+        self.__hovered_icon_idx = -1
+
+        logging.info("HudScreen init done")
 
     def draw(self) -> None:
         self.manager.update(1 / self.settings.frame_rate)
 
         self._check_character_hover()
+        self._update_textbox()
 
         self.window.blit(self.background, (0, self.settings.window_height * 3 / 4))
         self.manager.draw_ui(self.window)
@@ -73,13 +76,13 @@ class HUDScreen(BasicView):
             except TypeError:
                 logging.warning("Element not found in dict")
 
-    def menu_button_pressed(self):
+    def menu_button_pressed(self) -> None:
         self.controller.to_main_menu()
 
-    def send_action_pressed(self):
+    def send_action_pressed(self) -> None:
         logging.info(f"Selected Action: {self.action_bar.selected_option}")
 
-    def _check_character_hover(self):
+    def _check_character_hover(self) -> None:
         # testing if character button idx is hovered, to show private_textbox
         # TODO: fix bug: "strange behavior on character button no. 1"
         for button in self.char_image_list:
@@ -91,7 +94,19 @@ class HUDScreen(BasicView):
                 self.private_textbox.kill()
                 self.private_textbox = None
 
-    def _update_icons(self, char_len):
+    def _update_textbox(self) -> None:
+        # todo: update info textbox text in here
+        # check if any button is hovered --> update
+        for idx, icon in enumerate(self.gadget_icon_list + self.property_icon_list):
+            if icon.check_hover(1, False) and idx != self.__hovered_icon_idx:
+                self.__hovered_icon_idx = idx
+
+                # todo: performance of this is horrible, bc. textbox has to be fully rebuild!
+                self.info_textbox.html_text = f"Last hovered icon {idx}"
+                self.info_textbox.rebuild()
+                break
+
+    def _update_icons(self, char_len) -> None:
         gadget_icon_surface = pygame.image.load("assets/GameView/axe.png")
         gadget_icon_surface = pygame.transform.scale(gadget_icon_surface, [self.__icon_size] * 2)
 
@@ -130,7 +145,7 @@ class HUDScreen(BasicView):
             prop.normal_image = property_icon_surface
             prop.rebuild()
 
-    def _create_character_images(self, char_len):
+    def _create_character_images(self, char_len) -> None:
         # test_surface to display images on character buttons
         char_surface = pygame.image.load("assets/GameView/trash.png").convert_alpha()
         char_surface = pygame.transform.scale(char_surface, (int(self.__padding), int(self.__padding)))
@@ -201,16 +216,6 @@ class HUDScreen(BasicView):
             object_id="#action_bar",
         )
 
-        self.info_textbox = pygame_gui.elements.UITextBox(
-            html_text="Test123",
-            relative_rect=pygame.Rect(
-                (self.container.rect.width - 3 * self.__padding - self.__distance, 0),
-                (self.__info_textbox_width, self.container.rect.height)),
-            manager=self.manager,
-            container=self.container,
-            object_id="info_textbox"
-        )
-
         self.menu_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect((self.container.rect.width - self.__padding, self.__padding + self.__distance),
                                       (self.__padding, 25)),
@@ -229,6 +234,16 @@ class HUDScreen(BasicView):
             container=self.container,
             object_id="#send_action"
 
+        )
+
+        self.info_textbox = pygame_gui.elements.UITextBox(
+            html_text="Test123",
+            relative_rect=pygame.Rect(
+                (self.container.rect.width - 3 * self.__padding - self.__distance, 0),
+                (self.__info_textbox_width, self.container.rect.height)),
+            manager=self.manager,
+            container=self.container,
+            object_id="info_textbox"
         )
 
     # private_textbox to show private character information by hovering
