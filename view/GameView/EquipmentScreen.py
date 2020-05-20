@@ -3,21 +3,27 @@ Implements the screen in which the equipment phase is visualized
 """
 
 import logging
-import pygame_gui
-import pygame
 
-from view.BasicView import BasicView
-from view.ViewSettings import ViewSettings
-from view.GameView.Visuals.ItemChoice.VisualCharacter import CHAR_PATH_LIST
-from view.GameView.Visuals.ItemChoice.VisualGadget import GADGET_NAME_LIST, GADGET_PATH_LIST
+import pygame
+import pygame_gui
+
 from controller.ControllerView import ControllerGameView
 from network.NetworkEvent import NETWORK_EVENT
+from view.BasicView import BasicView
+from view.GameView.Visuals.VisualCharacter import CHAR_PATH_LIST
+from view.GameView.Visuals.VisualGadget import GADGET_PATH_LIST
+from view.ViewSettings import ViewSettings
 
 __author__ = "Marco Deuscher"
 __date__ = "08.05.2020 (creation)"
 
 
 class DrawableImage:
+    """
+    Impelments a small class to represent a surface, a rect and a associated c++ obj. and draw on screen
+
+    used to repr. images <--> gadget / character
+    """
 
     def __init__(self, rect, surface, lib_client_obj=None):
         self.surface = surface
@@ -45,8 +51,6 @@ class EquipmentScreen(BasicView):
 
         # map from GadgetEnum -> UUID (char)
         self.gadget_char_map = {}
-        # todo remove
-        self.__debug = False
 
         self.manager = self.manager = pygame_gui.UIManager((self.settings.window_width, self.settings.window_height),
                                                            "assets/GameView/GameViewTheme.json")
@@ -60,7 +64,7 @@ class EquipmentScreen(BasicView):
         self.background.fill(self.manager.ui_theme.get_colour(None, None, 'dark_bg'))
 
         self.__padding = self.bottom_container.rect.width / 10
-        self.__button_size = (self.bottom_container.rect.width / 3, self.bottom_container.rect.width / 12)
+        self.__label_size = (self.bottom_container.rect.width / 3, self.bottom_container.rect.width / 4)
         self.__img_size = (128, 128)
         self.__img_pad = 2.25 * self.__img_size[0]
 
@@ -86,6 +90,7 @@ class EquipmentScreen(BasicView):
         if len(self.gadgets) != 0:
             self._drag_and_drop(event)
 
+        # handle potential network events
         if event.type == pygame.USEREVENT and event.user_type == NETWORK_EVENT:
             if event.message_type == "RequestItemChoice":
                 logging.info("Go to Item Choice Phase")
@@ -94,17 +99,10 @@ class EquipmentScreen(BasicView):
                 logging.info("Go to playing field")
                 self.parent_view.to_playing_field()
 
-        if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_PRESSED:
-            self.continue_pressed()
-
         if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
             self.controller.to_main_menu()
 
-    def continue_pressed(self) -> None:
-        if len(self.gadgets) != 0 and not self.__debug:
-            logging.warning(f"Not all gadgets owned by a character! {len(self.gadgets)} remaining")
-            return
-
+    def _send_selection(self) -> None:
         # convert map to uuid -> gadget
         network_map = {}
         for key, val in self.gadget_char_map.items():
@@ -118,8 +116,11 @@ class EquipmentScreen(BasicView):
         ret = self.controller.send_equipment_choice(network_map)
         logging.info(f"Send equipment choice message successfull: {ret}")
 
-
     def update_selection(self) -> None:
+        """
+        Updates displayed selection based on previously received network update
+        :return:    None
+        """
         selected_characters = self.controller.lib_client_handler.lib_client.getChosenCharacters()
         selected_gadgets = self.controller.lib_client_handler.lib_client.getChosenGadgets()
 
@@ -135,17 +136,21 @@ class EquipmentScreen(BasicView):
 
         for idx in range(selected_gadgets.size()):
             self.gadgets.append(DrawableImage(pygame.Rect(
-                (self.settings.window_width * .1 + idx * self.__img_pad * 3/4, self.settings.window_height * .45),
+                (self.settings.window_width * .1 + idx * self.__img_pad * 3 / 4, self.settings.window_height * .45),
                 (128, 128)),
                 pygame.image.load(GADGET_PATH_LIST[selected_gadgets[idx]]),
                 selected_gadgets[idx]
             ))
 
-        # anzahl der dragable elemente!
+        # number of dragable elements!
         self.__offset = [[0, 0]] * len(self.gadgets)
 
-    def _drag_and_drop(self, event):
-        # drag and drop
+    def _drag_and_drop(self, event) -> None:
+        """
+        Implements the drag and drop functionality
+        :param event:   pygame event
+        :return:        None
+        """
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == pygame.BUTTON_LEFT:
                 for idx, gad in enumerate(self.gadgets):
@@ -171,42 +176,18 @@ class EquipmentScreen(BasicView):
                 self.gadgets[self.__drag_index].rect.y = mouse_y + self.__offset[self.__drag_index][1]
 
         if len(self.gadgets) == 0:
-            self.text_label.set_text("Equipment done")
+            self.text_label.set_text("Equipment done. Waiting for other player")
+            self._send_selection()
 
     def _init_ui_elements(self) -> None:
         self.text_label = pygame_gui.elements.UILabel(
-            relative_rect=pygame.Rect((0, self.__padding * len(self.bottom_container.elements)), self.__button_size),
+            relative_rect=pygame.Rect((0, self.__padding * len(self.bottom_container.elements)), self.__label_size),
             text="",
             manager=self.manager,
             container=self.bottom_container,
             object_id="#text_label"
         )
 
-        self.continue_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect((0, self.__padding * len(self.bottom_container.elements)), self.__button_size),
-            text="Continue",
-            manager=self.manager,
-            container=self.bottom_container,
-            object_id="#continue"
-        )
-
         # this screen is only opened if the network message request requip mapping was already received
         self.gadgets = []
         self.characters = []
-
-        if self.__debug:
-            for idx in range(6):
-                self.gadgets.append(DrawableImage(pygame.Rect(
-                    (self.settings.window_width * .15 + idx * self.__img_pad, self.settings.window_height * .45),
-                    (128, 128)
-                ), pygame.image.load("assets/GameView/axe.png"), idx))
-
-            for idx in range(2):
-                self.characters.append(DrawableImage(pygame.Rect(
-                    (self.settings.window_width * .15 + idx * self.__img_pad,
-                     self.settings.window_height * .1),
-                    (128, 128)),
-                    pygame.image.load("assets/GameView/trash.png"), idx+10))
-
-            # anzahl der dragable elemente!
-            self.__offset = [[0, 0]] * len(self.gadgets)

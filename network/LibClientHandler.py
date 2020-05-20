@@ -1,3 +1,6 @@
+"""
+Implements interface to LibClient lib
+"""
 import logging
 import cppyy
 from network.Callback import Callback
@@ -10,15 +13,18 @@ cppyy.include("LibClient.hpp")
 cppyy.include("util/UUID.hpp")
 cppyy.include("datatypes/gameplay/BaseOperation.hpp")
 
+__author__ = "Marco Deuscher"
+__date__ = "20.05.2020 (doc creation)"
+
 
 class LibClientHandler:
+    """
+    Implements a wrapper for the LibClient Object provided by LibClient lib (c++ Lib)
+    """
 
-    def __init__(self, controller):
-        """
-        todo bei caro funktioniert das auch ohne diese lokalen variablen, konnte den Grund aber noch nicht finden
-        :param controller:
-        """
+    def __init__(self):
         self.callback = Callback()
+        # new make_shared syntax introduced by cppyy==1.7.0
         self.lib_client = cppyy.gbl.libclient.LibClient(cppyy.gbl.std.make_shared(self.callback))
 
     def connect(self, servername: str, port: int) -> bool:

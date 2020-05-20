@@ -7,8 +7,8 @@ import pygame
 
 from view.BasicView import BasicView
 from view.ViewSettings import ViewSettings
-from view.GameView.Visuals.ItemChoice.VisualGadget import GADGET_NAME_LIST, GADGET_PATH_LIST
-from view.GameView.Visuals.ItemChoice.VisualCharacter import CHAR_PATH_LIST
+from view.GameView.Visuals.VisualGadget import GADGET_NAME_LIST, GADGET_PATH_LIST
+from view.GameView.Visuals.VisualCharacter import CHAR_PATH_LIST
 from controller.ControllerView import ControllerGameView
 from network.NetworkEvent import NETWORK_EVENT
 

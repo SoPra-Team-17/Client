@@ -2,8 +2,6 @@
 Implements a Point in a 3D discrete coordinate system
 """
 
-import cppyy
-
 __author__ = "Marco Deuscher"
 __date__ = "25.04.2020 (date of doc. creation)"
 
@@ -14,9 +12,18 @@ class WorldPoint:
         self.y = y
         self.z = z
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
+        """
+        Checks equality of two points
+        :param other:   other Worldpoint
+        :return:        True if x1==x2, y1==y2, z1==z2
+        """
         return self.x == other.x and self.y == other.y and self.z == other.z
 
-    def __repr__(self):
+    def __repr__(self) -> str:
+        """
+        Creates a string representation of the object
+        Can be used for debugging
+        :return:    String
+        """
         return f"x: {self.x} y: {self.y} z: {self.z}"
-

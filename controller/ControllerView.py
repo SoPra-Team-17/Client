@@ -16,7 +16,7 @@ class ControllerMainMenu(ABC):
         pass
 
     @abstractmethod
-    def start_game(self) -> None:
+    def to_lobby_view(self) -> None:
         """
         Interface to MainMenu View
         :return:    None

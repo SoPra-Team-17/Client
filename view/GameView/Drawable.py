@@ -64,18 +64,10 @@ class FieldMap:
         self.y_max = 0
 
     def translation(self, offset: Tuple[float, float]) -> None:
-        import itertools
         for drawable in self.map.list:
             if drawable is not None:
                 drawable.point.x += offset[0]
                 drawable.point.y += offset[1]
-
-    def sort(self) -> None:
-        """
-        todo ich glaube mit der neuen Datenstruktur ist das sortieren nicht mehr notwendig!
-        :return:
-        """
-        self.map.list.sort(key=lambda drawable: drawable.nearness if drawable is not None else 9999999)
 
     def draw(self, window: pygame.display, camOffset: Tuple[float, float]) -> None:
         # self.sort() --> siehe sort comment
@@ -84,6 +76,11 @@ class FieldMap:
                 drawable.draw(window, camOffset, self.settings)
 
     def highlight_drawable_in_focus(self, camOffset: Tuple[float, float]) -> None:
+        """
+        Highlight the block of the floor which is currently focused
+        :param camOffset:
+        :return:
+        """
         pos = pygame.mouse.get_pos()
         # transform mouse pos to world coords
         xt, yt = Transformations.trafo_window_to_world_coords(pos[0], pos[1], camOffset[0], camOffset[1])
@@ -100,6 +97,11 @@ class FieldMap:
             self.map[self.__hovered_coords].hovering(True)
 
     def select_block(self, camOffset: Tuple[float, float]) -> None:
+        """
+        Processes mouse click on playing field and gets coordinates of selected block (always on the floor)
+        :param camOffset:   camera offset provided by camera
+        :return:            None (sets attribute __selected_coords)
+        """
         self.map[self.__selected_coords].selected(False)
 
         pos = pygame.mouse.get_pos()

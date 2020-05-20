@@ -91,13 +91,6 @@ class SettingsScreen(BasicView):
         if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
             self.return_button_pressed()
 
-    def default_callback(self) -> None:
-        """
-        Default callback for debug purposes
-        :return:
-        """
-        logging.info("Default callback")
-
     def return_button_pressed(self) -> None:
         """
         Callback when return button is pressed

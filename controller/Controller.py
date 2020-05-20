@@ -37,7 +37,7 @@ class Controller(ControllerGameView, ControllerMainMenu, ControllerLobby):
         # call init of ControllerMainMenu
         super(ControllerGameView, self).__init__()
 
-        self.lib_client_handler = LibClientHandler(self)
+        self.lib_client_handler = LibClientHandler()
 
         self.view_settings = ViewSettings()
 
@@ -47,14 +47,14 @@ class Controller(ControllerGameView, ControllerMainMenu, ControllerLobby):
                                               pygame.RESIZABLE)
         pygame.display.set_caption(self.view_settings.window_name)
         self.clock = pygame.time.Clock()
-        self.mainMenu = MainMenu(self.screen, self, self.view_settings)
+        self.main_menu = MainMenu(self.screen, self, self.view_settings)
         self.gameView = GameView(self.screen, self, self.view_settings)
-        self.lobbyView = LobbyView(self.screen, self, self.view_settings)
+        self.lobby_view = LobbyView(self.screen, self, self.view_settings)
 
-        self.activeViews = []
+        self.active_views = []
 
         # at the beginning main menu is the active view
-        self.activeViews.append(self.mainMenu)
+        self.active_views.append(self.main_menu)
 
     def init_components(self) -> None:
         """
@@ -76,31 +76,48 @@ class Controller(ControllerGameView, ControllerMainMenu, ControllerLobby):
                     pygame.quit()
                     sys.exit(0)
                 # distribute events to all active views
-                for view in self.activeViews:
+                for view in self.active_views:
                     view.receive_event(event)
             # drawing order to all active views
-            for view in self.activeViews:
+            for view in self.active_views:
                 view.draw()
 
             self.clock.tick(self.view_settings.frame_rate)
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~VIEW SWITCHES~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    def start_game(self) -> None:
-        logging.info("Start game detected")
-        self.activeViews = [self.lobbyView]
+    def to_lobby_view(self) -> None:
+        """
+        Implements transistion to lobby view. Sets lobbyView as active view
+        :return:    None
+        """
+        logging.info("Active view: lobby view")
+        self.active_views = [self.lobby_view]
 
     def to_game_view(self) -> None:
-        self.activeViews = [self.gameView]
+        """
+        Implements transition to game view. Sets gameView as active view and goes directly to item choice screen
+        :return:    None
+        """
+        logging.info("Active view: game view")
+        self.active_views = [self.gameView]
         self.gameView.to_item_choice()
 
     def exit_game(self) -> None:
+        """
+        Exit game button in main menu pressed. Closes window and term. process
+        :return:    None
+        """
         logging.info("Exit from MainMenu")
         pygame.quit()
         sys.exit(0)
 
     def to_main_menu(self) -> None:
-        self.activeViews = [self.mainMenu]
+        """
+        Implements transistion to main menu. Sets mainMenu as active view
+        :return:
+        """
+        self.active_views = [self.main_menu]
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~SEND NETWORK MESSAGE~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # LobbyView Messages
@@ -114,6 +131,7 @@ class Controller(ControllerGameView, ControllerMainMenu, ControllerLobby):
         return self.lib_client_handler.sendReconnect()
 
     def send_hello(self, name, role) -> bool:
+        # convert String value to c++ enum
         if role == "Player":
             role = cppyy.gbl.spy.network.RoleEnum.PLAYER
         elif role == "Spectator":

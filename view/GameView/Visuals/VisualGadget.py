@@ -1,4 +1,9 @@
-import pygame
+"""
+Lookup for all non-isometric Gadget assets
+"""
+
+__author__ = "Marco Deuscher"
+__date__ = "20.05.20 (doc creation)"
 
 GADGET_NAME_LIST = ["Invalid", "Hairdryer", "Mole die", "Techicolour Prism", "Bowler Blade", "Magnetic Watch",
                      "Poison Pills", "Laser Compact", "Rocket Pen", "Gas Gloss", "Mothball Pouch", "Fog tin",

@@ -1,5 +1,5 @@
 """
-Implements actual playing field
+Implements the actual playing field
 """
 import logging
 import pygame
@@ -18,53 +18,10 @@ __author__ = "Marco Deuscher"
 __date__ = "25.04.2020 (date of doc. creation)"
 
 
-def create_playing_field(map, assets: AssetStorage) -> None:
-    """
-    Methode used for testing, generates basic field to test transformations and so on
-    :todo can be deleted as soon as scenario files can be read in
-    :param group:
-    :param window:
-    :return:
-    """
-
-    map[WorldPoint(0, 0, 1)] = Wall(WorldPoint(0, 0, 1), assets)
-    map[WorldPoint(0, 0, 2)] = Wall(WorldPoint(0, 0, 2), assets)
-
-    map[WorldPoint(3, 2, 1)] = Wall(WorldPoint(3, 2, 1), assets)
-    map[WorldPoint(3, 2, 2)] = Wall(WorldPoint(3, 2, 2), assets)
-
-    map[WorldPoint(4, 4, 1)] = Fireplace(WorldPoint(4, 4, 1), assets)
-
-    map[WorldPoint(2, 4, 1)] = RouletteTable(WorldPoint(2, 4, 1), assets)
-
-    map[WorldPoint(0, 4, 1)] = BarSeat(WorldPoint(0, 4, 1), assets)
-
-    map[WorldPoint(4, 0, 1)] = Character(WorldPoint(4, 0, 1), assets)
-
-    map[WorldPoint(6, 0, 1)] = Gadget(WorldPoint(6, 0, 1), assets)
-
-    map[WorldPoint(6, 6, 1)] = BarTable(WorldPoint(6, 6, 1), assets)
-
-    map[WorldPoint(7, 2, 1)] = Safe(WorldPoint(7, 2, 1), assets)
-
-    for i in range(0, 50, 1):
-        for j in range(0, 50, 1):
-            map[WorldPoint(i, j, 0)] = Floor(WorldPoint(i, j, 0), assets)
-
-    for x in range(50):
-        map[WorldPoint(x, -1, 1)] = Wall(WorldPoint(x, -1, 0), assets)
-        map[WorldPoint(x, -1, 1)] = Wall(WorldPoint(x, -1, 1), assets)
-        map[WorldPoint(x, -1, 2)] = Wall(WorldPoint(x, -1, 2), assets)
-
-    for y in range(50):
-        map[WorldPoint(-1, y, 0)] = Wall(WorldPoint(-1, y, 0), assets)
-        map[WorldPoint(-1, y, 1)] = Wall(WorldPoint(-1, y, 1), assets)
-        map[WorldPoint(-1, y, 2)] = Wall(WorldPoint(-1, y, 2), assets)
-
 
 class PlayingFieldScreen(BasicView):
     """
-    This class contains all the relevant information for drawing the gameview
+    This class contains all the relevant information for drawing the playing field
     """
 
     def __init__(self, window: pygame.display, controller, parent_view, settings: ViewSettings):
