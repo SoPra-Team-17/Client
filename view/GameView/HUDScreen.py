@@ -56,7 +56,6 @@ class HUDScreen(BasicView):
         self.__hovered_icon_idx = -1
         self.__hovered_count = 0
 
-
         logging.info("HudScreen init done")
 
     def draw(self) -> None:
@@ -89,15 +88,15 @@ class HUDScreen(BasicView):
 
     def _check_character_hover(self) -> None:
         # testing if character button idx is hovered, to show private_textbox
-        # TODO: fix bug: "strange behavior on character button no. 1"
-        for button in self.char_image_list:
-            # if the mouse is hovering over a character button and there is no private_textbox
-            if button.check_hover(1 / self.settings.frame_rate, False) and self.private_textbox is None:
-                self._init_private_textbox(self.char_image_list.index(button))
-                break
-            elif not (button.check_hover(1 / self.settings.frame_rate, False)) and self.private_textbox:
-                self.private_textbox.kill()
-                self.private_textbox = None
+        # textbox is now recreated on each frame...
+        # if the mouse is hovering over a character button and there is no private_textbox
+        if self.private_textbox is not None:
+            self.private_textbox.kill()
+            self.private_textbox = None
+
+        for idx, button in enumerate(self.char_image_list):
+            if button.check_hover(1 / self.settings.frame_rate, False):
+                self._init_private_textbox(idx)
 
     def _update_textbox(self) -> None:
         # todo: update info textbox text in here
@@ -240,13 +239,13 @@ class HUDScreen(BasicView):
         self.send_action_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect((self.container.rect.width - self.__button_size[0],
                                        self.container.rect.height - 2 * self.__button_size[1] - self.__distance),
-                                       (self.__button_size)),
-                                      text="Send Action",
-                                      manager=self.manager,
-                                      container=self.container,
-                                      object_id="#send_action"
+                                      (self.__button_size)),
+            text="Send Action",
+            manager=self.manager,
+            container=self.container,
+            object_id="#send_action"
 
-                                      )
+        )
 
         self.info_textbox = pygame_gui.elements.UITextBox(
             html_text="Test123",
