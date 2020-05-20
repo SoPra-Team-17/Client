@@ -98,9 +98,11 @@ class ItemChoiceScreen(BasicView):
                 logging.info("Entering equipment choice phase")
                 self.parent_view.to_equipment()
 
+        # todo debug, has to be removed at some point
         if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
             self.controller.to_main_menu()
 
+    # todo debug, has to be removed at some point
     def start_game_pressed(self) -> None:
         self.parent_view.to_equipment()
 

@@ -15,10 +15,10 @@ __author__ = "Marco Deuscher"
 __date__ = "25.04.2020 (date of doc. creation)"
 
 
-class MainMenu(BasicView):
+class MainMenuView(BasicView):
 
     def __init__(self, window: pygame.display, controller: ControllerMainMenu, settings: ViewSettings) -> None:
-        super(MainMenu, self).__init__(window, controller, settings)
+        super(MainMenuView, self).__init__(window, controller, settings)
 
         self.active_screens = []
         self.mainMenuScreen = MainMenuScreen(self.window, self.controller, self, self.settings)

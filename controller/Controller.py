@@ -8,7 +8,7 @@ import cppyy
 from cppyy.gbl.std import map, pair, set
 
 from view.ViewSettings import ViewSettings
-from view.MainMenu.MainMenu import MainMenu
+from view.MainMenu.MainMenuView import MainMenuView
 from view.GameView.GameView import GameView
 from view.Lobby.LobbyView import LobbyView
 from controller.ControllerView import ControllerGameView, ControllerMainMenu, ControllerLobby
@@ -47,7 +47,7 @@ class Controller(ControllerGameView, ControllerMainMenu, ControllerLobby):
                                               pygame.RESIZABLE)
         pygame.display.set_caption(self.view_settings.window_name)
         self.clock = pygame.time.Clock()
-        self.main_menu = MainMenu(self.screen, self, self.view_settings)
+        self.main_menu = MainMenuView(self.screen, self, self.view_settings)
         self.gameView = GameView(self.screen, self, self.view_settings)
         self.lobby_view = LobbyView(self.screen, self, self.view_settings)
 

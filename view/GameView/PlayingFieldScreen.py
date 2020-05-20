@@ -3,6 +3,7 @@ Implements the actual playing field
 """
 import logging
 import pygame
+import cppyy
 
 from view.BasicView import BasicView
 from view.GameView.Drawable import *
@@ -32,9 +33,8 @@ class PlayingFieldScreen(BasicView):
         self.asset_storage = AssetStorage()
         self.camera = self.camera = Camera(camera_speed=.5)
 
-
+        # todo values are hardcoded, do in update_playingfield, when executed for the first time
         map = DrawableMap((50, 50, 3))
-        # create_playing_field(map, assets=self.asset_storage)
 
         self.background_image = pygame.image.load("assets/GameView/background.png")
         self.background_image = pygame.transform.scale(self.background_image, (1920, 1080))
@@ -71,7 +71,6 @@ class PlayingFieldScreen(BasicView):
         This method is called when a updated playing field is received over the network (Game Status message)
         :return:    None
         """
-        import cppyy
         state = self.controller.lib_client_handler.lib_client.getState()
         field_map = state.getMap()
 

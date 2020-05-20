@@ -5,7 +5,7 @@ import logging
 import sys
 
 from controller.Controller import Controller
-from network.InitCppy import init_cppyy
+from network.InitCppyy import init_cppyy
 
 __author__ = "Marco"
 __date__ = "25.04.2020 (date of doc. creation)"

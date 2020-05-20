@@ -57,9 +57,9 @@ class LibClientHandler:
             raise TypeError("Invalid Choice type")
 
     def sendEquipmentChoice(self, equipMap: dict) -> bool:
-        # todo test if this works and check type!
         return self.lib_client.network.sendEquipmentChoice(equipMap)
 
+    # networks expects shared ptr
     def sendGameOperation(self, operation: cppyy.gbl.spy.gameplay.BaseOperation) -> bool:
         if isinstance(operation, cppyy.gbl.spy.gameplay.BaseOperation):
             return self.lib_client.network.sendGameOperation(operation)

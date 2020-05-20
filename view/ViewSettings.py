@@ -1,7 +1,6 @@
 """
 Class implementing the needed settings for each view, also provides serialization to and from json
 """
-import ipaddress
 import logging
 import json
 
