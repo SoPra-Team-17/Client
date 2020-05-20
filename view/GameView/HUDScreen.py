@@ -18,6 +18,10 @@ class HUDScreen(BasicView):
     __distance = 10
     # size of gadget and property icons
     __icon_size = 32
+    __button_size = (150, 35)
+    __dropdown_size = (200, 35)
+    # todo: hack find better solution
+    __hovering_threshold = 15
 
     def __init__(self, window: pygame.display, controller: ControllerGameView, settings: ViewSettings,
                  parent: BasicView) -> None:
@@ -36,7 +40,6 @@ class HUDScreen(BasicView):
 
         # padding to set responsive size of character buttons
         self.__padding = (self.container.rect.width / 2 - 5 * self.__distance) / 7
-        self.__buttonSize = (self.container.rect.width / 3, self.container.rect.width / 12)
         self.font = pygame.font.Font("assets/GameView/Montserrat-Regular.ttf", 20)
 
         self.background = pygame.Surface((self.container.rect.width, self.container.rect.height))
@@ -51,6 +54,8 @@ class HUDScreen(BasicView):
         self.private_textbox = None
 
         self.__hovered_icon_idx = -1
+        self.__hovered_count = 0
+
 
         logging.info("HudScreen init done")
 
@@ -60,7 +65,7 @@ class HUDScreen(BasicView):
         self._check_character_hover()
         self._update_textbox()
 
-        self.window.blit(self.background, (0, self.settings.window_height * 3 / 4))
+        self.window.blit(self.background, (0, self.container.rect.y))
         self.manager.draw_ui(self.window)
 
     def receive_event(self, event: pygame.event.Event) -> None:
@@ -87,10 +92,10 @@ class HUDScreen(BasicView):
         # TODO: fix bug: "strange behavior on character button no. 1"
         for button in self.char_image_list:
             # if the mouse is hovering over a character button and there is no private_textbox
-            if button.check_hover(1, False) and self.private_textbox is None:
+            if button.check_hover(1 / self.settings.frame_rate, False) and self.private_textbox is None:
                 self._init_private_textbox(self.char_image_list.index(button))
                 break
-            elif not (button.check_hover(1, False)) and self.private_textbox:
+            elif not (button.check_hover(1 / self.settings.frame_rate, False)) and self.private_textbox:
                 self.private_textbox.kill()
                 self.private_textbox = None
 
@@ -98,12 +103,17 @@ class HUDScreen(BasicView):
         # todo: update info textbox text in here
         # check if any button is hovered --> update
         for idx, icon in enumerate(self.gadget_icon_list + self.property_icon_list):
-            if icon.check_hover(1, False) and idx != self.__hovered_icon_idx:
-                self.__hovered_icon_idx = idx
+            if icon.check_hover(1 / self.settings.frame_rate, False):
+                if idx == self.__hovered_icon_idx:
+                    self.__hovered_count += 1
+                else:
+                    self.__hovered_icon_idx = idx
+                    continue
 
-                # todo: performance of this is horrible, bc. textbox has to be fully rebuild!
-                self.info_textbox.html_text = f"Last hovered icon {idx}"
-                self.info_textbox.rebuild()
+                if self.__hovered_count > self.__hovering_threshold:
+                    self.info_textbox.html_text = f"Last hovered icon {idx}"
+                    self.info_textbox.rebuild()
+                    self.__hovered_count = 0
                 break
 
     def _update_icons(self, char_len) -> None:
@@ -209,44 +219,47 @@ class HUDScreen(BasicView):
             options_list=self.__actionbar_options,
             starting_option=self.__actionbar_starting_opt,
             relative_rect=pygame.Rect(
-                (self.container.rect.width - 5 * self.__padding - self.__distance, self.__padding + self.__distance),
-                (2 * self.__padding, 25)),
+                (self.container.rect.width - 2 * self.__distance - self.__button_size[0] - self.__status_textbox_width -
+                 self.__dropdown_size[0], self.container.rect.height - self.__dropdown_size[1]),
+                self.__dropdown_size),
             manager=self.manager,
             container=self.container,
             object_id="#action_bar",
         )
 
         self.menu_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect((self.container.rect.width - self.__padding, self.__padding + self.__distance),
-                                      (self.__padding, 25)),
+            relative_rect=pygame.Rect(
+                (self.container.rect.width - self.__button_size[0], self.container.rect.height - self.__button_size[1]),
+                (self.__button_size)),
             text="Menu",
             manager=self.manager,
             container=self.container,
             object_id="#menu_button"
-
         )
 
         self.send_action_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect((self.container.rect.width - self.__padding, self.__distance),
-                                      (self.__padding, 25)),
-            text="Send Action",
-            manager=self.manager,
-            container=self.container,
-            object_id="#send_action"
+            relative_rect=pygame.Rect((self.container.rect.width - self.__button_size[0],
+                                       self.container.rect.height - 2 * self.__button_size[1] - self.__distance),
+                                       (self.__button_size)),
+                                      text="Send Action",
+                                      manager=self.manager,
+                                      container=self.container,
+                                      object_id="#send_action"
 
-        )
+                                      )
 
         self.info_textbox = pygame_gui.elements.UITextBox(
             html_text="Test123",
             relative_rect=pygame.Rect(
-                (self.container.rect.width - 3 * self.__padding - self.__distance, 0),
+                (self.container.rect.width - self.__button_size[0] - self.__distance - self.__info_textbox_width, 0),
                 (self.__info_textbox_width, self.container.rect.height)),
             manager=self.manager,
             container=self.container,
             object_id="info_textbox"
         )
 
-    # private_textbox to show private character information by hovering
+        # private_textbox to show private character information by hovering
+
     def _init_private_textbox(self, idx) -> None:
         self.private_textbox = pygame_gui.elements.UITextBox(
             html_text=f"<b>HP:</b>{42}<br><b>IP:</b>{13}<br><b>Chips:</b>{13}<br>",
