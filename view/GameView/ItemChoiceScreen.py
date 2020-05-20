@@ -81,14 +81,8 @@ class ItemChoiceScreen(BasicView):
         self.manager.process_events(event)
 
         if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_PRESSED:
-            switcher = {
-                self.start_game_button: self.start_game_pressed,
-            }
-            try:
-                switcher.get(event.ui_element)()
-            except TypeError:
-                self.selected_item(event.ui_element)
-                self._kill_ui_elements()
+            self.selected_item(event.ui_element)
+            self._kill_ui_elements()
 
         if event.type == pygame.USEREVENT and event.user_type == NETWORK_EVENT:
             if event.message_type == "RequestItemChoice":
@@ -101,10 +95,6 @@ class ItemChoiceScreen(BasicView):
         # todo debug, has to be removed at some point
         if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
             self.controller.to_main_menu()
-
-    # todo debug, has to be removed at some point
-    def start_game_pressed(self) -> None:
-        self.parent_view.to_equipment()
 
     def selected_item(self, element) -> None:
         """
@@ -213,14 +203,6 @@ class ItemChoiceScreen(BasicView):
         self.gadget_name_list = []
         self.char_img_list = []
         self.char_name_list = []
-
-        self.start_game_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect((0, self.__padding * len(self.bottom_container.elements)), self.__button_size),
-            text="Continue",
-            manager=self.manager,
-            container=self.bottom_container,
-            object_id="#start_game"
-        )
 
     def _kill_ui_elements(self) -> None:
         for img, name in zip(self.char_img_list, self.char_name_list):
