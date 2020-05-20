@@ -1,3 +1,6 @@
+"""
+Implements interface to LibClient lib
+"""
 import logging
 import cppyy
 from network.Callback import Callback
@@ -8,23 +11,21 @@ cppyy.add_include_path("/usr/local/include/SopraNetwork")
 
 cppyy.include("LibClient.hpp")
 cppyy.include("util/UUID.hpp")
+cppyy.include("datatypes/gameplay/BaseOperation.hpp")
+
+__author__ = "Marco Deuscher"
+__date__ = "20.05.2020 (doc creation)"
 
 
 class LibClientHandler:
+    """
+    Implements a wrapper for the LibClient Object provided by LibClient lib (c++ Lib)
+    """
 
-    def __init__(self, controller):
-        """
-        todo bei caro funktioniert das auch ohne diese lokalen variablen, konnte den Grund aber noch nicht finden
-        :param controller:
-        """
+    def __init__(self):
         self.callback = Callback()
-        self.make_shared_callback = cppyy.py_make_shared(Callback)
-        self.make_shared_model = cppyy.py_make_shared(cppyy.gbl.libclient.Model)
-        model = cppyy.gbl.libclient.Model()
-        network = cppyy.gbl.libclient.Network(self.make_shared_callback(self.callback), self.make_shared_model(model))
-        self.lib_client = cppyy.gbl.libclient.LibClient(self.make_shared_callback(self.callback))
-
-        del network, model
+        # new make_shared syntax introduced by cppyy==1.7.0
+        self.lib_client = cppyy.gbl.libclient.LibClient(cppyy.gbl.std.make_shared(self.callback))
 
     def connect(self, servername: str, port: int) -> bool:
         if isinstance(servername, str) and isinstance(port, int):
@@ -47,17 +48,20 @@ class LibClientHandler:
         return self.lib_client.network.sendReconnect()
 
     def sendItemChoice(self, choice: (cppyy.gbl.spy.util.UUID, cppyy.gbl.spy.gadget.GadgetEnum)) -> bool:
-        if isinstance(choice, (cppyy.gbl.spy.util.UUID, int)):
+        if isinstance(choice, int):
+            # convert to gadget type!
+            return self.lib_client.network.sendItemChoice(cppyy.gbl.spy.gadget.GadgetEnum(choice))
+        elif isinstance(choice, (cppyy.gbl.spy.util.UUID)):
             return self.lib_client.network.sendItemChoice(choice)
         else:
             raise TypeError("Invalid Choice type")
 
-    def sendEquipmentChoice(self, equipMap) -> bool:
-        # todo how to handle Map?
-        raise Exception("Map handling not implemented")
+    def sendEquipmentChoice(self, equipMap: dict) -> bool:
+        return self.lib_client.network.sendEquipmentChoice(equipMap)
 
-    def sendGameOperation(self, operation: cppyy.gbl.spy.gameplay.Operation) -> bool:
-        if isinstance(operation, cppyy.gbl.spy.gameplay.Operation):
+    # networks expects shared ptr
+    def sendGameOperation(self, operation: cppyy.gbl.spy.gameplay.BaseOperation) -> bool:
+        if isinstance(operation, cppyy.gbl.spy.gameplay.BaseOperation):
             return self.lib_client.network.sendGameOperation(operation)
         else:
             raise TypeError("Invalid operation type")

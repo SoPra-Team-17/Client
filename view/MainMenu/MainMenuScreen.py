@@ -63,13 +63,26 @@ class MainMenuScreen(BasicView):
             switcher.get(event.ui_element)()
 
     def start_game_pressed(self) -> None:
-        self.controller.connect_to_server(self.settings.address, self.settings.port)
-        self.controller.start_game()
+        """
+        Start game Button pressed. Connect to server. If successfull go to lobby view
+        :return:
+        """
+        success = self.controller.connect_to_server(self.settings.address, self.settings.port)
+        if success:
+            self.controller.to_lobby_view()
 
     def help_button_pressed(self) -> None:
+        """
+        Implements transition to help
+        :return:    None
+        """
         self.parent_view.help_button_pressed()
 
     def settings_button_pressed(self) -> None:
+        """
+        Implements transition to settings screen
+        :return:    None
+        """
         self.parent_view.to_settings()
 
     def _init_ui_elements(self) -> None:

@@ -18,32 +18,80 @@ class DrawableAssets(ABC):
     :todo animationen können auch hier gemacht werden
     """
 
-    @abstractmethod
-    def get_standard_image(self):
-        pass
 
-    @abstractmethod
-    def get_hovered_image(self):
-        pass
-
-
-class BlockAssets(DrawableAssets):
+class FloorAssets(DrawableAssets):
     def __init__(self):
-        self.block_image = pygame.image.load("assets/GameView/block.png").convert_alpha()
+        self.block_image = pygame.image.load("assets/PolyPixel2D/assets_1024x1024/isometric_0057.png").convert_alpha()
         self.block_image = pygame.transform.scale(self.block_image, (64, 64))
 
         self.hovered_image = self.block_image.copy()
         self.hovered_image.fill((0, 0, 0, 255), None, pygame.BLEND_RGBA_MULT)
         self.hovered_image.fill((0, 255, 0, 0), None, pygame.BLEND_RGBA_ADD)
 
-    def get_standard_image(self):
-        return self.block_image
+        self.selected_image = self.block_image.copy()
+        self.selected_image.fill((0, 0, 0, 255), None, pygame.BLEND_RGBA_MULT)
+        self.selected_image.fill((255, 255, 0, 0), None, pygame.BLEND_RGBA_ADD)
 
-    def get_hovered_image(self):
-        return self.hovered_image
+
+class WallAssets(DrawableAssets):
+    def __init__(self):
+        self.block_image = pygame.image.load("assets/PolyPixel2D/assets_1024x1024/isometric_0215.png").convert_alpha()
+        self.block_image = pygame.transform.scale(self.block_image, (64, 64))
+
+
+class FireplaceAsset(DrawableAssets):
+    def __init__(self):
+        self.block_image = pygame.image.load("assets/GameView/Lamp.png").convert_alpha()
+        self.block_image = pygame.transform.scale(self.block_image, (64, 64))
+
+
+class RouletteTableAsset(DrawableAssets):
+    def __init__(self):
+        self.block_image = pygame.image.load("assets/PolyPixel2D/assets_1024x1024/isometric_0037.png").convert_alpha()
+        self.block_image = pygame.transform.scale(self.block_image, (64, 64))
+
+
+class BarSeatAsset(DrawableAssets):
+    def __init__(self):
+        self.block_image = pygame.image.load("assets/GameView/Chair1.png").convert_alpha()
+        self.block_image = pygame.transform.scale(self.block_image, (64, 64))
+
+
+class BarTableAsset(DrawableAssets):
+    def __init__(self):
+        self.block_image = pygame.image.load("assets/GameView/Desk1.png").convert_alpha()
+        self.block_image = pygame.transform.scale(self.block_image, (64, 64))
+
+
+class CharacterAsset(DrawableAssets):
+    def __init__(self):
+        self.block_image = pygame.image.load("assets/GameView/test.png").convert_alpha()
+        self.block_image = pygame.transform.scale(self.block_image, (64, 128))
+
+
+class GadgetAsset(DrawableAssets):
+    def __init__(self):
+        self.block_image = self.block_image = pygame.image.load(
+            "assets/PolyPixel2D/assets_1024x1024/isometric_0048.png").convert_alpha()
+        self.block_image = pygame.transform.scale(self.block_image, (64, 64))
+
+
+class SafeAsset(DrawableAssets):
+    def __init__(self):
+        self.block_image = self.block_image = pygame.image.load(
+            "assets/PolyPixel2D/assets_1024x1024/isometric_0153.png").convert_alpha()
+        self.block_image = pygame.transform.scale(self.block_image, (64, 64))
 
 
 class AssetStorage():
 
     def __init__(self):
-        self.block_assets = BlockAssets()
+        self.block_assets = FloorAssets()
+        self.wall_assets = WallAssets()
+        self.fireplace_assets = FireplaceAsset()
+        self.roulettetable_assets = RouletteTableAsset()
+        self.barseat_assets = BarSeatAsset()
+        self.bartable_assets = BarTableAsset()
+        self.character_assets = CharacterAsset()
+        self.gadget_assets = GadgetAsset()
+        self.safe_assets = SafeAsset()
