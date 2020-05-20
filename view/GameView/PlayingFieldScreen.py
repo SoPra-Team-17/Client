@@ -75,6 +75,7 @@ class PlayingFieldScreen(BasicView):
         self.asset_storage = AssetStorage()
         self.camera = self.camera = Camera(camera_speed=.5)
 
+
         map = DrawableMap((50, 50, 3))
         # create_playing_field(map, assets=self.asset_storage)
 

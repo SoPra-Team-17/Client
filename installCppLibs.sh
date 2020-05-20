@@ -74,11 +74,4 @@ cmake ..
 make -j$(nproc)
 sudo make install
 
-# symbolic links for cppyy
-cd /usr/lib
-sudo ln -s /usr/local/lib/libSopraCommon.so
-sudo ln -s /usr/local/lib/libSopraNetwork.so
-sudo ln -s /usr/local/lib/libSopraClient.so
-
-
 sudo ldconfig
