@@ -1,3 +1,7 @@
+"""
+Implements the actual settings screen
+"""
+
 import logging
 import validators
 import pygame_gui.elements.ui_button
@@ -6,6 +10,9 @@ import pygame
 from view.BasicView import BasicView
 from view.ViewSettings import ViewSettings
 from controller.ControllerView import ControllerMainMenu
+
+__author__ = "Marco Deuscher"
+__date__ = "25.04.2020 (date of doc. creation)"
 
 
 class SettingsScreen(BasicView):
@@ -83,13 +90,6 @@ class SettingsScreen(BasicView):
                 logging.warning("Did not find UI-Element in Dict")
         if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
             self.return_button_pressed()
-
-    def default_callback(self) -> None:
-        """
-        Default callback for debug purposes
-        :return:
-        """
-        logging.info("Default callback")
 
     def return_button_pressed(self) -> None:
         """

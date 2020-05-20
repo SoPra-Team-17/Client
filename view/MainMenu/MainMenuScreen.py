@@ -1,3 +1,6 @@
+"""
+Implements the actual MainMenu screen
+"""
 import logging
 import pygame_gui.elements.ui_button
 import pygame
@@ -5,6 +8,9 @@ import pygame
 from view.BasicView import BasicView
 from view.ViewSettings import ViewSettings
 from controller.ControllerView import ControllerMainMenu
+
+__author__ = "Marco Deuscher"
+__date__ = "25.04.2020 (date of doc. creation)"
 
 
 class MainMenuScreen(BasicView):
@@ -49,17 +55,34 @@ class MainMenuScreen(BasicView):
 
         if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_PRESSED:
             switcher = {
-                self.start_game_button: self.controller.start_game,
+                self.start_game_button: self.start_game_pressed,
                 self.help_button: self.help_button_pressed,
                 self.settings_button: self.settings_button_pressed,
                 self.end_game_button: self.controller.exit_game
             }
             switcher.get(event.ui_element)()
 
+    def start_game_pressed(self) -> None:
+        """
+        Start game Button pressed. Connect to server. If successfull go to lobby view
+        :return:
+        """
+        success = self.controller.connect_to_server(self.settings.address, self.settings.port)
+        if success:
+            self.controller.to_lobby_view()
+
     def help_button_pressed(self) -> None:
+        """
+        Implements transition to help
+        :return:    None
+        """
         self.parent_view.help_button_pressed()
 
     def settings_button_pressed(self) -> None:
+        """
+        Implements transition to settings screen
+        :return:    None
+        """
         self.parent_view.to_settings()
 
     def _init_ui_elements(self) -> None:

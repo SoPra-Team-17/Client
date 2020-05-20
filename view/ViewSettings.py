@@ -1,6 +1,11 @@
-import ipaddress
+"""
+Class implementing the needed settings for each view, also provides serialization to and from json
+"""
 import logging
 import json
+
+__author__ = "Marco Deuscher"
+__date__ = "25.04.2020 (date of doc. creation)"
 
 
 class ViewSettings:
@@ -15,7 +20,7 @@ class ViewSettings:
             with open(self._settings_path, "r") as f:
                 parsed_json = json.load(f)
                 self.from_json(parsed_json)
-        except Exception:
+        except json.JSONDecodeError:
             logging.error("Unable to parse from JSON")
             self.window_width = 1920
             self.window_height = 1080
@@ -26,7 +31,6 @@ class ViewSettings:
             self.address = "127.0.0.1"
             self.port = 1337
 
-
         self.to_json()
 
     def __repr__(self) -> str:
@@ -35,12 +39,11 @@ class ViewSettings:
         :return:    string
         """
         return \
-            f"WindowName: {self.window_name}\n"\
-            f"Resolution: {self.window_width}x{self.window_height}\n"\
-            f"Frame rate: {self.frame_rate}\n"\
-            f"Audio effects: {self.audio_effects :.1f} Music: {self.audio_music :.1f}\n"\
+            f"WindowName: {self.window_name}\n" \
+            f"Resolution: {self.window_width}x{self.window_height}\n" \
+            f"Frame rate: {self.frame_rate}\n" \
+            f"Audio effects: {self.audio_effects :.1f} Music: {self.audio_music :.1f}\n" \
             f"Server address: {self.address} Port: {self.port}\n"
-
 
     def to_json(self) -> None:
         j = {}

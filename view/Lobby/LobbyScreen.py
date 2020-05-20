@@ -1,3 +1,6 @@
+"""
+Implements the lobby screen
+"""
 import logging
 import pygame_gui
 import pygame
@@ -6,14 +9,16 @@ from view.BasicView import BasicView
 from view.ViewSettings import ViewSettings
 from controller.ControllerView import ControllerLobby
 
+__author__ = "Marco Deuscher"
+__date__ = "20.05.20 (doc creation)"
 
 class LobbyScreen(BasicView):
-    _vald_roles = ["Player", "Spectator"]
+    _valid_roles = ["Player", "Spectator"]
     _text_labels = {
-        "start_game": "Start Game",
+        "connect": "Connect",
         "reconnect": "Reconnect",
         "name": "Enter name",
-        "role": "Select Role",
+        "role": _valid_roles[0],
         "return": "Return"
     }
 
@@ -51,7 +56,7 @@ class LobbyScreen(BasicView):
 
         if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_PRESSED:
             switcher = {
-                self.start_game_button: self.controller.to_game_view,
+                self.connect_button: self.connect_pressed,
                 self.reconnect_button: self.controller.send_reconnect,
                 self.return_button: self.controller.to_main_menu
             }
@@ -63,7 +68,20 @@ class LobbyScreen(BasicView):
         if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
             self.controller.to_main_menu()
 
+    def connect_pressed(self) -> None:
+        """
+        Connect button pressed, extract entered info and send hello to server
+        :return:    None
+        """
+        d = self._extract_info()
+        ret = self.controller.send_hello(d["name"], d["role"])
+        logging.info(f"Sending Hello successfull: {ret}")
+
     def _extract_info(self) -> dict:
+        """
+        Extract information from entryline and dropdown
+        :return:
+        """
         d = {}
         d["name"] = self.name_entryline.get_text()
         d["role"] = self.role_dropdown.selected_option
@@ -71,12 +89,12 @@ class LobbyScreen(BasicView):
         return d
 
     def _init_ui_elements(self) -> None:
-        self.start_game_button = pygame_gui.elements.UIButton(
+        self.connect_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect((0, self.__padding * len(self.container.elements)), self.__buttonSize),
-            text=self._text_labels["start_game"],
+            text=self._text_labels["connect"],
             manager=self.manager,
             container=self.container,
-            object_id="#start_game"
+            object_id="#connect"
         )
 
         self.reconnect_button = pygame_gui.elements.UIButton(
@@ -95,7 +113,7 @@ class LobbyScreen(BasicView):
 
         self.role_dropdown = pygame_gui.elements.UIDropDownMenu(
             relative_rect=pygame.Rect((0, self.__padding * len(self.container.elements)), self.__buttonSize),
-            options_list=self._vald_roles,
+            options_list=self._valid_roles,
             starting_option=self._text_labels["role"],
             manager=self.manager,
             container=self.container,

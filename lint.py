@@ -1,11 +1,19 @@
-# siehe https://medium.com/analytics-vidhya/pylint-static-code-analysis-github-action-to-fail-below-a-score-threshold-58a124aafaa0
+"""
+Implementing linting script also used by CI
+
+https://medium.com/analytics-vidhya/pylint-static-code-analysis-github-action-to-fail-below-a-score-threshold-58a124aafaa0
+was used as a reference
+"""
 import sys
 import logging
 from pylint.lint import Run
 
+__author__ = "Marco"
+__date__ = "25.04.2020 (date of doc. creation)"
+
 logging.getLogger().setLevel(logging.INFO)
 
-path = ["view", "model", "controller", "test", "util"]
+path = ["view", "model", "controller", "test", "util", "network"]
 threshold = 5
 
 results = Run(path, do_exit=False)
