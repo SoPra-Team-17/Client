@@ -74,6 +74,7 @@ class Callback(cppyy.gbl.libclient.Callback):
 
     def connectionLost(self) -> None:
         logging.info("Received Connectin lost")
+        # todo create network event and ask user if reconnect should be tried or just try to reconnect
 
     def wrongDestination(self) -> None:
         logging.info("Received Wrong Destination")

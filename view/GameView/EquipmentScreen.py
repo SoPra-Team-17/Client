@@ -52,7 +52,7 @@ class EquipmentScreen(BasicView):
         # map from GadgetEnum -> UUID (char)
         self.gadget_char_map = {}
 
-        self.manager = self.manager = pygame_gui.UIManager((self.settings.window_width, self.settings.window_height),
+        self.manager = pygame_gui.UIManager((self.settings.window_width, self.settings.window_height),
                                                            "assets/GameView/GameViewTheme.json")
 
         self.bottom_container = pygame_gui.core.UIContainer(
