@@ -12,6 +12,13 @@ class HUDScreen(BasicView):
     __actionbar_starting_opt = "Select Action"
     __actionbar_options = ["Gadget", "Gamble", "Spy", "Movement", "Retire", "Property"]
 
+    __status_textbox_width = 200
+    __info_textbox_width = 200
+    # distance to set fix distance between character buttons
+    __distance = 10
+    # size of gadget and property icons
+    __icon_size = 32
+
     def __init__(self, window: pygame.display, controller: ControllerGameView, settings: ViewSettings,
                  parent: BasicView):
         super(HUDScreen, self).__init__(window, controller, settings)
@@ -22,24 +29,18 @@ class HUDScreen(BasicView):
                                             "assets/GUI/HUDTheme.json")
 
         self.container = pygame_gui.core.UIContainer(
-            relative_rect=pygame.Rect((self.settings.window_width * .0, self.settings.window_height * 4 / 5),
-                                      (self.settings.window_width, self.settings.window_height / 5)),
+            relative_rect=pygame.Rect((self.settings.window_width * .0, self.settings.window_height * 3 / 4),
+                                      (self.settings.window_width, self.settings.window_height / 4)),
             manager=self.manager
         )
 
-        # distance to set fix distance between character buttons
-        self.__distance = 10
         # padding to set responsive size of character buttons
-        self.__padding = (self.container.rect.width / 2 - 5 * self.__distance) / 5
+        self.__padding = (self.container.rect.width / 2 - 5 * self.__distance) / 7
         self.__buttonSize = (self.container.rect.width / 3, self.container.rect.width / 12)
         self.font = pygame.font.Font("assets/GameView/Montserrat-Regular.ttf", 20)
 
         self.background = pygame.Surface((self.container.rect.width, self.container.rect.height))
         self.background.fill(self.manager.ui_theme.get_colour(None, None, "dark_bg"))
-
-        # test_surface to display images on character buttons
-        self.test_surface = pygame.image.load("assets/GameView/trash.png").convert_alpha()
-        self.test_surface = pygame.transform.scale(self.test_surface, (int(self.__padding), int(self.__padding)))
 
         self._init_ui_elements()
         # initialising private_textbox to create the attribute in HUDScreen
@@ -56,7 +57,7 @@ class HUDScreen(BasicView):
 
         self._check_character_hover()
 
-        self.window.blit(self.background, (0, self.settings.window_height * 5 / 6))
+        self.window.blit(self.background, (0, self.settings.window_height * 3 / 4))
         self.manager.draw_ui(self.window)
 
     def receive_event(self, event: pygame.event.Event) -> None:
@@ -78,7 +79,6 @@ class HUDScreen(BasicView):
     def send_action_pressed(self):
         logging.info(f"Selected Action: {self.action_bar.selected_option}")
 
-
     def _check_character_hover(self):
         # testing if character button idx is hovered, to show private_textbox
         # TODO: fix bug: "strange behavior on character button no. 1"
@@ -91,12 +91,55 @@ class HUDScreen(BasicView):
                 self.private_textbox.kill()
                 self.private_textbox = None
 
+    def _update_icons(self, char_len):
+        gadget_icon_surface = pygame.image.load("assets/GameView/axe.png")
+        gadget_icon_surface = pygame.transform.scale(gadget_icon_surface, [self.__icon_size] * 2)
+
+        property_icon_surface = pygame.image.load("assets/GameView/ClammyClothes.png")
+        property_icon_surface = pygame.transform.scale(property_icon_surface, [self.__icon_size] * 2)
+
+        for idx_char in range(char_len):
+            for idx in range(3):
+                self.gadget_icon_list.append(pygame_gui.elements.UIButton(
+                    relative_rect=pygame.Rect(
+                        (idx_char * (self.__padding + self.__distance) + idx * self.__icon_size, 0),
+                        gadget_icon_surface.get_size()),
+                    text="",
+                    manager=self.manager,
+                    container=self.container,
+                    object_id=f"#gadget_image0{idx_char}"
+                ))
+
+        for idx_char in range(char_len):
+            for idx in range(2):
+                self.property_icon_list.append(pygame_gui.elements.UIButton(
+                    relative_rect=pygame.Rect(
+                        (idx_char * (self.__padding + self.__distance) + idx * self.__icon_size, self.__icon_size),
+                        gadget_icon_surface.get_size()),
+                    text="",
+                    manager=self.manager,
+                    container=self.container,
+                    object_id=f"#gadget_image0{idx_char}"
+                ))
+
+        for gad in self.gadget_icon_list:
+            gad.normal_image = gadget_icon_surface
+            gad.rebuild()
+
+        for prop in self.property_icon_list:
+            prop.normal_image = property_icon_surface
+            prop.rebuild()
+
     def _create_character_images(self, char_len):
+        # test_surface to display images on character buttons
+        char_surface = pygame.image.load("assets/GameView/trash.png").convert_alpha()
+        char_surface = pygame.transform.scale(char_surface, (int(self.__padding), int(self.__padding)))
+
         for idx in range(char_len):
             self.char_image_list.append(
                 pygame_gui.elements.UIButton(
-                    relative_rect=pygame.Rect((idx * (self.__padding + self.__distance), 0),
-                                              self.test_surface.get_size()),
+                    relative_rect=pygame.Rect((idx * (self.__padding + self.__distance), 2 * self.__icon_size),
+                                              char_surface.get_size()),
                     text="",
                     manager=self.manager,
                     container=self.container,
@@ -106,7 +149,8 @@ class HUDScreen(BasicView):
             self.health_bar_list.append(
                 pygame_gui.elements.UIScreenSpaceHealthBar(
                     relative_rect=pygame.Rect(
-                        (idx * (self.__padding + self.__distance), self.__padding + self.__distance),
+                        (idx * (self.__padding + self.__distance),
+                         self.__padding + self.__distance + 2 * self.__icon_size),
                         (self.__padding, 25)),
                     manager=self.manager,
                     container=self.container,
@@ -121,7 +165,9 @@ class HUDScreen(BasicView):
         self.status_textbox = pygame_gui.elements.UITextBox(
             html_text=f"<strong>Intelligence Points:</strong>{ip}<br><br><strong>Movement Points:</strong>{mp}<br><br>" \
                       f"<strong>Action Points:</strong>{ap}<br><br><strong>Chips:</strong>{chips}",
-            relative_rect=pygame.Rect((len(self.char_image_list) * (self.__padding + self.__distance), 0), (200, 175)),
+            relative_rect=pygame.Rect(
+                (len(self.char_image_list) * (self.__padding + self.__distance), 0),
+                (self.__status_textbox_width, self.container.get_rect().height)),
             manager=self.manager,
             container=self.container,
             object_id="#status_textbox"
@@ -129,7 +175,7 @@ class HUDScreen(BasicView):
 
         # loading sample image on character buttons
         for char in self.char_image_list:
-            char.normal_image = self.test_surface
+            char.normal_image = char_surface
             char.rebuild()
 
     def _init_ui_elements(self) -> None:
@@ -139,16 +185,30 @@ class HUDScreen(BasicView):
 
         self._create_character_images(3)
 
+        self.gadget_icon_list = []
+        self.property_icon_list = []
+        self._update_icons(3)
+
         # implementing a dropdown action_bar with all actions a character can perform
         self.action_bar = pygame_gui.elements.UIDropDownMenu(
             options_list=self.__actionbar_options,
             starting_option=self.__actionbar_starting_opt,
             relative_rect=pygame.Rect(
-                (self.container.rect.width - 3 * self.__padding - self.__distance, self.__padding + self.__distance),
+                (self.container.rect.width - 5 * self.__padding - self.__distance, self.__padding + self.__distance),
                 (2 * self.__padding, 25)),
             manager=self.manager,
             container=self.container,
             object_id="#action_bar",
+        )
+
+        self.info_textbox = pygame_gui.elements.UITextBox(
+            html_text="Test123",
+            relative_rect=pygame.Rect(
+                (self.container.rect.width - 3 * self.__padding - self.__distance, 0),
+                (self.__info_textbox_width, self.container.rect.height)),
+            manager=self.manager,
+            container=self.container,
+            object_id="info_textbox"
         )
 
         self.menu_button = pygame_gui.elements.UIButton(
@@ -158,6 +218,7 @@ class HUDScreen(BasicView):
             manager=self.manager,
             container=self.container,
             object_id="#menu_button"
+
         )
 
         self.send_action_button = pygame_gui.elements.UIButton(
@@ -167,15 +228,15 @@ class HUDScreen(BasicView):
             manager=self.manager,
             container=self.container,
             object_id="#send_action"
+
         )
 
     # private_textbox to show private character information by hovering
     def _init_private_textbox(self, idx) -> None:
-
         self.private_textbox = pygame_gui.elements.UITextBox(
-            html_text=f"<b>Health Points:</b>{42}",
-            relative_rect=pygame.Rect((idx * (self.__padding + self.__distance), 0),
-                                      (self.__padding, 175)),
+            html_text=f"<b>HP:</b>{42}<br><b>IP:</b>{13}<br><b>Chips:</b>{13}<br>",
+            relative_rect=pygame.Rect((idx * (self.__padding + self.__distance), 2 * self.__icon_size),
+                                      (self.__padding, self.__padding)),
             manager=self.manager,
             container=self.container,
             object_id="#private_textbox"
