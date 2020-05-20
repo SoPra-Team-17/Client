@@ -8,7 +8,8 @@ class ViewSettings:
     Class implementing a state information of the current view settings
     The settings can be changed from the MainMenu or InGame
     """
-    _settings_path = "assets/Menu/settings.json"
+    _settings_path = "assets/GUI/settings.json"
+
     def __init__(self):
         try:
             with open(self._settings_path, "r") as f:
