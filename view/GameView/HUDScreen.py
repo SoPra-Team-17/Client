@@ -8,6 +8,7 @@ from controller.ControllerView import ControllerGameView
 
 
 class HUDScreen(BasicView):
+    __element_names = {"menu": "Menu", "send_action": "SendAction"}
     # starting option of dropdown
     __actionbar_starting_opt = "Select Action"
     __actionbar_options = ["Gadget", "Gamble", "Spy", "Movement", "Retire", "Property"]
@@ -46,14 +47,8 @@ class HUDScreen(BasicView):
         self.background.fill(self.manager.ui_theme.get_colour(None, None, "dark_bg"))
 
         self._init_ui_elements()
-        # initialising private_textbox to create the attribute in HUDScreen
-        self._init_private_textbox(0)
-        # kill private_textbox so that it does not appear on the screen
-        self.private_textbox.kill()
-        # set private_textbox to None as default value for receive_event method
-        self.private_textbox = None
 
-        self.__hovered_icon_idx = -1
+        self.__hovered_icon_idx = None
         self.__hovered_count = 0
 
         logging.info("HudScreen init done")
@@ -205,7 +200,7 @@ class HUDScreen(BasicView):
     def _init_ui_elements(self) -> None:
         self.char_image_list = []
         self.health_bar_list = []
-        self.status_textbox = None
+        self.private_textbox = None
 
         self._create_character_images(3)
 
@@ -230,7 +225,7 @@ class HUDScreen(BasicView):
             relative_rect=pygame.Rect(
                 (self.container.rect.width - self.__button_size[0], self.container.rect.height - self.__button_size[1]),
                 (self.__button_size)),
-            text="Menu",
+            text=self.__element_names["menu"],
             manager=self.manager,
             container=self.container,
             object_id="#menu_button"
@@ -240,7 +235,7 @@ class HUDScreen(BasicView):
             relative_rect=pygame.Rect((self.container.rect.width - self.__button_size[0],
                                        self.container.rect.height - 2 * self.__button_size[1] - self.__distance),
                                       (self.__button_size)),
-            text="Send Action",
+            text=self.__element_names["send_action"],
             manager=self.manager,
             container=self.container,
             object_id="#send_action"
