@@ -82,11 +82,32 @@ class HUDScreen(BasicView):
 
     def send_action_pressed(self) -> None:
         logging.info(f"Selected Action: {self.action_bar.selected_option}")
-        target = self.parent.parent.get_selected_field()
         type = self.action_bar.selected_option
-        ret = self.controller.send_game_operation(target=target, op_type=type)
-        print("Send Game Operation", ret)
-
+        if type == "Movement":
+            target = self.parent.parent.get_selected_field()
+            ret = self.controller.send_game_operation(target=target, op_type=type)
+            logging.info("Send Movement successfull", ret)
+        elif type == "Retire":
+            ret = self.controller.send_game_operation(op_type=type)
+            logging.info("Send Retire Action successfull", ret)
+        elif type == "Gamble":
+            # todo way needed to specify stake!
+            stake = 1
+            target = self.parent.parent.get_selected_field()
+            ret = self.controller.send_game_operation(target=target, op_type=type)
+            logging.info("Send Gamble Action successfull", ret)
+        elif type == "Property":
+            # todo way to get selected property
+            prop = 1
+            target = self.parent.parent.get_selected_field()
+            ret = self.controller.send_game_operation(target=target, op_type=type, property=prop)
+            logging.info("Send Property Action successfull", ret)
+        elif type == "Gadget":
+            # todo way to get selected gadget
+            gad = 1
+            target = self.parent.parent.get_selected_field()
+            ret = self.controller.send_game_operation(target=target, op_type=type, gadget=gad)
+            logging.info("Send Gadget Action successfull", ret)
 
     def _check_character_hover(self) -> None:
         # testing if character button idx is hovered, to show private_textbox
