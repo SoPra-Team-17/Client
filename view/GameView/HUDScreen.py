@@ -1,4 +1,5 @@
 import logging
+import traceback
 import pygame_gui
 import pygame
 
@@ -72,7 +73,8 @@ class HUDScreen(BasicView):
             }
             try:
                 switcher.get(event.ui_element)()
-            except TypeError:
+            except TypeError as t:
+                logging.error(traceback.format_exc())
                 logging.warning("Element not found in dict")
 
     def menu_button_pressed(self) -> None:
@@ -80,6 +82,11 @@ class HUDScreen(BasicView):
 
     def send_action_pressed(self) -> None:
         logging.info(f"Selected Action: {self.action_bar.selected_option}")
+        target = self.parent.parent.get_selected_field()
+        type = self.action_bar.selected_option
+        ret = self.controller.send_game_operation(target=target, op_type=type)
+        print("Send Game Operation", ret)
+
 
     def _check_character_hover(self) -> None:
         # testing if character button idx is hovered, to show private_textbox

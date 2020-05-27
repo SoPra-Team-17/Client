@@ -21,6 +21,13 @@ cppyy.add_include_path("/usr/local/include/SopraNetwork")
 cppyy.include("network/RoleEnum.hpp")
 cppyy.include("util/UUID.hpp")
 cppyy.include("datatypes/gadgets/GadgetEnum.hpp")
+cppyy.include("datatypes/gameplay/Movement.hpp")
+cppyy.include("datatypes/gameplay/RetireAction.hpp")
+cppyy.include("datatypes/gameplay/PropertyAction.hpp")
+cppyy.include("datatypes/gameplay/GadgetAction.hpp")
+cppyy.include("datatypes/gameplay/SpyAction.hpp")
+cppyy.include("datatypes/gameplay/GambleAction.hpp")
+cppyy.include("datatypes/character/PropertyEnum.hpp")
 
 __author__ = "Marco Deuscher"
 __date__ = "25.04.2020 (date of doc. creation)"
@@ -158,8 +165,53 @@ class Controller(ControllerGameView, ControllerMainMenu, ControllerLobby):
 
         return self.lib_client_handler.sendEquipmentChoice(map_cpp)
 
-    def send_game_operation(self, operation) -> bool:
-        return self.lib_client_handler.sendGameOperation(operation)
+    def send_game_operation(self, *args, **kwargs) -> bool:
+        # todo assertion if op type in valid op types
+        op_type = kwargs["op_type"]
+        target = kwargs["target"]
+
+        assert op_type in ["Gadget", "Gamble", "Spy", "Movement", "Retire", "Property"]
+
+        if target is not None:
+            target_cpp = cppyy.gbl.spy.util.Point()
+            target_cpp.x = target.x
+            target_cpp.y = target.y
+            target = target_cpp
+
+        operation = None
+
+        match_config = self.lib_client_handler.lib_client.getSettings()
+
+        active_char = self.lib_client_handler.lib_client.getActiveCharacter()
+        active_char_coords = self.lib_client_handler.lib_client.getState().getCharacters().findByUUID(
+            active_char).getCoordinates().value()
+
+        if op_type == "Movement":
+            operation = cppyy.gbl.spy.gameplay.Movement(False, target, active_char, active_char_coords)
+            logging.info("Movement op will be send to network")
+        elif op_type == "Retire":
+            operation = cppyy.gbl.spy.gameplay.RetireAction(active_char)
+            logging.info("Retire operation will be sond to network")
+        elif op_type == "Spy":
+            assert target is not None
+            operation = cppyy.gbl.spy.gameplay.SpyAction(active_char, target)
+        elif op_type == "Gamble":
+            stake = kwargs["stake"]
+            assert target is not None and stake is not None
+            operation = cppyy.gbl.spy.gameplay.GambleAction(False, target, active_char, stake)
+        elif op_type == "Property":
+            property = kwargs["property"]
+            assert target is not None and property is not None
+            property_cpp = cppyy.gbl.spy.character.PropertyEnum(property)
+            operation = cppyy.gbl.spy.gameplay.PropertyAction(False, target, active_char, property_cpp)
+        elif op_type == "Gadget":
+            gadget = kwargs["gadget"]
+            assert target is not None and gadget is not None
+            gadget_cpp = cppyy.gbl.spy.gadget.GadgetEnum(gadget)
+            operation = cppyy.gbl.spy.gameplay.GadgetAction(False, target, active_char, gadget_cpp)
+
+        operation = cppyy.gbl.std.make_shared(operation)
+        return self.lib_client_handler.sendGameOperation(operation, match_config)
 
     def send_game_leave(self) -> bool:
         return self.lib_client_handler.sendGameLeave()

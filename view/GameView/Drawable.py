@@ -63,6 +63,9 @@ class FieldMap:
         self.x_max = 0
         self.y_max = 0
 
+    def get_selected_coords(self) -> WorldPoint:
+        return self.__selected_coords if self.__selected_coords != WorldPoint(0, 0, 0) else None
+
     def translation(self, offset: Tuple[float, float]) -> None:
         for drawable in self.map.list:
             if drawable is not None:
@@ -127,6 +130,7 @@ class Floor(Drawable):
         self.block = self.asset_storage.block_assets.block_image
         self.hovered_image = self.asset_storage.block_assets.hovered_image
         self.selected_image = self.asset_storage.block_assets.selected_image
+        self.active_char_image = self.asset_storage.block_assets.active_char_image
 
         self.current_image = self.block
 
@@ -135,6 +139,9 @@ class Floor(Drawable):
 
     def selected(self, selected: bool = False) -> None:
         self.current_image = self.selected_image if selected else self.block
+
+    def active_char(self):
+        self.current_image = self.active_char_image
 
 
 class Wall(Drawable):

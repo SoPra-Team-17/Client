@@ -10,9 +10,9 @@ from view.GameView.ItemChoiceScreen import ItemChoiceScreen
 from view.GameView.EquipmentScreen import EquipmentScreen
 from view.ViewSettings import ViewSettings
 from controller.ControllerView import ControllerGameView
+from util.Coordinates import WorldPoint
 
 import pygame
-
 
 __author__ = "Marco Deuscher"
 __date__ = "20.05.20 (doc creation)"
@@ -27,7 +27,7 @@ class GameView(BasicView):
         super().__init__(window, controller, settings)
 
         self.playing_field_screen = PlayingFieldScreen(self.window, self.controller, self, self.settings)
-        self.hud_view = HUDView(self.window, self.controller, self.settings)
+        self.hud_view = HUDView(self.window, self.controller, self, self.settings)
         self.item_choice_screen = ItemChoiceScreen(self.window, self.controller, self, self.settings)
         self.equipment_screen = EquipmentScreen(self.window, self.controller, self, self.settings)
 
@@ -80,3 +80,6 @@ class GameView(BasicView):
         """
         self.active_views = [self.equipment_screen]
         self.equipment_screen.update_selection()
+
+    def get_selected_field(self) -> WorldPoint:
+        return self.playing_field_screen.map.get_selected_coords()

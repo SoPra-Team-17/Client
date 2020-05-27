@@ -12,6 +12,7 @@ cppyy.add_include_path("/usr/local/include/SopraNetwork")
 cppyy.include("LibClient.hpp")
 cppyy.include("util/UUID.hpp")
 cppyy.include("datatypes/gameplay/BaseOperation.hpp")
+cppyy.include("datatypes/matchconfig/MatchConfig.hpp")
 
 __author__ = "Marco Deuscher"
 __date__ = "20.05.2020 (doc creation)"
@@ -60,9 +61,10 @@ class LibClientHandler:
         return self.lib_client.network.sendEquipmentChoice(equipMap)
 
     # networks expects shared ptr
-    def sendGameOperation(self, operation: cppyy.gbl.spy.gameplay.BaseOperation) -> bool:
-        if isinstance(operation, cppyy.gbl.spy.gameplay.BaseOperation):
-            return self.lib_client.network.sendGameOperation(operation)
+    def sendGameOperation(self, operation: cppyy.gbl.spy.gameplay.BaseOperation, config: cppyy.gbl.spy.MatchConfig) -> bool:
+        if isinstance(operation, cppyy.gbl.spy.gameplay.BaseOperation) \
+                and isinstance(config, cppyy.gbl.spy.MatchConfig):
+            return self.lib_client.network.sendGameOperation(operation, config)
         else:
             raise TypeError("Invalid operation type")
 

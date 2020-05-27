@@ -19,7 +19,6 @@ __author__ = "Marco Deuscher"
 __date__ = "25.04.2020 (date of doc. creation)"
 
 
-
 class PlayingFieldScreen(BasicView):
     """
     This class contains all the relevant information for drawing the playing field
@@ -71,6 +70,9 @@ class PlayingFieldScreen(BasicView):
         This method is called when a updated playing field is received over the network (Game Status message)
         :return:    None
         """
+        # old map is discarded
+        self.map.map = DrawableMap((50, 50, 3))
+
         state = self.controller.lib_client_handler.lib_client.getState()
         field_map = state.getMap()
 
@@ -128,6 +130,18 @@ class PlayingFieldScreen(BasicView):
             if not char.getCoordinates().has_value():
                 continue
             point = char.getCoordinates().value()
+            logging.info(f"Char coord: x={point.x} y={point.y}")
 
             self.map.map[WorldPoint(point.x, point.y, z=1)] = Character(WorldPoint(point.x, point.y, z=1),
                                                                         self.asset_storage)
+
+        # mark active char red.
+        active_char = self.controller.lib_client_handler.lib_client.getActiveCharacter()
+        active_char_coords = self.controller.lib_client_handler.lib_client.getState().getCharacters().findByUUID(
+            active_char).getCoordinates().value()
+        wp_coords = WorldPoint(active_char_coords.x, active_char_coords.y, 0)
+        self.map.map[wp_coords].active_char()
+        self.map.map[WorldPoint(active_char_coords.x, active_char_coords.y, 2)] = Floor(
+            WorldPoint(active_char_coords.x, active_char_coords.y, 2), self.asset_storage)
+        self.map.map[WorldPoint(active_char_coords.x, active_char_coords.y, 2)].active_char()
+        logging.info("Successfully updated playing field")
