@@ -13,6 +13,7 @@ from view.GameView.GameView import GameView
 from view.Lobby.LobbyView import LobbyView
 from controller.ControllerView import ControllerGameView, ControllerMainMenu, ControllerLobby
 from network.LibClientHandler import LibClientHandler
+from network.NetworkEvent import NETWORK_EVENT
 
 cppyy.add_include_path("/usr/local/include/SopraClient")
 cppyy.add_include_path("/usr/local/include/SopraCommon")
@@ -75,6 +76,7 @@ class Controller(ControllerGameView, ControllerMainMenu, ControllerLobby):
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit(0)
+                self._handle_critical_network_events(event)
                 # distribute events to all active views
                 for view in self.active_views:
                     view.receive_event(event)
@@ -83,6 +85,17 @@ class Controller(ControllerGameView, ControllerMainMenu, ControllerLobby):
                 view.draw()
 
             self.clock.tick(self.view_settings.frame_rate)
+
+    def _handle_critical_network_events(self, event: pygame.event.Event) -> None:
+        """
+        In this method critical network events, like connection lost are handled
+        :return:    None
+        """
+        if event.type == pygame.USEREVENT and event.user_type == NETWORK_EVENT:
+            if event.message_type == "ConnectionLost":
+                logging.warning("Received connection lost event")
+            elif event.message_type == "WrongDestination":
+                logging.warning("Received wrong destination event")
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~VIEW SWITCHES~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
