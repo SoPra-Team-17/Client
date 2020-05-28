@@ -62,6 +62,7 @@ class GameView(BasicView):
         """
         self.active_views = [self.playing_field_screen, self.hud_view]
         self.playing_field_screen.update_playingfield()
+        self.hud_view.hudScreen.network_update()
 
     def to_item_choice(self) -> None:
         """

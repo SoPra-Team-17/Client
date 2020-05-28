@@ -165,7 +165,7 @@ class Controller(ControllerGameView, ControllerMainMenu, ControllerLobby):
 
         return self.lib_client_handler.sendEquipmentChoice(map_cpp)
 
-    def send_game_operation(self, *args, **kwargs) -> bool:
+    def send_game_operation(self, **kwargs) -> bool:
         # todo assertion if op type in valid op types
         op_type = kwargs["op_type"]
         target = kwargs["target"]
