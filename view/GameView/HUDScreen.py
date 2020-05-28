@@ -2,10 +2,12 @@ import logging
 import traceback
 import pygame_gui
 import pygame
+import cppyy
 
 from view.BasicView import BasicView
 from view.ViewSettings import ViewSettings
 from controller.ControllerView import ControllerGameView
+from network.NetworkEvent import NETWORK_EVENT
 
 
 class HUDScreen(BasicView):
@@ -76,6 +78,9 @@ class HUDScreen(BasicView):
             except TypeError as t:
                 logging.error(traceback.format_exc())
                 logging.warning("Element not found in dict")
+        elif event.type == pygame.USEREVENT and event.user_type == NETWORK_EVENT:
+            if event.message_type == "GameStatus":
+                self.network_update()
 
     def menu_button_pressed(self) -> None:
         self.controller.to_main_menu()
@@ -94,7 +99,7 @@ class HUDScreen(BasicView):
             # todo way needed to specify stake!
             stake = 1
             target = self.parent.parent.get_selected_field()
-            ret = self.controller.send_game_operation(target=target, op_type=type)
+            ret = self.controller.send_game_operation(target=target, op_type=type, stake=stake)
             logging.info("Send Gamble Action successfull", ret)
         elif type == "Property":
             # todo way to get selected property
@@ -138,15 +143,29 @@ class HUDScreen(BasicView):
                     self.__hovered_count = 0
                 break
 
-    def _update_icons(self, char_len) -> None:
+    def network_update(self):
+        logging.info("Performing HUD network update")
+        self._create_character_images()
+        self._update_icons()
+
+    def _update_icons(self) -> None:
+        self.gadget_icon_list.clear()
+        self.property_icon_list.clear()
+
         gadget_icon_surface = pygame.image.load("assets/GameView/axe.png")
         gadget_icon_surface = pygame.transform.scale(gadget_icon_surface, [self.__icon_size] * 2)
 
         property_icon_surface = pygame.image.load("assets/GameView/ClammyClothes.png")
         property_icon_surface = pygame.transform.scale(property_icon_surface, [self.__icon_size] * 2)
 
-        for idx_char in range(char_len):
-            for idx in range(3):
+        my_chars = self.controller.lib_client_handler.lib_client.getChosenCharacters()
+
+        for idx_char, char in enumerate(my_chars):
+            char_gadgets = self.controller.lib_client_handler.lib_client.getState().getCharacters().findByUUID(
+                char).getGadgets()
+
+            # todo display correct gadget
+            for idx in range(char_gadgets.size()):
                 self.gadget_icon_list.append(pygame_gui.elements.UIButton(
                     relative_rect=pygame.Rect(
                         (idx_char * (self.__padding + self.__distance) + idx * self.__icon_size, 0),
@@ -157,11 +176,30 @@ class HUDScreen(BasicView):
                     object_id=f"#gadget_image0{idx_char}"
                 ))
 
-        for idx_char in range(char_len):
-            for idx in range(2):
+        for idx_char, char in enumerate(my_chars):
+            current_char = self.controller.lib_client_handler.lib_client.getState().getCharacters().findByUUID(
+                char)
+            # two executable properties
+            hasObservation = current_char.hasProperty(cppyy.gbl.spy.character.PropertyEnum.OBSERVATION)
+            hasBnB = current_char.hasProperty(cppyy.gbl.spy.character.PropertyEnum.BANG_AND_BURN)
+
+            # todo display correct property
+            if hasObservation:
                 self.property_icon_list.append(pygame_gui.elements.UIButton(
                     relative_rect=pygame.Rect(
-                        (idx_char * (self.__padding + self.__distance) + idx * self.__icon_size, self.__icon_size),
+                        (idx_char * (self.__padding + self.__distance) + self.__icon_size, self.__icon_size),
+                        gadget_icon_surface.get_size()),
+                    text="",
+                    manager=self.manager,
+                    container=self.container,
+                    object_id=f"#gadget_image0{idx_char}"
+                ))
+
+            if hasBnB:
+                self.property_icon_list.append(pygame_gui.elements.UIButton(
+                    relative_rect=pygame.Rect(
+                        (idx_char * (self.__padding + self.__distance) + int(hasObservation) * self.__icon_size,
+                         self.__icon_size),
                         gadget_icon_surface.get_size()),
                     text="",
                     manager=self.manager,
@@ -177,12 +215,20 @@ class HUDScreen(BasicView):
             prop.normal_image = property_icon_surface
             prop.rebuild()
 
-    def _create_character_images(self, char_len) -> None:
+    def _create_character_images(self) -> None:
+        self.char_image_list.clear()
+        self.health_bar_list.clear()
+
         # test_surface to display images on character buttons
         char_surface = pygame.image.load("assets/GameView/trash.png").convert_alpha()
         char_surface = pygame.transform.scale(char_surface, (int(self.__padding), int(self.__padding)))
 
-        for idx in range(char_len):
+        my_chars = self.controller.lib_client_handler.lib_client.getChosenCharacters()
+        my_gadgets = self.controller.lib_client_handler.lib_client.getChosenGadgets()
+
+        ip_sum = 0
+
+        for idx, char in enumerate(my_chars):
             self.char_image_list.append(
                 pygame_gui.elements.UIButton(
                     relative_rect=pygame.Rect((idx * (self.__padding + self.__distance), 2 * self.__icon_size),
@@ -193,6 +239,7 @@ class HUDScreen(BasicView):
                     object_id=f"#char_image0{idx}"
                 )
             )
+
             self.health_bar_list.append(
                 pygame_gui.elements.UIScreenSpaceHealthBar(
                     relative_rect=pygame.Rect(
@@ -201,17 +248,32 @@ class HUDScreen(BasicView):
                         (self.__padding, 25)),
                     manager=self.manager,
                     container=self.container,
-                    object_id=f"#health_bar0{idx}"
+                    object_id=f"#health_bar0{idx}",
                 )
             )
+            # get hp of char
+            current_char= self.controller.lib_client_handler.lib_client.getState().getCharacters().findByUUID(
+                char)
+            current_char_hp = current_char.getHealthPoints()
+            ip_sum += current_char.getIntelligencePoints()
 
-        ip = 123
-        mp = 456
-        ap = 10
-        chips = 12
+            self.health_bar_list[idx].current_health = current_char_hp
+            self.health_bar_list[idx].health_percentag = current_char_hp / 100
+            self.health_bar_list[idx].rebuild()
+
+        # textbox has to be recreated, to reparse html text anyway..
+        if self.status_textbox is not None:
+            self.status_textbox.kill()
+
+        active_char = self.controller.lib_client_handler.lib_client.getActiveCharacter()
+        mp = self.controller.lib_client_handler.lib_client.getState().getCharacters().findByUUID(
+            active_char).getMovePoints()
+        ap = self.controller.lib_client_handler.lib_client.getState().getCharacters().findByUUID(
+            active_char).getActionPoints()
+
         self.status_textbox = pygame_gui.elements.UITextBox(
-            html_text=f"<strong>Intelligence Points:</strong>{ip}<br><br><strong>Movement Points:</strong>{mp}<br><br>" \
-                      f"<strong>Action Points:</strong>{ap}<br><br><strong>Chips:</strong>{chips}",
+            html_text=f"<strong>Intelligence Points:</strong>{ip_sum}<br><br><strong>Movement Points:</strong>{mp}<br><br>" \
+                      f"<strong>Action Points:</strong>{ap}<br>",
             relative_rect=pygame.Rect(
                 (len(self.char_image_list) * (self.__padding + self.__distance), 0),
                 (self.__status_textbox_width, self.container.get_rect().height)),
@@ -229,12 +291,10 @@ class HUDScreen(BasicView):
         self.char_image_list = []
         self.health_bar_list = []
         self.private_textbox = None
-
-        self._create_character_images(3)
+        self.status_textbox = None
 
         self.gadget_icon_list = []
         self.property_icon_list = []
-        self._update_icons(3)
 
         # implementing a dropdown action_bar with all actions a character can perform
         self.action_bar = pygame_gui.elements.UIDropDownMenu(
