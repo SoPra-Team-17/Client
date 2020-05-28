@@ -168,7 +168,10 @@ class Controller(ControllerGameView, ControllerMainMenu, ControllerLobby):
     def send_game_operation(self, **kwargs) -> bool:
         # todo assertion if op type in valid op types
         op_type = kwargs["op_type"]
-        target = kwargs["target"]
+        try:
+            target = kwargs["target"]
+        except KeyError:
+            target = None
 
         assert op_type in ["Gadget", "Gamble", "Spy", "Movement", "Retire", "Property"]
 
