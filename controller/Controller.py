@@ -166,14 +166,12 @@ class Controller(ControllerGameView, ControllerMainMenu, ControllerLobby):
         return self.lib_client_handler.sendEquipmentChoice(map_cpp)
 
     def send_game_operation(self, **kwargs) -> bool:
-        # todo remove assertions
         op_type = kwargs["op_type"]
         try:
             target = kwargs["target"]
         except KeyError:
             target = None
 
-        assert op_type in ["Gadget", "Gamble", "Spy", "Movement", "Retire", "Property"]
 
         if target is not None:
             target_cpp = cppyy.gbl.spy.util.Point()
@@ -196,15 +194,12 @@ class Controller(ControllerGameView, ControllerMainMenu, ControllerLobby):
             operation = cppyy.gbl.spy.gameplay.RetireAction(active_char)
             logging.info("Retire operation will be sond to network")
         elif op_type == "Spy":
-            assert target is not None
             operation = cppyy.gbl.spy.gameplay.SpyAction(active_char, target)
         elif op_type == "Gamble":
             stake = kwargs["stake"]
-            assert target is not None and stake is not None
             operation = cppyy.gbl.spy.gameplay.GambleAction(False, target, active_char, stake)
         elif op_type == "Property":
             property = kwargs["property"]
-            assert target is not None and property is not None and property in [0, 1]
             # property = 0 --> Observation, property = 1 --> Bang and Burn
             if property == 0:
                 operation = cppyy.gbl.spy.gameplay.PropertyAction(False, target, active_char,
@@ -214,7 +209,6 @@ class Controller(ControllerGameView, ControllerMainMenu, ControllerLobby):
                                                                   cppyy.gbl.spy.character.PropertyEnum(12))
         elif op_type == "Gadget":
             gadget = kwargs["gadget"]
-            assert target is not None and gadget is not None and gadget in range(1, 21)
             gadget_cpp = cppyy.gbl.spy.gadget.GadgetEnum(gadget)
             operation = cppyy.gbl.spy.gameplay.GadgetAction(False, target, active_char, gadget_cpp)
 

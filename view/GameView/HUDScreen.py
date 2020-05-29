@@ -15,6 +15,7 @@ cppyy.add_include_path("/usr/local/include/SopraCommon")
 cppyy.add_include_path("/usr/local/include/SopraNetwork")
 
 cppyy.include("util/Point.hpp")
+cppyy.include("datatypes/gadgets/GadgetEnum.hpp")
 
 
 class HUDScreen(BasicView):
@@ -133,8 +134,9 @@ class HUDScreen(BasicView):
             # reset gadget / property selection
             self.__selected_gad_prob_idx = None
         elif type == "Gadget":
-            gad = self.__idx_to_gadget_idx(self.__selected_gad_prob_idx)
-            logging.info(f"Gadget: {gad}")
+            # if selection is None, send action to pick up cocktail!
+            gad = self.__idx_to_gadget_idx(
+                self.__selected_gad_prob_idx) if self.__selected_gad_prob_idx is not None else cppyy.gbl.spy.gadget.GadgetEnum.COCKTAIL
             target = self.parent.parent.get_selected_field()
             ret = self.controller.send_game_operation(target=target, op_type=type, gadget=gad)
             logging.info(f"Send Gadget Action successfull: {ret}")
@@ -155,6 +157,7 @@ class HUDScreen(BasicView):
 
     def _update_textbox(self) -> None:
         # check if any button is hovered --> update
+        # todo improve performance of this method --> laggs when field on pf is selected
         update = False
         textbox_str = ""
         for idx, icon in enumerate(self.gadget_icon_list + self.property_icon_list):
@@ -190,9 +193,14 @@ class HUDScreen(BasicView):
 
         if self.parent.parent.get_selected_field() is not None:
             # selected field information
-            self.__create_field_info_string()
+            field = self.parent.parent.get_selected_field()
+            # only update string, when selected field has changed
+            if field != self.__selected_field:
+                self.__selected_field = field
+                self.__create_field_info_string(field)
+                textbox_str += f"<br>Field: {self.__field_info_str}"
+                update = True
 
-            textbox_str += f"<br>Field: {self.__field_info_str}"
         if update:
             self.info_textbox.html_text = textbox_str
             self.info_textbox.rebuild()
@@ -404,6 +412,7 @@ class HUDScreen(BasicView):
         hp = char.getHealthPoints()
         chips = char.getChips()
         ip = char.getIntelligencePoints()
+        # todo show name
 
         self.private_textbox = pygame_gui.elements.UITextBox(
             html_text=f"<b>HP:</b>{hp}<br><b>IP:</b>{ip}<br><b>Chips:</b>{chips}<br>",
@@ -429,16 +438,12 @@ class HUDScreen(BasicView):
             else:
                 count += current_char.getGadgets().size()
 
-    def __create_field_info_string(self) -> None:
+    def __create_field_info_string(self, field) -> None:
         """
         Gets the selected field and creates a html string, to be displayed in the info box
         todo create state, so this is only done, when the selected field has changed
         :return:
         """
-        field = self.parent.parent.get_selected_field()
-        # only update string, when selected field has changed
-        if field == self.__selected_field:
-            return
 
         logging.info("Updating field info string")
 
@@ -465,4 +470,3 @@ class HUDScreen(BasicView):
             info_str += f"Is Destroyed: {destroyed}<br>"
 
         self.__field_info_str = info_str
-
