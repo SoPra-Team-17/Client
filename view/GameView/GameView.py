@@ -12,7 +12,6 @@ from view.ViewSettings import ViewSettings
 from controller.ControllerView import ControllerGameView
 from util.Coordinates import WorldPoint
 
-import pygame
 
 __author__ = "Marco Deuscher"
 __date__ = "20.05.20 (doc creation)"

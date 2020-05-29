@@ -255,3 +255,45 @@ class Safe(Drawable):
 
     def selected(self, selected: bool = False) -> None:
         pass
+
+
+class Fog(Drawable):
+    def __init__(self, pos: WorldPoint, assets: AssetStorage) -> None:
+        super(Fog, self).__init__(pos, assets, (64, 64))
+
+        self.block = self.asset_storage.fog_assets.block_image
+        self.current_image = self.block
+
+    def hovering(self, focus: bool = False) -> None:
+        pass
+
+    def selected(self, selected: bool = False) -> None:
+        pass
+
+
+class Janitor(Drawable):
+    def __init__(self, pos: WorldPoint, assets: AssetStorage) -> None:
+        super(Janitor, self).__init__(pos, assets, (64, 64))
+
+        self.block = self.asset_storage.janitor_assets.block_image
+        self.current_image = self.block
+
+    def hovering(self, focus: bool = False) -> None:
+        pass
+
+    def selected(self, selected: bool = False) -> None:
+        pass
+
+
+class Cat(Drawable):
+    def __init__(self, pos: WorldPoint, assets: AssetStorage) -> None:
+        super(Cat, self).__init__(pos, assets, (64, 64))
+
+        self.block = self.asset_storage.cat_assets.block_image
+        self.current_image = self.block
+
+    def hovering(self, focus: bool = False) -> None:
+        pass
+
+    def selected(self, selected: bool = False) -> None:
+        pass

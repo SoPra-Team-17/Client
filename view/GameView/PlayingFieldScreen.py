@@ -125,6 +125,10 @@ class PlayingFieldScreen(BasicView):
                 if field.getGadget().has_value():
                     self.map.map[WorldPoint(x, y, z=1)] = Gadget(WorldPoint(x, y, z=1), self.asset_storage)
 
+                # check if field is foggy
+                if field.isFoggy():
+                    self.map.map[WorldPoint(x, y, z=1)] = Fog(WorldPoint(x, y, z=1), self.asset_storage)
+
         # add characters
         for char in state.getCharacters():
             if not char.getCoordinates().has_value():
@@ -132,6 +136,17 @@ class PlayingFieldScreen(BasicView):
             point = char.getCoordinates().value()
             self.map.map[WorldPoint(point.x, point.y, z=1)] = Character(WorldPoint(point.x, point.y, z=1),
                                                                         self.asset_storage)
+        # check if janitor is on playing field
+        if state.getJanitorCoordinates().has_value():
+            pos_cpp = state.getJanitorCoordinates().value()
+            self.map.map[WorldPoint(pos_cpp.x, pos_cpp.y, z=1)] = Janitor(WorldPoint(pos_cpp.x, pos_cpp.y, z=1),
+                                                                          self.asset_storage)
+
+        # check if cat is on playing field
+        if state.getCatCoordinates().has_value():
+            pos_cpp = state.getCatCoordinates().value()
+            self.map.map[WorldPoint(pos_cpp.x, pos_cpp.y, z=1)] = Cat(WorldPoint(pos_cpp.x, pos_cpp.y, z=1),
+                                                                      self.asset_storage)
 
         # mark active char red.
         active_char = self.controller.lib_client_handler.lib_client.getActiveCharacter()

@@ -5,7 +5,7 @@ import sys
 import logging
 import pygame
 import cppyy
-from cppyy.gbl.std import map, pair, set
+from cppyy.gbl.std import map, pair, set, vector
 
 from view.ViewSettings import ViewSettings
 from view.MainMenu.MainMenuView import MainMenuView
@@ -13,6 +13,7 @@ from view.GameView.GameView import GameView
 from view.Lobby.LobbyView import LobbyView
 from controller.ControllerView import ControllerGameView, ControllerMainMenu, ControllerLobby
 from network.LibClientHandler import LibClientHandler
+from network.NetworkEvent import NETWORK_EVENT
 
 cppyy.add_include_path("/usr/local/include/SopraClient")
 cppyy.add_include_path("/usr/local/include/SopraCommon")
@@ -28,6 +29,8 @@ cppyy.include("datatypes/gameplay/GadgetAction.hpp")
 cppyy.include("datatypes/gameplay/SpyAction.hpp")
 cppyy.include("datatypes/gameplay/GambleAction.hpp")
 cppyy.include("datatypes/character/PropertyEnum.hpp")
+cppyy.include("datatypes/character/CharacterInformation.hpp")
+cppyy.include("network/messages/MetaInformationKey.hpp")
 
 __author__ = "Marco Deuscher"
 __date__ = "25.04.2020 (date of doc. creation)"
@@ -83,6 +86,7 @@ class Controller(ControllerGameView, ControllerMainMenu, ControllerLobby):
                     pygame.quit()
                     sys.exit(0)
                 # distribute events to all active views
+                self._check_network_events(event)
                 for view in self.active_views:
                     view.receive_event(event)
             # drawing order to all active views
@@ -90,6 +94,21 @@ class Controller(ControllerGameView, ControllerMainMenu, ControllerLobby):
                 view.draw()
 
             self.clock.tick(self.view_settings.frame_rate)
+
+    def _check_network_events(self, event):
+        meta_message = event.type == pygame.USEREVENT and event.user_type == NETWORK_EVENT and event.message_type == "MetaInformation"
+
+        if not meta_message:
+            return
+
+        # info is cpp map from MetaInformationKey -> variant(all types)
+        info = self.lib_client_handler.lib_client.getInformation()
+        logging.info(f"Information: {info}")
+        char_information_arr = info[
+            cppyy.gbl.spy.network.messages.MetaInformationKey.CONFIGURATION_CHARACTER_INFORMATION]
+        logging.info(f"CharInfo: {char_information_arr}")
+        val = cppyy.gbl.std.get[vector[cppyy.gbl.spy.character.CharacterInformation]](char_information_arr)
+        logging.info(f"Value: {val}")
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~VIEW SWITCHES~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -109,6 +128,11 @@ class Controller(ControllerGameView, ControllerMainMenu, ControllerLobby):
         logging.info("Active view: game view")
         self.active_views = [self.gameView]
         self.gameView.to_item_choice()
+
+        # on transition to game_view request meta information for character names from server
+        key_list = [cppyy.gbl.spy.network.messages.MetaInformationKey.CONFIGURATION_CHARACTER_INFORMATION]
+        ret = self.send_request_meta_information(key_list)
+        logging.info(f"Send Request Metainformation successfull: {ret}")
 
     def exit_game(self) -> None:
         """
@@ -172,7 +196,6 @@ class Controller(ControllerGameView, ControllerMainMenu, ControllerLobby):
         except KeyError:
             target = None
 
-
         if target is not None:
             target_cpp = cppyy.gbl.spy.util.Point()
             target_cpp.x = target.x
@@ -222,7 +245,11 @@ class Controller(ControllerGameView, ControllerMainMenu, ControllerLobby):
         return self.lib_client_handler.sendRequestGamePause(gamePause)
 
     def send_request_meta_information(self, keys) -> bool:
-        return self.lib_client_handler.sendRequestMetaInformation(keys)
+        keys_cpp = vector[cppyy.gbl.spy.network.messages.MetaInformationKey]()
+        for key in keys:
+            keys_cpp.push_back(cppyy.gbl.spy.network.messages.MetaInformationKey(key))
+
+        return self.lib_client_handler.sendRequestMetaInformation(keys_cpp)
 
     def send_request_replay(self) -> bool:
         return self.lib_client_handler.sendRequestReplay()
