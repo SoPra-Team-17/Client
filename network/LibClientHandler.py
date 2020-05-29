@@ -25,7 +25,7 @@ class LibClientHandler:
     def __init__(self):
         self.callback = Callback()
         # new make_shared syntax introduced by cppyy==1.7.0
-        self.lib_client = cppyy.gbl.libclient.LibClient(cppyy.gbl.std.make_shared(self.callback))
+        self.lib_client = cppyy.gbl.libclient.LibClient(self.callback)
 
     def connect(self, servername: str, port: int) -> bool:
         if isinstance(servername, str) and isinstance(port, int):
