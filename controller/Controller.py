@@ -166,7 +166,7 @@ class Controller(ControllerGameView, ControllerMainMenu, ControllerLobby):
         return self.lib_client_handler.sendEquipmentChoice(map_cpp)
 
     def send_game_operation(self, **kwargs) -> bool:
-        # todo assertion if op type in valid op types
+        # todo remove assertions
         op_type = kwargs["op_type"]
         try:
             target = kwargs["target"]
@@ -204,12 +204,17 @@ class Controller(ControllerGameView, ControllerMainMenu, ControllerLobby):
             operation = cppyy.gbl.spy.gameplay.GambleAction(False, target, active_char, stake)
         elif op_type == "Property":
             property = kwargs["property"]
-            assert target is not None and property is not None
-            property_cpp = cppyy.gbl.spy.character.PropertyEnum(property)
-            operation = cppyy.gbl.spy.gameplay.PropertyAction(False, target, active_char, property_cpp)
+            assert target is not None and property is not None and property in [0, 1]
+            # property = 0 --> Observation, property = 1 --> Bang and Burn
+            if property == 0:
+                operation = cppyy.gbl.spy.gameplay.PropertyAction(False, target, active_char,
+                                                                  cppyy.gbl.spy.character.PropertyEnum(15))
+            elif property == 1:
+                operation = cppyy.gbl.spy.gameplay.PropertyAction(False, target, active_char,
+                                                                  cppyy.gbl.spy.character.PropertyEnum(12))
         elif op_type == "Gadget":
             gadget = kwargs["gadget"]
-            assert target is not None and gadget is not None
+            assert target is not None and gadget is not None and gadget in range(1, 21)
             gadget_cpp = cppyy.gbl.spy.gadget.GadgetEnum(gadget)
             operation = cppyy.gbl.spy.gameplay.GadgetAction(False, target, active_char, gadget_cpp)
 

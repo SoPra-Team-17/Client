@@ -6,8 +6,15 @@ import cppyy
 
 from view.BasicView import BasicView
 from view.ViewSettings import ViewSettings
+from view.GameView.Visuals.VisualGadget import GADGET_NAME_LIST, GADGET_PATH_LIST
 from controller.ControllerView import ControllerGameView
 from network.NetworkEvent import NETWORK_EVENT
+
+cppyy.add_include_path("/usr/local/include/SopraClient")
+cppyy.add_include_path("/usr/local/include/SopraCommon")
+cppyy.add_include_path("/usr/local/include/SopraNetwork")
+
+cppyy.include("util/Point.hpp")
 
 
 class HUDScreen(BasicView):
@@ -54,6 +61,11 @@ class HUDScreen(BasicView):
         self.__hovered_icon_idx = None
         self.__hovered_count = 0
 
+        self.__selected_gad_prob_idx = None
+
+        self.__selected_field = None
+        self.__field_info_str = ""
+
         logging.info("HudScreen init done")
 
     def draw(self) -> None:
@@ -81,6 +93,12 @@ class HUDScreen(BasicView):
         elif event.type == pygame.USEREVENT and event.user_type == NETWORK_EVENT:
             if event.message_type == "GameStatus":
                 self.network_update()
+        elif event.type == pygame.MOUSEBUTTONUP:
+            # check if on one of the gadget / properties imgs
+            for idx, icon in enumerate(self.gadget_icon_list + self.property_icon_list):
+                if icon.check_hover(1 / self.settings.frame_rate, False):
+                    logging.info(f"Selected gad_prob_idx: {idx}")
+                    self.__selected_gad_prob_idx = idx
 
     def menu_button_pressed(self) -> None:
         self.controller.to_main_menu()
@@ -106,17 +124,22 @@ class HUDScreen(BasicView):
             ret = self.controller.send_game_operation(target=target, op_type=type, stake=stake)
             logging.info(f"Send Gamble Action successfull {ret}")
         elif type == "Property":
-            # todo way to get selected property
-            prop = 1
+            # Observation = 0, BangAndBurn = 1
+            prop = self.__selected_gad_prob_idx - len(self.gadget_icon_list)
+            logging.info(f"Property: {prop}")
             target = self.parent.parent.get_selected_field()
             ret = self.controller.send_game_operation(target=target, op_type=type, property=prop)
             logging.info(f"Send Property Action successfull: {ret}")
+            # reset gadget / property selection
+            self.__selected_gad_prob_idx = None
         elif type == "Gadget":
-            # todo way to get selected gadget
-            gad = 1
+            gad = self.__idx_to_gadget_idx(self.__selected_gad_prob_idx)
+            logging.info(f"Gadget: {gad}")
             target = self.parent.parent.get_selected_field()
             ret = self.controller.send_game_operation(target=target, op_type=type, gadget=gad)
             logging.info(f"Send Gadget Action successfull: {ret}")
+            # reset gadget / property selection
+            self.__selected_gad_prob_idx = None
 
     def _check_character_hover(self) -> None:
         # testing if character button idx is hovered, to show private_textbox
@@ -131,8 +154,9 @@ class HUDScreen(BasicView):
                 self._init_private_textbox(idx)
 
     def _update_textbox(self) -> None:
-        # todo: update info textbox text in here
         # check if any button is hovered --> update
+        update = False
+        textbox_str = ""
         for idx, icon in enumerate(self.gadget_icon_list + self.property_icon_list):
             if icon.check_hover(1 / self.settings.frame_rate, False):
                 if idx == self.__hovered_icon_idx:
@@ -142,10 +166,37 @@ class HUDScreen(BasicView):
                     continue
 
                 if self.__hovered_count > self.__hovering_threshold:
-                    self.info_textbox.html_text = f"Last hovered icon {idx}"
-                    self.info_textbox.rebuild()
-                    self.__hovered_count = 0
+                    update = True
+                    if idx < len(self.gadget_icon_list):
+                        # hovering gadget
+                        gadget_idx = self.__idx_to_gadget_idx(idx)
+                        textbox_str += f"Hovering Gadget:<br>{GADGET_NAME_LIST[gadget_idx]}"
+                    else:
+                        # hovering property
+                        property = "Observation" if idx - len(self.gadget_icon_list) == 0 else "Bang and Burn"
+                        textbox_str += f"Hovering Property:<br>{property}"
                 break
+
+        if self.__selected_gad_prob_idx is not None:
+            if self.__selected_gad_prob_idx < len(self.gadget_icon_list):
+                # gadget selected
+                gad = self.__idx_to_gadget_idx(self.__selected_gad_prob_idx)
+                textbox_str += f"<br>Currently Selected:<br>{GADGET_NAME_LIST[gad]}"
+            else:
+                # property selected
+                property = "Observation" if self.__selected_gad_prob_idx - len(
+                    self.gadget_icon_list) == 0 else "Bang and Burn"
+                textbox_str += f"<br>Currently Selected:<br>{property}"
+
+        if self.parent.parent.get_selected_field() is not None:
+            # selected field information
+            self.__create_field_info_string()
+
+            textbox_str += f"<br>Field: {self.__field_info_str}"
+        if update:
+            self.info_textbox.html_text = textbox_str
+            self.info_textbox.rebuild()
+            self.__hovered_count = 0
 
     def network_update(self):
         logging.info("Performing HUD network update")
@@ -256,7 +307,7 @@ class HUDScreen(BasicView):
                 )
             )
             # get hp of char
-            current_char= self.controller.lib_client_handler.lib_client.getState().getCharacters().findByUUID(
+            current_char = self.controller.lib_client_handler.lib_client.getState().getCharacters().findByUUID(
                 char)
             current_char_hp = current_char.getHealthPoints()
             ip_sum += current_char.getIntelligencePoints()
@@ -362,3 +413,56 @@ class HUDScreen(BasicView):
             container=self.container,
             object_id="#private_textbox"
         )
+
+    def __idx_to_gadget_idx(self, idx):
+        """
+        Transforms between idx for UI-elements list and State Gadget idx
+        :param idx:     UI gadget idx
+        :return:        State gadget idx
+        """
+        character_ids = self.controller.lib_client_handler.lib_client.getChosenCharacters()
+        count = 0
+        for char_id in character_ids:
+            current_char = self.controller.lib_client_handler.lib_client.getState().getCharacters().findByUUID(char_id)
+            if idx - count < current_char.getGadgets().size():
+                return current_char.getGadgets()[idx - count].getType()
+            else:
+                count += current_char.getGadgets().size()
+
+    def __create_field_info_string(self) -> None:
+        """
+        Gets the selected field and creates a html string, to be displayed in the info box
+        todo create state, so this is only done, when the selected field has changed
+        :return:
+        """
+        field = self.parent.parent.get_selected_field()
+        # only update string, when selected field has changed
+        if field == self.__selected_field:
+            return
+
+        logging.info("Updating field info string")
+
+        info_str = ""
+
+        point_cpp = cppyy.gbl.spy.util.Point()
+        point_cpp.x, point_cpp.y = field.x, field.y
+        field_cpp = self.controller.lib_client_handler.lib_client.getState().getMap().getField(point_cpp)
+        # todo extract all relevant information from field and format to string
+        # todo get potential character standing on field! and display name and of own faction!
+        foggy = field_cpp.isFoggy()
+        info_str += f"Is Foggy: {foggy}<br>"
+        if field_cpp.getGadget().has_value():
+            gadget = field_cpp.getGadget().value().getType()
+            info_str += f"Gadget: {GADGET_NAME_LIST[gadget]}<br>"
+        if field_cpp.getChipAmount().has_value():
+            chip_amount = field_cpp.getChipAmount().value()
+            info_str += f"Chip Amount: {chip_amount}<br>"
+        if field_cpp.getSafeIndex().has_value():
+            safe_index = field_cpp.getSafeIndex().value()
+            info_str += f"Safe Index: {safe_index}<br>"
+        if field_cpp.isDestroyed().has_value():
+            destroyed = field_cpp.isDestroyed().value()
+            info_str += f"Is Destroyed: {destroyed}<br>"
+
+        self.__field_info_str = info_str
+

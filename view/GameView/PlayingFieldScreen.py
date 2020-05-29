@@ -130,8 +130,6 @@ class PlayingFieldScreen(BasicView):
             if not char.getCoordinates().has_value():
                 continue
             point = char.getCoordinates().value()
-            logging.info(f"Char coord: x={point.x} y={point.y}")
-
             self.map.map[WorldPoint(point.x, point.y, z=1)] = Character(WorldPoint(point.x, point.y, z=1),
                                                                         self.asset_storage)
 
