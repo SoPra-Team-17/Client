@@ -86,7 +86,6 @@ class Controller(ControllerGameView, ControllerMainMenu, ControllerLobby):
                     pygame.quit()
                     sys.exit(0)
                 # distribute events to all active views
-                self._check_network_events(event)
                 for view in self.active_views:
                     view.receive_event(event)
             # drawing order to all active views
@@ -94,12 +93,6 @@ class Controller(ControllerGameView, ControllerMainMenu, ControllerLobby):
                 view.draw()
 
             self.clock.tick(self.view_settings.frame_rate)
-
-    def _check_network_events(self, event):
-        meta_message = event.type == pygame.USEREVENT and event.user_type == NETWORK_EVENT and event.message_type == "MetaInformation"
-
-        if not meta_message:
-            return
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~VIEW SWITCHES~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

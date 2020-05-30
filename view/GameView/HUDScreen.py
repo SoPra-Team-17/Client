@@ -109,7 +109,11 @@ class HUDScreen(BasicView):
         self.controller.to_main_menu()
 
     def send_action_pressed(self) -> None:
-        logging.info(f"Selected Action: {self.action_bar.selected_option}")
+        """
+        Extract for action relevant information from GUI-Elements and call controller, which then calls the network
+        todo: could return boolean if successfull
+        :return:    None
+        """
         type = self.action_bar.selected_option
         if type == "Movement":
             target = self.parent.parent.get_selected_field()
@@ -148,9 +152,10 @@ class HUDScreen(BasicView):
             self.__selected_gad_prob_idx = None
 
     def _check_character_hover(self) -> None:
-        # testing if character button idx is hovered, to show private_textbox
-        # textbox is now recreated on each frame...
-        # if the mouse is hovering over a character button and there is no private_textbox
+        """
+        Check if character image is currently hovered, if so init private textbox on this char
+        :return:    None
+        """
         if self.private_textbox is not None:
             self.private_textbox.kill()
             self.private_textbox = None
@@ -160,8 +165,12 @@ class HUDScreen(BasicView):
                 self._init_private_textbox(idx)
 
     def _update_textbox(self) -> None:
+        """
+        Updates text inside textbox
+        todo improve performance of this method --> laggs when field on pf is selected
+        :return:    None
+        """
         # check if any button is hovered --> update
-        # todo improve performance of this method --> laggs when field on pf is selected
         update = False
         textbox_str = ""
         for idx, icon in enumerate(self.gadget_icon_list + self.property_icon_list):
@@ -210,12 +219,19 @@ class HUDScreen(BasicView):
             self.info_textbox.rebuild()
             self.__hovered_count = 0
 
-    def network_update(self):
-        logging.info("Performing HUD network update")
+    def network_update(self) -> None:
+        """
+        Interface to view. calls all internal methods needed to perform a network update step
+        :return:    None
+        """
         self._create_character_images()
         self._update_icons()
 
     def _update_icons(self) -> None:
+        """
+        Updates icons based on new network upate. Gets information from model and creates icon bar based on that
+        :return:    None
+        """
         self.gadget_icon_list.clear()
         self.property_icon_list.clear()
 
@@ -283,6 +299,10 @@ class HUDScreen(BasicView):
             prop.rebuild()
 
     def _create_character_images(self) -> None:
+        """
+        Gets information from model and creates character images based on that information
+        :return:
+        """
         self.char_image_list.clear()
         self.health_bar_list.clear()
 
@@ -409,7 +429,12 @@ class HUDScreen(BasicView):
 
 
     def _init_private_textbox(self, idx) -> None:
-        # todo properly format
+        """
+        Creates a new textbox, which displays relevant information. Is placed above the hovered character image
+        todo properly format textboxes
+        :param idx:     Idx of hovered character in UI-List
+        :return:        None
+        """
         char_id = self.controller.lib_client_handler.lib_client.getChosenCharacters()[idx]
         char = self.controller.lib_client_handler.lib_client.getState().getCharacters().findByUUID(char_id)
 

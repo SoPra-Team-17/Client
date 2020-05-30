@@ -56,7 +56,7 @@ class GameView(BasicView):
     def to_playing_field(self) -> None:
         """
         This method implements the transition to the playing field, sets playing_field_screen and hud_view as active
-        Also updates the playing field, with the prev. received network update
+        Also updates the playing field, with the prev. received network update, same for hud screen
         :return:    None
         """
         self.active_views = [self.playing_field_screen, self.hud_view]
@@ -82,4 +82,9 @@ class GameView(BasicView):
         self.equipment_screen.update_selection()
 
     def get_selected_field(self) -> WorldPoint:
+        """
+        Getter for the currently selected playing field
+        todo return type for invalid selection!
+        :return:
+        """
         return self.playing_field_screen.map.get_selected_coords()
