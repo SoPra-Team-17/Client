@@ -101,15 +101,6 @@ class Controller(ControllerGameView, ControllerMainMenu, ControllerLobby):
         if not meta_message:
             return
 
-        # info is cpp map from MetaInformationKey -> variant(all types)
-        info = self.lib_client_handler.lib_client.getInformation()
-        logging.info(f"Information: {info}")
-        char_information_arr = info[
-            cppyy.gbl.spy.network.messages.MetaInformationKey.CONFIGURATION_CHARACTER_INFORMATION]
-        logging.info(f"CharInfo: {char_information_arr}")
-        val = cppyy.gbl.std.get[vector[cppyy.gbl.spy.character.CharacterInformation]](char_information_arr)
-        logging.info(f"Value: {val}")
-
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~VIEW SWITCHES~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     def to_lobby_view(self) -> None:

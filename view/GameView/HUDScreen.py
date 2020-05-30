@@ -10,12 +10,16 @@ from view.GameView.Visuals.VisualGadget import GADGET_NAME_LIST, GADGET_PATH_LIS
 from controller.ControllerView import ControllerGameView
 from network.NetworkEvent import NETWORK_EVENT
 
+from cppyy.gbl.std import map, pair, set, vector
+
 cppyy.add_include_path("/usr/local/include/SopraClient")
 cppyy.add_include_path("/usr/local/include/SopraCommon")
 cppyy.add_include_path("/usr/local/include/SopraNetwork")
 
 cppyy.include("util/Point.hpp")
 cppyy.include("datatypes/gadgets/GadgetEnum.hpp")
+cppyy.include("datatypes/character/CharacterInformation.hpp")
+cppyy.include("network/messages/MetaInformationKey.hpp")
 
 
 class HUDScreen(BasicView):
@@ -394,7 +398,7 @@ class HUDScreen(BasicView):
         )
 
         self.info_textbox = pygame_gui.elements.UITextBox(
-            html_text="Test123",
+            html_text="",
             relative_rect=pygame.Rect(
                 (self.container.rect.width - self.__button_size[0] - self.__distance - self.__info_textbox_width, 0),
                 (self.__info_textbox_width, self.container.rect.height)),
@@ -403,19 +407,28 @@ class HUDScreen(BasicView):
             object_id="info_textbox"
         )
 
-        # private_textbox to show private character information by hovering
 
     def _init_private_textbox(self, idx) -> None:
+        # todo properly format
         char_id = self.controller.lib_client_handler.lib_client.getChosenCharacters()[idx]
         char = self.controller.lib_client_handler.lib_client.getState().getCharacters().findByUUID(char_id)
 
         hp = char.getHealthPoints()
         chips = char.getChips()
         ip = char.getIntelligencePoints()
-        # todo show name
+        info = self.controller.lib_client_handler.lib_client.getInformation()
+        variant = info[
+            cppyy.gbl.spy.network.messages.MetaInformationKey.CONFIGURATION_CHARACTER_INFORMATION]
+        char_info_vector = cppyy.gbl.std.get[vector[cppyy.gbl.spy.character.CharacterInformation]](variant)
+
+        chosen_char_id = self.controller.lib_client_handler.lib_client.getChosenCharacters()[idx]
+        name = ""
+        for char_info in char_info_vector:
+            if chosen_char_id == char_info.getCharacterId():
+                name = char_info.getName()
 
         self.private_textbox = pygame_gui.elements.UITextBox(
-            html_text=f"<b>HP:</b>{hp}<br><b>IP:</b>{ip}<br><b>Chips:</b>{chips}<br>",
+            html_text=f"<b>{name}</b><b>HP:</b>{hp}<br><b>IP:</b>{ip}<br><b>Chips:</b>{chips}<br>",
             relative_rect=pygame.Rect((idx * (self.__padding + self.__distance), 2 * self.__icon_size),
                                       (self.__padding, self.__padding)),
             manager=self.manager,
