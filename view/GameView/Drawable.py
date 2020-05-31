@@ -57,14 +57,14 @@ class FieldMap:
         self.settings = settings
 
         self.__hovered_coords = WorldPoint()
-        self.__selected_coords = WorldPoint()
+        self.__selected_coords = None
 
         # todo expect rectangle shaped playing fieldd D
         self.x_max = 0
         self.y_max = 0
 
     def get_selected_coords(self) -> WorldPoint:
-        return self.__selected_coords if self.__selected_coords != WorldPoint(0, 0, 0) else None
+        return self.__selected_coords
 
     def translation(self, offset: Tuple[float, float]) -> None:
         for drawable in self.map.list:
@@ -91,12 +91,12 @@ class FieldMap:
         if xt < 0 or xt >= self.x_max or yt < 0 or yt >= self.y_max:
             return
 
-        if self.__selected_coords != self.__hovered_coords:
+        if self.__hovered_coords != self.__selected_coords:
             self.map[self.__hovered_coords].hovering(False)
 
         self.__hovered_coords = WorldPoint(xt, yt, 0)
 
-        if self.__selected_coords != self.__hovered_coords:
+        if  self.__hovered_coords != self.__selected_coords:
             self.map[self.__hovered_coords].hovering(True)
 
     def select_block(self, camOffset: Tuple[float, float]) -> None:
@@ -105,7 +105,8 @@ class FieldMap:
         :param camOffset:   camera offset provided by camera
         :return:            None (sets attribute __selected_coords)
         """
-        self.map[self.__selected_coords].selected(False)
+        if self.__selected_coords is not None:
+            self.map[self.__selected_coords].selected(False)
 
         pos = pygame.mouse.get_pos()
         # transform mouse pos to world coords
