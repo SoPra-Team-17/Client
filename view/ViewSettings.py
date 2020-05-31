@@ -30,6 +30,7 @@ class ViewSettings:
             self.audio_music = 50
             self.address = "127.0.0.1"
             self.port = 1337
+            self.max_reconnects = 25
 
         self.to_json()
 
@@ -43,7 +44,8 @@ class ViewSettings:
             f"Resolution: {self.window_width}x{self.window_height}\n" \
             f"Frame rate: {self.frame_rate}\n" \
             f"Audio effects: {self.audio_effects :.1f} Music: {self.audio_music :.1f}\n" \
-            f"Server address: {self.address} Port: {self.port}\n"
+            f"Server address: {self.address} Port: {self.port}\n" \
+            f"Max reconnects: {self.max_reconnects}\n"
 
     def to_json(self) -> None:
         j = {}
@@ -54,6 +56,7 @@ class ViewSettings:
         j["audio_music"] = self.audio_music
         j["address"] = self.address
         j["port"] = self.port
+        j["max_reconnects"] = self.max_reconnects
 
         with open(self._settings_path, "w") as f:
             f.write(json.dumps(j))
@@ -66,3 +69,4 @@ class ViewSettings:
         self.audio_music = j["audio_music"]
         self.address = j["address"]
         self.port = j["port"]
+        self.max_reconnects = j["max_reconnects"]

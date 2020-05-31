@@ -94,6 +94,12 @@ class Controller(ControllerGameView, ControllerMainMenu, ControllerLobby):
         if event.type == pygame.USEREVENT and event.user_type == NETWORK_EVENT:
             if event.message_type == "ConnectionLost":
                 logging.warning("Received connection lost event")
+                for _ in range(self.view_settings.max_reconnects):
+                    success = self.lib_client_handler.sendReconnect()
+                    if success:
+                        logging.info("Sent reconnect message")
+                        return
+                logging.error("Unable to reconnect")
             elif event.message_type == "WrongDestination":
                 logging.warning("Received wrong destination event")
 
