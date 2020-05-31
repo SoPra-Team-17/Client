@@ -21,7 +21,7 @@ class DrawableAssets(ABC):
 
 class FloorAssets(DrawableAssets):
     def __init__(self):
-        self.block_image = pygame.image.load("assets/PolyPixel2D/assets_1024x1024/isometric_0057.png").convert_alpha()
+        self.block_image = pygame.image.load("assets/GameView/IsoAssets/PNG/VoxelTiles/voxelTile_19.png").convert_alpha()
         self.block_image = pygame.transform.scale(self.block_image, (64, 64))
 
         self.hovered_image = self.block_image.copy()
@@ -39,19 +39,19 @@ class FloorAssets(DrawableAssets):
 
 class WallAssets(DrawableAssets):
     def __init__(self):
-        self.block_image = pygame.image.load("assets/PolyPixel2D/assets_1024x1024/isometric_0215.png").convert_alpha()
+        self.block_image = pygame.image.load("assets/GameView/IsoAssets/PNG/VoxelTiles/voxelTile_27.png").convert_alpha()
         self.block_image = pygame.transform.scale(self.block_image, (64, 64))
 
 
 class FireplaceAsset(DrawableAssets):
     def __init__(self):
-        self.block_image = pygame.image.load("assets/GameView/Lamp.png").convert_alpha()
+        self.block_image = pygame.image.load("assets/GameView/IsoAssets/PNG/VoxelTiles/voxelTile_17.png").convert_alpha()
         self.block_image = pygame.transform.scale(self.block_image, (64, 64))
 
 
 class RouletteTableAsset(DrawableAssets):
     def __init__(self):
-        self.block_image = pygame.image.load("assets/PolyPixel2D/assets_1024x1024/isometric_0037.png").convert_alpha()
+        self.block_image = pygame.image.load("assets/GameView/IsoAssets/PNG/VoxelTiles/voxelTile_18.png").convert_alpha()
         self.block_image = pygame.transform.scale(self.block_image, (64, 64))
 
 
@@ -76,14 +76,14 @@ class CharacterAsset(DrawableAssets):
 class GadgetAsset(DrawableAssets):
     def __init__(self):
         self.block_image = pygame.image.load(
-            "assets/PolyPixel2D/assets_1024x1024/isometric_0048.png").convert_alpha()
+            "assets/GameView/IsoAssets/PNG/Platformertiles/platformerTile_23.png").convert_alpha()
         self.block_image = pygame.transform.scale(self.block_image, (64, 64))
 
 
 class SafeAsset(DrawableAssets):
     def __init__(self):
         self.block_image = pygame.image.load(
-            "assets/PolyPixel2D/assets_1024x1024/isometric_0153.png").convert_alpha()
+            "assets/GameView/IsoAssets/PNG/Platformertiles/platformerTile_40.png").convert_alpha()
         self.block_image = pygame.transform.scale(self.block_image, (64, 64))
 
 
