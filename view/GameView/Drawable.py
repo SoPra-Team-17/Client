@@ -230,13 +230,13 @@ class Character(Drawable):
         v_x1, v_y1 = Transformations.trafo_draw_to_screen((self.point.x, self.point.y, self.point.z), camOffset,
                                                           (self.__TILEHEIGHT, self.__TILEWIDTH), window)
         # top block
-        v_x2, v_y2 = Transformations.trafo_draw_to_screen((self.point.x, self.point.y, self.point.z + 1), camOffset,
+        v_x2, v_y2 = Transformations.trafo_draw_to_screen((self.point.x-1, self.point.y-1, self.point.z + 1), camOffset,
                                                           (self.__TILEHEIGHT, self.__TILEWIDTH), window)
 
         # only draw block, when still inside visible window! accout for block size so block is not clipped on the edge
         if -64 <= v_x1 <= settings.window_width + 64 and -64 <= v_y1 <= settings.window_height:
-            window.blit(self.block_bottom, (v_x1, v_y1))
             window.blit(self.block_top, (v_x2, v_y2))
+            window.blit(self.block_bottom, (v_x1, v_y1))
 
     def hovering(self, focus: bool = False) -> None:
         pass
@@ -313,3 +313,4 @@ class Cat(Drawable):
 
     def selected(self, selected: bool = False) -> None:
         pass
+

@@ -22,7 +22,7 @@ class DrawableAssets(ABC):
 class FloorAssets(DrawableAssets):
     def __init__(self):
         self.block_image = pygame.image.load(
-            "assets/GameView/IsoAssets/PNG/VoxelTiles/voxelTile_19.png").convert_alpha()
+            "assets/GameView/IsoAssets/PNG/Platformertiles/platformerTile_33.png").convert_alpha()
         self.block_image = pygame.transform.scale(self.block_image, (64, 64))
 
         self.hovered_image = self.block_image.copy()
@@ -74,7 +74,7 @@ class BarTableAsset(DrawableAssets):
 class CharacterAsset(DrawableAssets):
     def __init__(self):
         self.block_image_top = pygame.image.load("assets/GameView/character_top.png").convert_alpha()
-        self.block_image_bottom = pygame.image.load("assets/GameView/character.png").convert_alpha()
+        self.block_image_bottom = pygame.image.load("assets/GameView/character_bottom.png").convert_alpha()
         self.block_image_top = pygame.transform.scale(self.block_image_top, (64, 64))
         self.block_image_bottom = pygame.transform.scale(self.block_image_bottom, (64, 64))
 

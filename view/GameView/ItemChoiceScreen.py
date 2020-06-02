@@ -132,6 +132,7 @@ class ItemChoiceScreen(BasicView):
         self._create_selection_buttons(len(offeredGadgets), len(offeredCharacters))
 
         for idx, gad in enumerate(offeredGadgets):
+            print(f"GadgetIdx: {gad}")
             img = pygame.image.load(GADGET_PATH_LIST[gad])
             img = pygame.transform.scale(img, self.__img_size)
             self.gadget_img_list[idx].normal_image = img
