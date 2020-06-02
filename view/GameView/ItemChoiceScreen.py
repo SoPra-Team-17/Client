@@ -110,6 +110,7 @@ class ItemChoiceScreen(BasicView):
         if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
             self.controller.to_main_menu()
 
+        # todo fix waiting for other player label only on event
         if len(self.gadget_img_list) == 0 and len(self.char_img_list) == 0:
             self.waiting_label.set_text("Selection done. Waiting for other player.")
 
@@ -195,8 +196,7 @@ class ItemChoiceScreen(BasicView):
 
         for i in range(char_len):
             self.char_img_list.append(pygame_gui.elements.UIButton(
-                relative_rect=pygame.Rect((self.__img_pad * i, 0),
-                                          self.__img_size),
+                relative_rect=pygame.Rect((self.__img_pad * i, 0), self.__img_size),
                 text="",
                 manager=self.manager,
                 container=self.char_img_container,
@@ -205,8 +205,7 @@ class ItemChoiceScreen(BasicView):
 
             self.char_name_list.append(pygame_gui.elements.UILabel(
                 relative_rect=pygame.Rect(
-                    (self.__img_pad * i, 0),
-                    (self.__img_size[0], self.__img_size[1] / 2)),
+                    (self.__img_pad * i, 0), (self.__img_size[0], self.__img_size[1] / 2)),
                 text=f"TestChar{i}",
                 manager=self.manager,
                 container=self.char_name_container,
@@ -215,8 +214,7 @@ class ItemChoiceScreen(BasicView):
 
         for i in range(gadget_len):
             self.gadget_img_list.append(pygame_gui.elements.UIButton(
-                relative_rect=pygame.Rect((self.__img_pad * i, 0),
-                                          self.__img_size),
+                relative_rect=pygame.Rect((self.__img_pad * i, 0), self.__img_size),
                 text="",
                 manager=self.manager,
                 container=self.gadget_img_container,
@@ -224,8 +222,7 @@ class ItemChoiceScreen(BasicView):
             ))
             self.gadget_name_list.append(pygame_gui.elements.UILabel(
                 relative_rect=pygame.Rect(
-                    (self.__img_pad * i, 0),
-                    (self.__img_size[0], self.__img_size[1] / 2)),
+                    (self.__img_pad * i, 0), (self.__img_size[0], self.__img_size[1] / 2)),
                 text=f"",
                 manager=self.manager,
                 container=self.gadget_name_container,
@@ -254,8 +251,7 @@ class ItemChoiceScreen(BasicView):
 
         self.private_textbox = pygame_gui.elements.UITextBox(
             html_text=f"Gender: <b>{self.char_gender_list[idx]}</b> Features:",
-            relative_rect=pygame.Rect((self.__img_pad * idx, 0),
-                                      self.__img_size),
+            relative_rect=pygame.Rect((self.__img_pad * idx, 0), self.__img_size),
             manager=self.manager,
             container=self.char_img_container,
             object_id="#private_textbox"
