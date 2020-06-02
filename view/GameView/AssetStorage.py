@@ -21,7 +21,8 @@ class DrawableAssets(ABC):
 
 class FloorAssets(DrawableAssets):
     def __init__(self):
-        self.block_image = pygame.image.load("assets/GameView/IsoAssets/PNG/VoxelTiles/voxelTile_19.png").convert_alpha()
+        self.block_image = pygame.image.load(
+            "assets/GameView/IsoAssets/PNG/Platformertiles/platformerTile_33.png").convert_alpha()
         self.block_image = pygame.transform.scale(self.block_image, (64, 64))
 
         self.hovered_image = self.block_image.copy()
@@ -39,19 +40,22 @@ class FloorAssets(DrawableAssets):
 
 class WallAssets(DrawableAssets):
     def __init__(self):
-        self.block_image = pygame.image.load("assets/GameView/IsoAssets/PNG/VoxelTiles/voxelTile_27.png").convert_alpha()
+        self.block_image = pygame.image.load(
+            "assets/GameView/IsoAssets/PNG/VoxelTiles/voxelTile_27.png").convert_alpha()
         self.block_image = pygame.transform.scale(self.block_image, (64, 64))
 
 
 class FireplaceAsset(DrawableAssets):
     def __init__(self):
-        self.block_image = pygame.image.load("assets/GameView/IsoAssets/PNG/VoxelTiles/voxelTile_17.png").convert_alpha()
+        self.block_image = pygame.image.load(
+            "assets/GameView/IsoAssets/PNG/VoxelTiles/voxelTile_17.png").convert_alpha()
         self.block_image = pygame.transform.scale(self.block_image, (64, 64))
 
 
 class RouletteTableAsset(DrawableAssets):
     def __init__(self):
-        self.block_image = pygame.image.load("assets/GameView/IsoAssets/PNG/VoxelTiles/voxelTile_18.png").convert_alpha()
+        self.block_image = pygame.image.load(
+            "assets/GameView/IsoAssets/PNG/VoxelTiles/voxelTile_18.png").convert_alpha()
         self.block_image = pygame.transform.scale(self.block_image, (64, 64))
 
 
@@ -68,9 +72,17 @@ class BarTableAsset(DrawableAssets):
 
 
 class CharacterAsset(DrawableAssets):
+    """
+    Load all char images at the beginning!
+    Then create dict[char_name, img]
+    Then in playingfieldscreen, where chars are drawn, get characterinformation by matching UUIDs and use
+    assets.dict.get(char_name) to access correct asset for character
+    """
     def __init__(self):
-        self.block_image = pygame.image.load("assets/PolyPixel2D/assets_1024x1024/isometric_0019.png").convert_alpha()
-        self.block_image = pygame.transform.scale(self.block_image, (64, 64))
+        self.block_image_top = pygame.image.load("assets/GameView/character_top.png").convert_alpha()
+        self.block_image_bottom = pygame.image.load("assets/GameView/character_bottom.png").convert_alpha()
+        self.block_image_top = pygame.transform.scale(self.block_image_top, (64, 64))
+        self.block_image_bottom = pygame.transform.scale(self.block_image_bottom, (64, 64))
 
 
 class GadgetAsset(DrawableAssets):
