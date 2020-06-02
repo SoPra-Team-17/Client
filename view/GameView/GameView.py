@@ -8,10 +8,10 @@ from view.GameView.PlayingFieldScreen import PlayingFieldScreen
 from view.GameView.HUDView import HUDView
 from view.GameView.ItemChoiceScreen import ItemChoiceScreen
 from view.GameView.EquipmentScreen import EquipmentScreen
+from view.GameView.SettingsView import SettingsView
 from view.ViewSettings import ViewSettings
 from controller.ControllerView import ControllerGameView
 from util.Coordinates import WorldPoint
-
 
 __author__ = "Marco Deuscher"
 __date__ = "20.05.20 (doc creation)"
@@ -29,6 +29,7 @@ class GameView(BasicView):
         self.hud_view = HUDView(self.window, self.controller, self, self.settings)
         self.item_choice_screen = ItemChoiceScreen(self.window, self.controller, self, self.settings)
         self.equipment_screen = EquipmentScreen(self.window, self.controller, self, self.settings)
+        self.settings_view = SettingsView(self.window, self.controller, self, self.settings)
 
         self.active_views = [self.item_choice_screen]
 
@@ -80,6 +81,13 @@ class GameView(BasicView):
         """
         self.active_views = [self.equipment_screen]
         self.equipment_screen.update_selection()
+
+    def to_settings(self) -> None:
+        """
+        This method implements the transition to the setttings screen
+        :return:    None
+        """
+        self.active_views = [self.settings_view]
 
     def get_selected_field(self) -> WorldPoint:
         """
