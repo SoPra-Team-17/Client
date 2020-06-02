@@ -28,7 +28,7 @@ class LobbyScreen(BasicView):
         self.parent_view = parentView
 
         self.manager = pygame_gui.UIManager((self.settings.window_width, self.settings.window_height),
-                                            "assets/Menu/MainMenuTheme.json")
+                                            "assets/GUI/GUITheme.json")
 
         self.container = pygame_gui.core.UIContainer(
             relative_rect=pygame.Rect((self.settings.window_width * .465, self.settings.window_height * .4),

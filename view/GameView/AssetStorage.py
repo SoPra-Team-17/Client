@@ -32,6 +32,10 @@ class FloorAssets(DrawableAssets):
         self.selected_image.fill((0, 0, 0, 255), None, pygame.BLEND_RGBA_MULT)
         self.selected_image.fill((255, 255, 0, 0), None, pygame.BLEND_RGBA_ADD)
 
+        self.active_char_image = self.block_image.copy()
+        self.active_char_image.fill((0, 0, 0, 255), None, pygame.BLEND_RGBA_MULT)
+        self.active_char_image.fill((255, 0, 0, 0), None, pygame.BLEND_RGBA_ADD)
+
 
 class WallAssets(DrawableAssets):
     def __init__(self):
@@ -65,21 +69,42 @@ class BarTableAsset(DrawableAssets):
 
 class CharacterAsset(DrawableAssets):
     def __init__(self):
-        self.block_image = pygame.image.load("assets/GameView/test.png").convert_alpha()
-        self.block_image = pygame.transform.scale(self.block_image, (64, 128))
+        self.block_image = pygame.image.load("assets/PolyPixel2D/assets_1024x1024/isometric_0019.png").convert_alpha()
+        self.block_image = pygame.transform.scale(self.block_image, (64, 64))
 
 
 class GadgetAsset(DrawableAssets):
     def __init__(self):
-        self.block_image = self.block_image = pygame.image.load(
+        self.block_image = pygame.image.load(
             "assets/PolyPixel2D/assets_1024x1024/isometric_0048.png").convert_alpha()
         self.block_image = pygame.transform.scale(self.block_image, (64, 64))
 
 
 class SafeAsset(DrawableAssets):
     def __init__(self):
-        self.block_image = self.block_image = pygame.image.load(
+        self.block_image = pygame.image.load(
             "assets/PolyPixel2D/assets_1024x1024/isometric_0153.png").convert_alpha()
+        self.block_image = pygame.transform.scale(self.block_image, (64, 64))
+
+
+class FogAsset(DrawableAssets):
+    def __init__(self):
+        self.block_image = pygame.image.load(
+            "assets/PolyPixel2D/assets_1024x1024/isometric_0063.png").convert_alpha()
+        self.block_image = pygame.transform.scale(self.block_image, (64, 64))
+
+
+class JanitorAsset(DrawableAssets):
+    def __init__(self):
+        self.block_image = pygame.image.load(
+            "assets/PolyPixel2D/assets_1024x1024/isometric_0018.png").convert_alpha()
+        self.block_image = pygame.transform.scale(self.block_image, (64, 64))
+
+
+class CatAsset(DrawableAssets):
+    def __init__(self):
+        self.block_image = pygame.image.load(
+            "assets/PolyPixel2D/assets_1024x1024/isometric_0017.png").convert_alpha()
         self.block_image = pygame.transform.scale(self.block_image, (64, 64))
 
 
@@ -95,3 +120,6 @@ class AssetStorage():
         self.character_assets = CharacterAsset()
         self.gadget_assets = GadgetAsset()
         self.safe_assets = SafeAsset()
+        self.fog_assets = FogAsset()
+        self.janitor_assets = JanitorAsset()
+        self.cat_assets = CatAsset()

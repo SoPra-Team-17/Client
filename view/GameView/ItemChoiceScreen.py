@@ -23,6 +23,7 @@ class ItemChoiceScreen(BasicView):
         super(ItemChoiceScreen, self).__init__(window, controller, settings)
 
         self.parent_view = parentView
+        self.__img_size = (128, 128)
 
         self.manager = self.manager = pygame_gui.UIManager((self.settings.window_width, self.settings.window_height),
                                                            "assets/GameView/GameViewTheme.json")
@@ -33,32 +34,42 @@ class ItemChoiceScreen(BasicView):
             manager=self.manager)
 
         self.char_img_container = pygame_gui.core.UIContainer(
-            relative_rect=pygame.Rect((self.settings.window_width * .35, self.settings.window_height * .15),
-                                      (self.settings.window_width * 3 / 2, self.settings.window_height / 4)),
+            relative_rect=pygame.Rect((self.settings.window_width / 2 - self.__img_size[0] * 2.5,
+                                       self.settings.window_height / 2 - self.__img_size[1] * 2),
+                                      (self.__img_size[0] * 5, self.__img_size[1])),
             manager=self.manager
         )
 
         self.char_name_container = pygame_gui.core.UIContainer(
-            relative_rect=pygame.Rect((self.settings.window_width * .35, self.settings.window_height * .15),
-                                      (self.settings.window_width * 3 / 2, self.settings.window_height / 4)),
+            relative_rect=pygame.Rect((self.settings.window_width / 2 - self.__img_size[0] * 2.5,
+                                       self.settings.window_height / 2 - self.__img_size[1]),
+                                      (self.__img_size[0] * 5, self.__img_size[1] / 2)),
             manager=self.manager
         )
 
         self.gadget_img_container = pygame_gui.core.UIContainer(
-            relative_rect=pygame.Rect((self.settings.window_width * .35, self.settings.window_height * .45),
-                                      (self.settings.window_width * 3 / 2, self.settings.window_height / 4)),
+            relative_rect=pygame.Rect((self.settings.window_width / 2 - self.__img_size[0] * 2.5,
+                                       self.settings.window_height / 2 + self.__img_size[1] / 2),
+                                      (self.__img_size[0] * 5, self.__img_size[1])),
             manager=self.manager
         )
 
         self.gadget_name_container = pygame_gui.core.UIContainer(
-            relative_rect=pygame.Rect((self.settings.window_width * .35, self.settings.window_height * .45),
-                                      (self.settings.window_width * 3 / 2, self.settings.window_height / 4)),
+            relative_rect=pygame.Rect((self.settings.window_width / 2 - self.__img_size[0] * 2.5,
+                                       self.settings.window_height / 2 + self.__img_size[1] * 1.5),
+                                      (self.__img_size[0] * 5, self.__img_size[1] / 2)),
+            manager=self.manager
+        )
+
+        self.waiting_label_container = pygame_gui.core.UIContainer(
+            relative_rect=pygame.Rect((self.settings.window_width / 2 - self.__img_size[0] * 2.5,
+                                       self.settings.window_height / 2 - self.__img_size[1] / 2),
+                                      (self.__img_size[0] * 5, self.__img_size[1])),
             manager=self.manager
         )
 
         self.__padding = self.bottom_container.rect.width / 10
         self.__button_size = (self.bottom_container.rect.width / 3, self.bottom_container.rect.width / 12)
-        self.__img_size = (128, 128)
         self.__img_pad = 2 * self.__img_size[0]
 
         self.background = pygame.Surface((self.settings.window_width, self.settings.window_height))
@@ -131,8 +142,13 @@ class ItemChoiceScreen(BasicView):
 
         self._create_selection_buttons(len(offeredGadgets), len(offeredCharacters))
 
+       # if offeredCharacters is None:
+        #    self.waiting_label.set_text("Selection done. Waiting for other player.")
+
         for idx, gad in enumerate(offeredGadgets):
-            self.gadget_img_list[idx].normal_image = pygame.image.load(GADGET_PATH_LIST[gad])
+            img = pygame.image.load(GADGET_PATH_LIST[gad])
+            img = pygame.transform.scale(img, self.__img_size)
+            self.gadget_img_list[idx].normal_image = img
             self.gadget_img_list[idx].hovered_image = self.font.render(GADGET_NAME_LIST[gad], True, (255, 255, 255))
             self.gadget_img_list[idx].rebuild()
 
@@ -171,8 +187,8 @@ class ItemChoiceScreen(BasicView):
 
             self.char_name_list.append(pygame_gui.elements.UILabel(
                 relative_rect=pygame.Rect(
-                    (self.__img_pad * len(self.char_name_list), self.__img_size[0]),
-                    self.__img_size),
+                    (self.__img_pad * len(self.char_name_list), 0),
+                    (self.__img_size[0], self.__img_size[1] / 2)),
                 text=f"TestChar{i}",
                 manager=self.manager,
                 container=self.char_name_container,
@@ -190,8 +206,8 @@ class ItemChoiceScreen(BasicView):
             ))
             self.gadget_name_list.append(pygame_gui.elements.UILabel(
                 relative_rect=pygame.Rect(
-                    (self.__img_pad * len(self.gadget_name_list), self.__img_size[0]),
-                    self.__img_size),
+                    (self.__img_pad * len(self.gadget_name_list), 0),
+                    (self.__img_size[0], self.__img_size[1] / 2)),
                 text=f"",
                 manager=self.manager,
                 container=self.gadget_name_container,
@@ -203,6 +219,13 @@ class ItemChoiceScreen(BasicView):
         self.gadget_name_list = []
         self.char_img_list = []
         self.char_name_list = []
+        self.waiting_label = pygame_gui.elements.UILabel(
+            relative_rect=pygame.Rect((0, 0), (self.__img_size[0] * 5, self.__img_size[1])),
+            text="",
+            manager=self.manager,
+            container=self.waiting_label_container,
+            object_id="#waiting_label"
+        )
 
     def _kill_ui_elements(self) -> None:
         for img, name in zip(self.char_img_list, self.char_name_list):

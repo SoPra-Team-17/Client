@@ -19,7 +19,6 @@ __author__ = "Marco Deuscher"
 __date__ = "25.04.2020 (date of doc. creation)"
 
 
-
 class PlayingFieldScreen(BasicView):
     """
     This class contains all the relevant information for drawing the playing field
@@ -71,6 +70,9 @@ class PlayingFieldScreen(BasicView):
         This method is called when a updated playing field is received over the network (Game Status message)
         :return:    None
         """
+        # old map is discarded
+        self.map.map = DrawableMap((50, 50, 3))
+
         state = self.controller.lib_client_handler.lib_client.getState()
         field_map = state.getMap()
 
@@ -123,11 +125,36 @@ class PlayingFieldScreen(BasicView):
                 if field.getGadget().has_value():
                     self.map.map[WorldPoint(x, y, z=1)] = Gadget(WorldPoint(x, y, z=1), self.asset_storage)
 
+                # check if field is foggy
+                if field.isFoggy():
+                    self.map.map[WorldPoint(x, y, z=1)] = Fog(WorldPoint(x, y, z=1), self.asset_storage)
+
         # add characters
         for char in state.getCharacters():
             if not char.getCoordinates().has_value():
                 continue
             point = char.getCoordinates().value()
-
             self.map.map[WorldPoint(point.x, point.y, z=1)] = Character(WorldPoint(point.x, point.y, z=1),
                                                                         self.asset_storage)
+        # check if janitor is on playing field
+        if state.getJanitorCoordinates().has_value():
+            pos_cpp = state.getJanitorCoordinates().value()
+            self.map.map[WorldPoint(pos_cpp.x, pos_cpp.y, z=1)] = Janitor(WorldPoint(pos_cpp.x, pos_cpp.y, z=1),
+                                                                          self.asset_storage)
+
+        # check if cat is on playing field
+        if state.getCatCoordinates().has_value():
+            pos_cpp = state.getCatCoordinates().value()
+            self.map.map[WorldPoint(pos_cpp.x, pos_cpp.y, z=1)] = Cat(WorldPoint(pos_cpp.x, pos_cpp.y, z=1),
+                                                                      self.asset_storage)
+
+        # mark active char red.
+        active_char = self.controller.lib_client_handler.lib_client.getActiveCharacter()
+        active_char_coords = self.controller.lib_client_handler.lib_client.getState().getCharacters().findByUUID(
+            active_char).getCoordinates().value()
+        wp_coords = WorldPoint(active_char_coords.x, active_char_coords.y, 0)
+        self.map.map[wp_coords].active_char()
+        self.map.map[WorldPoint(active_char_coords.x, active_char_coords.y, 2)] = Floor(
+            WorldPoint(active_char_coords.x, active_char_coords.y, 2), self.asset_storage)
+        self.map.map[WorldPoint(active_char_coords.x, active_char_coords.y, 2)].active_char()
+        logging.info("Successfully updated playing field")

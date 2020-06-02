@@ -12,6 +12,7 @@ cppyy.add_include_path("/usr/local/include/SopraNetwork")
 cppyy.include("LibClient.hpp")
 cppyy.include("util/UUID.hpp")
 cppyy.include("datatypes/gameplay/BaseOperation.hpp")
+cppyy.include("datatypes/matchconfig/MatchConfig.hpp")
 
 __author__ = "Marco Deuscher"
 __date__ = "20.05.2020 (doc creation)"
@@ -25,7 +26,7 @@ class LibClientHandler:
     def __init__(self):
         self.callback = Callback()
         # new make_shared syntax introduced by cppyy==1.7.0
-        self.lib_client = cppyy.gbl.libclient.LibClient(cppyy.gbl.std.make_shared(self.callback))
+        self.lib_client = cppyy.gbl.libclient.LibClient(self.callback)
 
     def connect(self, servername: str, port: int) -> bool:
         if isinstance(servername, str) and isinstance(port, int):
@@ -60,9 +61,11 @@ class LibClientHandler:
         return self.lib_client.network.sendEquipmentChoice(equipMap)
 
     # networks expects shared ptr
-    def sendGameOperation(self, operation: cppyy.gbl.spy.gameplay.BaseOperation) -> bool:
-        if isinstance(operation, cppyy.gbl.spy.gameplay.BaseOperation):
-            return self.lib_client.network.sendGameOperation(operation)
+    def sendGameOperation(self, operation: cppyy.gbl.spy.gameplay.BaseOperation,
+                          config: cppyy.gbl.spy.MatchConfig) -> bool:
+        if isinstance(operation, cppyy.gbl.spy.gameplay.BaseOperation) \
+                and isinstance(config, cppyy.gbl.spy.MatchConfig):
+            return self.lib_client.network.sendGameOperation(operation, config)
         else:
             raise TypeError("Invalid operation type")
 
@@ -76,10 +79,7 @@ class LibClientHandler:
             raise TypeError("Invalid gamePause type (not bool)")
 
     def sendRequestMetaInformation(self, keys) -> bool:
-        if isinstance(keys, list) and all(isinstance(elem, str) for elem in keys):
-            return self.lib_client.network.sendRequestMetaInformation(keys)
-        else:
-            raise TypeError("Invalid keys type (not list of strings)")
+        return self.lib_client.network.sendRequestMetaInformation(keys)
 
     def sendRequestReplay(self) -> bool:
         return self.lib_client.network.sendRequestReplay()

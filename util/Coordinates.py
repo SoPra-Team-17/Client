@@ -18,6 +18,8 @@ class WorldPoint:
         :param other:   other Worldpoint
         :return:        True if x1==x2, y1==y2, z1==z2
         """
+        if other is None:
+            return False
         return self.x == other.x and self.y == other.y and self.z == other.z
 
     def __repr__(self) -> str:

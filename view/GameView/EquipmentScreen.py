@@ -53,7 +53,7 @@ class EquipmentScreen(BasicView):
         self.gadget_char_map = {}
 
         self.manager = pygame_gui.UIManager((self.settings.window_width, self.settings.window_height),
-                                                           "assets/GameView/GameViewTheme.json")
+                                            "assets/GameView/GameViewTheme.json")
 
         self.bottom_container = pygame_gui.core.UIContainer(
             relative_rect=pygame.Rect((self.settings.window_width * .465, self.settings.window_height * .7),
@@ -136,10 +136,12 @@ class EquipmentScreen(BasicView):
             ))
 
         for idx in range(selected_gadgets.size()):
+            img = pygame.image.load(GADGET_PATH_LIST[selected_gadgets[idx]])
+            img = pygame.transform.scale(img, self.__img_size)
             self.gadgets.append(DrawableImage(pygame.Rect(
                 (self.settings.window_width * .1 + idx * self.__img_pad * 3 / 4, self.settings.window_height * .45),
                 (128, 128)),
-                pygame.image.load(GADGET_PATH_LIST[selected_gadgets[idx]]),
+                img,
                 selected_gadgets[idx]
             ))
 
