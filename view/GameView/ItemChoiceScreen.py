@@ -132,7 +132,9 @@ class ItemChoiceScreen(BasicView):
         self._create_selection_buttons(len(offeredGadgets), len(offeredCharacters))
 
         for idx, gad in enumerate(offeredGadgets):
-            self.gadget_img_list[idx].normal_image = pygame.image.load(GADGET_PATH_LIST[gad])
+            img = pygame.image.load(GADGET_PATH_LIST[gad])
+            img = pygame.transform.scale(img, self.__img_size)
+            self.gadget_img_list[idx].normal_image = img
             self.gadget_img_list[idx].hovered_image = self.font.render(GADGET_NAME_LIST[gad], True, (255, 255, 255))
             self.gadget_img_list[idx].rebuild()
 

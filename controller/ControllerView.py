@@ -51,7 +51,7 @@ class ControllerGameView(ABC):
         pass
 
     @abstractmethod
-    def send_game_operation(self, operation) -> bool:
+    def send_game_operation(self, **kwargs) -> bool:
         pass
 
     @abstractmethod

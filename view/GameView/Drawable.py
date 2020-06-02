@@ -57,11 +57,14 @@ class FieldMap:
         self.settings = settings
 
         self.__hovered_coords = WorldPoint()
-        self.__selected_coords = WorldPoint()
+        self.__selected_coords = None
 
         # todo expect rectangle shaped playing fieldd D
         self.x_max = 0
         self.y_max = 0
+
+    def get_selected_coords(self) -> WorldPoint:
+        return self.__selected_coords
 
     def translation(self, offset: Tuple[float, float]) -> None:
         for drawable in self.map.list:
@@ -88,12 +91,12 @@ class FieldMap:
         if xt < 0 or xt >= self.x_max or yt < 0 or yt >= self.y_max:
             return
 
-        if self.__selected_coords != self.__hovered_coords:
+        if self.__hovered_coords != self.__selected_coords:
             self.map[self.__hovered_coords].hovering(False)
 
         self.__hovered_coords = WorldPoint(xt, yt, 0)
 
-        if self.__selected_coords != self.__hovered_coords:
+        if  self.__hovered_coords != self.__selected_coords:
             self.map[self.__hovered_coords].hovering(True)
 
     def select_block(self, camOffset: Tuple[float, float]) -> None:
@@ -102,7 +105,8 @@ class FieldMap:
         :param camOffset:   camera offset provided by camera
         :return:            None (sets attribute __selected_coords)
         """
-        self.map[self.__selected_coords].selected(False)
+        if self.__selected_coords is not None:
+            self.map[self.__selected_coords].selected(False)
 
         pos = pygame.mouse.get_pos()
         # transform mouse pos to world coords
@@ -127,6 +131,7 @@ class Floor(Drawable):
         self.block = self.asset_storage.block_assets.block_image
         self.hovered_image = self.asset_storage.block_assets.hovered_image
         self.selected_image = self.asset_storage.block_assets.selected_image
+        self.active_char_image = self.asset_storage.block_assets.active_char_image
 
         self.current_image = self.block
 
@@ -135,6 +140,9 @@ class Floor(Drawable):
 
     def selected(self, selected: bool = False) -> None:
         self.current_image = self.selected_image if selected else self.block
+
+    def active_char(self):
+        self.current_image = self.active_char_image
 
 
 class Wall(Drawable):
@@ -241,6 +249,48 @@ class Safe(Drawable):
         super(Safe, self).__init__(pos, assets, (64, 64))
 
         self.block = self.asset_storage.safe_assets.block_image
+        self.current_image = self.block
+
+    def hovering(self, focus: bool = False) -> None:
+        pass
+
+    def selected(self, selected: bool = False) -> None:
+        pass
+
+
+class Fog(Drawable):
+    def __init__(self, pos: WorldPoint, assets: AssetStorage) -> None:
+        super(Fog, self).__init__(pos, assets, (64, 64))
+
+        self.block = self.asset_storage.fog_assets.block_image
+        self.current_image = self.block
+
+    def hovering(self, focus: bool = False) -> None:
+        pass
+
+    def selected(self, selected: bool = False) -> None:
+        pass
+
+
+class Janitor(Drawable):
+    def __init__(self, pos: WorldPoint, assets: AssetStorage) -> None:
+        super(Janitor, self).__init__(pos, assets, (64, 64))
+
+        self.block = self.asset_storage.janitor_assets.block_image
+        self.current_image = self.block
+
+    def hovering(self, focus: bool = False) -> None:
+        pass
+
+    def selected(self, selected: bool = False) -> None:
+        pass
+
+
+class Cat(Drawable):
+    def __init__(self, pos: WorldPoint, assets: AssetStorage) -> None:
+        super(Cat, self).__init__(pos, assets, (64, 64))
+
+        self.block = self.asset_storage.cat_assets.block_image
         self.current_image = self.block
 
     def hovering(self, focus: bool = False) -> None:

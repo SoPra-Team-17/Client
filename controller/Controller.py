@@ -5,7 +5,7 @@ import sys
 import logging
 import pygame
 import cppyy
-from cppyy.gbl.std import map, pair, set
+from cppyy.gbl.std import map, pair, set, vector
 
 from view.ViewSettings import ViewSettings
 from view.MainMenu.MainMenuView import MainMenuView
@@ -13,6 +13,7 @@ from view.GameView.GameView import GameView
 from view.Lobby.LobbyView import LobbyView
 from controller.ControllerView import ControllerGameView, ControllerMainMenu, ControllerLobby
 from network.LibClientHandler import LibClientHandler
+from network.NetworkEvent import NETWORK_EVENT
 
 cppyy.add_include_path("/usr/local/include/SopraClient")
 cppyy.add_include_path("/usr/local/include/SopraCommon")
@@ -21,6 +22,15 @@ cppyy.add_include_path("/usr/local/include/SopraNetwork")
 cppyy.include("network/RoleEnum.hpp")
 cppyy.include("util/UUID.hpp")
 cppyy.include("datatypes/gadgets/GadgetEnum.hpp")
+cppyy.include("datatypes/gameplay/Movement.hpp")
+cppyy.include("datatypes/gameplay/RetireAction.hpp")
+cppyy.include("datatypes/gameplay/PropertyAction.hpp")
+cppyy.include("datatypes/gameplay/GadgetAction.hpp")
+cppyy.include("datatypes/gameplay/SpyAction.hpp")
+cppyy.include("datatypes/gameplay/GambleAction.hpp")
+cppyy.include("datatypes/character/PropertyEnum.hpp")
+cppyy.include("datatypes/character/CharacterInformation.hpp")
+cppyy.include("network/messages/MetaInformationKey.hpp")
 
 __author__ = "Marco Deuscher"
 __date__ = "25.04.2020 (date of doc. creation)"
@@ -103,6 +113,11 @@ class Controller(ControllerGameView, ControllerMainMenu, ControllerLobby):
         self.active_views = [self.gameView]
         self.gameView.to_item_choice()
 
+        # on transition to game_view request meta information for character names from server
+        key_list = [cppyy.gbl.spy.network.messages.MetaInformationKey.CONFIGURATION_CHARACTER_INFORMATION]
+        ret = self.send_request_meta_information(key_list)
+        logging.info(f"Send Request Metainformation successfull: {ret}")
+
     def exit_game(self) -> None:
         """
         Exit game button in main menu pressed. Closes window and term. process
@@ -158,8 +173,54 @@ class Controller(ControllerGameView, ControllerMainMenu, ControllerLobby):
 
         return self.lib_client_handler.sendEquipmentChoice(map_cpp)
 
-    def send_game_operation(self, operation) -> bool:
-        return self.lib_client_handler.sendGameOperation(operation)
+    def send_game_operation(self, **kwargs) -> bool:
+        op_type = kwargs["op_type"]
+        try:
+            target = kwargs["target"]
+        except KeyError:
+            target = None
+
+        if target is not None:
+            target_cpp = cppyy.gbl.spy.util.Point()
+            target_cpp.x = target.x
+            target_cpp.y = target.y
+            target = target_cpp
+
+        operation = None
+
+        match_config = self.lib_client_handler.lib_client.getSettings()
+
+        active_char = self.lib_client_handler.lib_client.getActiveCharacter()
+        active_char_coords = self.lib_client_handler.lib_client.getState().getCharacters().findByUUID(
+            active_char).getCoordinates().value()
+
+        if op_type == "Movement":
+            operation = cppyy.gbl.spy.gameplay.Movement(False, target, active_char, active_char_coords)
+            logging.info("Movement op will be send to network")
+        elif op_type == "Retire":
+            operation = cppyy.gbl.spy.gameplay.RetireAction(active_char)
+            logging.info("Retire operation will be sond to network")
+        elif op_type == "Spy":
+            operation = cppyy.gbl.spy.gameplay.SpyAction(active_char, target)
+        elif op_type == "Gamble":
+            stake = kwargs["stake"]
+            operation = cppyy.gbl.spy.gameplay.GambleAction(False, target, active_char, stake)
+        elif op_type == "Property":
+            property = kwargs["property"]
+            # property = 0 --> Observation, property = 1 --> Bang and Burn
+            if property == 0:
+                operation = cppyy.gbl.spy.gameplay.PropertyAction(False, target, active_char,
+                                                                  cppyy.gbl.spy.character.PropertyEnum(15))
+            elif property == 1:
+                operation = cppyy.gbl.spy.gameplay.PropertyAction(False, target, active_char,
+                                                                  cppyy.gbl.spy.character.PropertyEnum(12))
+        elif op_type == "Gadget":
+            gadget = kwargs["gadget"]
+            gadget_cpp = cppyy.gbl.spy.gadget.GadgetEnum(gadget)
+            operation = cppyy.gbl.spy.gameplay.GadgetAction(False, target, active_char, gadget_cpp)
+
+        operation = cppyy.gbl.std.make_shared(operation)
+        return self.lib_client_handler.sendGameOperation(operation, match_config)
 
     def send_game_leave(self) -> bool:
         return self.lib_client_handler.sendGameLeave()
@@ -168,7 +229,11 @@ class Controller(ControllerGameView, ControllerMainMenu, ControllerLobby):
         return self.lib_client_handler.sendRequestGamePause(gamePause)
 
     def send_request_meta_information(self, keys) -> bool:
-        return self.lib_client_handler.sendRequestMetaInformation(keys)
+        keys_cpp = vector[cppyy.gbl.spy.network.messages.MetaInformationKey]()
+        for key in keys:
+            keys_cpp.push_back(cppyy.gbl.spy.network.messages.MetaInformationKey(key))
+
+        return self.lib_client_handler.sendRequestMetaInformation(keys_cpp)
 
     def send_request_replay(self) -> bool:
         return self.lib_client_handler.sendRequestReplay()
