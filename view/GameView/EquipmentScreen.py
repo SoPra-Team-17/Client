@@ -55,17 +55,23 @@ class EquipmentScreen(BasicView):
         self.manager = pygame_gui.UIManager((self.settings.window_width, self.settings.window_height),
                                             "assets/GameView/GameViewTheme.json")
 
+        self.__img_size = (128, 128)
+
         self.bottom_container = pygame_gui.core.UIContainer(
             relative_rect=pygame.Rect((self.settings.window_width * .465, self.settings.window_height * .7),
                                       (self.settings.window_width / 4, self.settings.window_height / 8)),
             manager=self.manager)
 
+        self.waiting_label_container = pygame_gui.core.UIContainer(
+            relative_rect=pygame.Rect((0, self.settings.window_height / 2 - self.__img_size[1] / 2),
+                                      (self.settings.window_width, self.__img_size[1])),
+            manager=self.manager
+        )
+
         self.background = pygame.Surface((self.settings.window_width, self.settings.window_height))
         self.background.fill(self.manager.ui_theme.get_colour(None, None, 'dark_bg'))
 
         self.__padding = self.bottom_container.rect.width / 10
-        self.__label_size = (self.bottom_container.rect.width / 3, self.bottom_container.rect.width / 4)
-        self.__img_size = (128, 128)
         self.__img_pad = 2 * self.__img_size[0]
 
         self._init_ui_elements()
@@ -125,15 +131,13 @@ class EquipmentScreen(BasicView):
         selected_characters = self.controller.lib_client_handler.lib_client.getChosenCharacters()
         selected_gadgets = self.controller.lib_client_handler.lib_client.getChosenGadgets()
 
-        print("Das ist ein einfacher Testttttt: ", selected_characters.size())
-
         for idx in range(selected_characters.size()):
             self.characters.append(DrawableImage(pygame.Rect(
                 (self.settings.window_width / 2 - self.__img_size[0] * (selected_characters.size() - 0.5) +
                  idx * self.__img_pad, self.settings.window_height / 2 - self.__img_size[1] * 2), self.__img_size),
-            # todo update assets
-            pygame.image.load(CHAR_PATH_LIST[0]),
-            selected_characters[idx]
+                # todo update assets
+                pygame.image.load(CHAR_PATH_LIST[0]),
+                selected_characters[idx]
             ))
 
         for idx in range(selected_gadgets.size()):
@@ -142,8 +146,8 @@ class EquipmentScreen(BasicView):
             self.gadgets.append(DrawableImage(pygame.Rect(
                 (self.settings.window_width / 2 - self.__img_size[0] * (selected_gadgets.size() - 0.5) +
                  idx * self.__img_pad, self.settings.window_height / 2 + self.__img_size[1] / 2), self.__img_size),
-            img,
-            selected_gadgets[idx]
+                img,
+                selected_gadgets[idx]
             ))
 
         # number of dragable elements!
@@ -180,16 +184,16 @@ class EquipmentScreen(BasicView):
                 self.gadgets[self.__drag_index].rect.y = mouse_y + self.__offset[self.__drag_index][1]
 
         if len(self.gadgets) == 0:
-            self.text_label.set_text("Equipment done. Waiting for other player")
+            self.waiting_label.set_text("Equipment done. Waiting for other player")
             self._send_selection()
 
     def _init_ui_elements(self) -> None:
-        self.text_label = pygame_gui.elements.UILabel(
-            relative_rect=pygame.Rect((0, self.__padding * len(self.bottom_container.elements)), self.__label_size),
+        self.waiting_label = pygame_gui.elements.UILabel(
+            relative_rect=pygame.Rect((0, 0), (self.settings.window_width, self.__img_size[1])),
             text="",
             manager=self.manager,
-            container=self.bottom_container,
-            object_id="#text_label"
+            container=self.waiting_label_container,
+            object_id="#waiting_label"
         )
 
         # this screen is only opened if the network message request requip mapping was already received

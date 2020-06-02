@@ -23,10 +23,11 @@ class ItemChoiceScreen(BasicView):
         super(ItemChoiceScreen, self).__init__(window, controller, settings)
 
         self.parent_view = parentView
-        self.__img_size = (128, 128)
 
         self.manager = self.manager = pygame_gui.UIManager((self.settings.window_width, self.settings.window_height),
                                                            "assets/GameView/GameViewTheme.json")
+
+        self.__img_size = (128, 128)
 
         self.bottom_container = pygame_gui.core.UIContainer(
             relative_rect=pygame.Rect((self.settings.window_width * .465, self.settings.window_height * .75),
