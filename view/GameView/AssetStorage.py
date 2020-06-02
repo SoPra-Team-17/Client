@@ -119,6 +119,11 @@ class CatAsset(DrawableAssets):
             "assets/GameView/cat.png").convert_alpha()
         self.block_image = pygame.transform.scale(self.block_image, (64, 64))
 
+class CocktailAsset(DrawableAssets):
+    def __init__(self):
+        self.block_image = pygame.image.load(
+            "assets/GameView/cocktail.png").convert_alpha()
+        self.block_image = pygame.transform.scale(self.block_image, (48, 48))
 
 class AssetStorage():
 
@@ -135,3 +140,4 @@ class AssetStorage():
         self.fog_assets = FogAsset()
         self.janitor_assets = JanitorAsset()
         self.cat_assets = CatAsset()
+        self.cocktail_assets = CocktailAsset()

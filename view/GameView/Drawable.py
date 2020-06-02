@@ -314,3 +314,16 @@ class Cat(Drawable):
     def selected(self, selected: bool = False) -> None:
         pass
 
+
+class Cocktail(Drawable):
+    def __init__(self, pos: WorldPoint, assets: AssetStorage) -> None:
+        super(Cocktail, self).__init__(pos, assets, (64, 64))
+
+        self.block = self.asset_storage.cocktail_assets.block_image
+        self.current_image = self.block
+
+    def hovering(self, focus: bool = False) -> None:
+        pass
+
+    def selected(self, selected: bool = False) -> None:
+        pass
