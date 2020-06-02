@@ -116,7 +116,7 @@ class JanitorAsset(DrawableAssets):
 class CatAsset(DrawableAssets):
     def __init__(self):
         self.block_image = pygame.image.load(
-            "assets/PolyPixel2D/assets_1024x1024/isometric_0017.png").convert_alpha()
+            "assets/GameView/cat.png").convert_alpha()
         self.block_image = pygame.transform.scale(self.block_image, (64, 64))
 
 

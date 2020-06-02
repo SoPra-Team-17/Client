@@ -82,20 +82,6 @@ class PlayingFieldScreen(BasicView):
         self.map.x_max = n_rows
         self.map.y_max = field_map.getRowLength(0)
 
-        # wall around field
-        for i in range(3):
-            self.map.map[WorldPoint(-1, -1, 0)] = Wall(WorldPoint(-1, -1, i), self.asset_storage)
-
-        for x in range(n_rows):
-            self.map.map[WorldPoint(x, -1, 1)] = Wall(WorldPoint(x, -1, 0), self.asset_storage)
-            self.map.map[WorldPoint(x, -1, 1)] = Wall(WorldPoint(x, -1, 1), self.asset_storage)
-            self.map.map[WorldPoint(x, -1, 2)] = Wall(WorldPoint(x, -1, 2), self.asset_storage)
-
-            for y in range(field_map.getRowLength(x)):
-                self.map.map[WorldPoint(-1, y, 0)] = Wall(WorldPoint(-1, y, 0), self.asset_storage)
-                self.map.map[WorldPoint(-1, y, 1)] = Wall(WorldPoint(-1, y, 1), self.asset_storage)
-                self.map.map[WorldPoint(-1, y, 2)] = Wall(WorldPoint(-1, y, 2), self.asset_storage)
-
         # todo check if coords are right
         for x in range(n_rows):
             for y in range(field_map.getRowLength(x)):
