@@ -72,6 +72,12 @@ class BarTableAsset(DrawableAssets):
 
 
 class CharacterAsset(DrawableAssets):
+    """
+    Load all char images at the beginning!
+    Then create dict[char_name, img]
+    Then in playingfieldscreen, where chars are drawn, get characterinformation by matching UUIDs and use
+    assets.dict.get(char_name) to access correct asset for character
+    """
     def __init__(self):
         self.block_image_top = pygame.image.load("assets/GameView/character_top.png").convert_alpha()
         self.block_image_bottom = pygame.image.load("assets/GameView/character_bottom.png").convert_alpha()
