@@ -85,6 +85,7 @@ class Controller(ControllerGameView, ControllerMainMenu, ControllerLobby):
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit(0)
+                self._handle_critical_network_events(event)
                 # distribute events to all active views
                 for view in self.active_views:
                     view.receive_event(event)
@@ -93,6 +94,23 @@ class Controller(ControllerGameView, ControllerMainMenu, ControllerLobby):
                 view.draw()
 
             self.clock.tick(self.view_settings.frame_rate)
+
+    def _handle_critical_network_events(self, event: pygame.event.Event) -> None:
+        """
+        In this method critical network events, like connection lost are handled
+        :return:    None
+        """
+        if event.type == pygame.USEREVENT and event.user_type == NETWORK_EVENT:
+            if event.message_type == "ConnectionLost":
+                logging.warning("Received connection lost event")
+                for _ in range(self.view_settings.max_reconnects):
+                    success = self.lib_client_handler.sendReconnect()
+                    if success:
+                        logging.info("Sent reconnect message")
+                        return
+                logging.error("Unable to reconnect")
+            elif event.message_type == "WrongDestination":
+                logging.warning("Received wrong destination event")
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~VIEW SWITCHES~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
