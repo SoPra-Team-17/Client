@@ -9,7 +9,7 @@ __date__ = "27.04.2020 (creation)"
 NETWORK_EVENT = "NETWORK"
 NETWORK_EVENT_MESSAGE_TYPES = ["HelloReply", "GameStarted", "RequestItemChoice", "RequestEquipmentChoice", "GameStatus",
                                "RequestGameOperation", "Statistics", "GameLeft", "GamePause", "MetaInformation",
-                               "Strike", "Error", "Replay"]
+                               "Strike", "Error", "Replay", "ConnectionLost", "WrongDestination"]
 
 def create_network_event(vals: dict) -> None:
     """
