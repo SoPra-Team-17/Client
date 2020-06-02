@@ -22,7 +22,7 @@ class DrawableAssets(ABC):
 class FloorAssets(DrawableAssets):
     def __init__(self):
         self.block_image = pygame.image.load(
-            "assets/GameView/IsoAssets/PNG/Platformertiles/platformerTile_33.png").convert_alpha()
+            "assets/GameView/IsoAssets/PNG/Platformertiles/platformerTile_11.png").convert_alpha()
         self.block_image = pygame.transform.scale(self.block_image, (64, 64))
 
         self.hovered_image = self.block_image.copy()
@@ -41,7 +41,7 @@ class FloorAssets(DrawableAssets):
 class WallAssets(DrawableAssets):
     def __init__(self):
         self.block_image = pygame.image.load(
-            "assets/GameView/IsoAssets/PNG/VoxelTiles/voxelTile_27.png").convert_alpha()
+            "assets/GameView/IsoAssets/PNG/VoxelTiles/voxelTile_30.png").convert_alpha()
         self.block_image = pygame.transform.scale(self.block_image, (64, 64))
 
 
