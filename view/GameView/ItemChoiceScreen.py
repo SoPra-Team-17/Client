@@ -85,6 +85,8 @@ class ItemChoiceScreen(BasicView):
     def draw(self) -> None:
         self.manager.update(1 / self.settings.frame_rate)
 
+        self._check_character_hover()
+
         self.window.blit(self.background, (0, 0))
         self.manager.draw_ui(self.window)
 
@@ -106,6 +108,22 @@ class ItemChoiceScreen(BasicView):
         # todo debug, has to be removed at some point
         if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
             self.controller.to_main_menu()
+
+        if len(self.gadget_img_list) == 0 and len(self.char_img_list) == 0:
+            self.waiting_label.set_text("Selection done. Waiting for other player.")
+
+    def _check_character_hover(self) -> None:
+        """
+        Check if character image is currently hovered, if so init private textbox on this char
+        :return:    None
+        """
+        if self.private_textbox is not None:
+            self.private_textbox.kill()
+            self.private_textbox = None
+
+        for idx, button in enumerate(self.char_img_list):
+            if button.check_hover(1 / self.settings.frame_rate, False):
+                self._init_private_textbox(idx)
 
     def selected_item(self, element) -> None:
         """
@@ -142,9 +160,6 @@ class ItemChoiceScreen(BasicView):
 
         self._create_selection_buttons(len(offeredGadgets), len(offeredCharacters))
 
-       # if offeredCharacters is None:
-        #    self.waiting_label.set_text("Selection done. Waiting for other player.")
-
         for idx, gad in enumerate(offeredGadgets):
             img = pygame.image.load(GADGET_PATH_LIST[gad])
             img = pygame.transform.scale(img, self.__img_size)
@@ -166,6 +181,8 @@ class ItemChoiceScreen(BasicView):
 
                     self.char_name_list[idx].set_text(name)
                     self.char_name_list[idx].rebuild()
+
+                    self.char_gender_list.insert(idx, gender)
 
                     self.char_img_list[idx].normal_image = pygame.image.load(CHAR_PATH_LIST[0])
                     # todo pygame does not support rendering of escape characters!
@@ -219,12 +236,28 @@ class ItemChoiceScreen(BasicView):
         self.gadget_name_list = []
         self.char_img_list = []
         self.char_name_list = []
+        self.char_gender_list = []
+        self.char_feature_list = []
+        self.private_textbox = None
         self.waiting_label = pygame_gui.elements.UILabel(
             relative_rect=pygame.Rect((0, 0), (self.__img_size[0] * 5, self.__img_size[1])),
             text="",
             manager=self.manager,
             container=self.waiting_label_container,
             object_id="#waiting_label"
+        )
+
+    def _init_private_textbox(self, idx) -> None:
+
+        # Creates a new textbox, which displays relevant information. Is placed above the hovered character image
+
+        self.private_textbox = pygame_gui.elements.UITextBox(
+            html_text=f"Gender: <b>{self.char_gender_list[idx]}</b> Features:",
+            relative_rect=pygame.Rect((self.__img_pad * idx, 0),
+                                      self.__img_size),
+            manager=self.manager,
+            container=self.char_img_container,
+            object_id="#private_textbox"
         )
 
     def _kill_ui_elements(self) -> None:
@@ -240,3 +273,5 @@ class ItemChoiceScreen(BasicView):
         self.char_img_list.clear()
         self.gadget_name_list.clear()
         self.gadget_img_list.clear()
+        self.char_gender_list.clear()
+        self.char_feature_list.clear()
