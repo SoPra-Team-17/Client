@@ -362,7 +362,7 @@ class HUDScreen(BasicView):
 
         )
 
-    def __idx_to_gadget_idx(self, idx):
+    def idx_to_gadget_idx(self, idx) -> int:
         """
         Transforms between idx for UI-elements list and State Gadget idx
         :param idx:     UI gadget idx

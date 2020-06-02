@@ -73,7 +73,7 @@ class SelectionInfoBox:
                     logging.info("Should update gad/prop")
                     if idx < len(gadget_icon_list):
                         # hovering gadget
-                        gadget_idx = self.__idx_to_gadget_idx(idx)
+                        gadget_idx = self.parent_screen.idx_to_gadget_idx(idx)
                         textbox_str += f"Hovering Gadget:<br>{GADGET_NAME_LIST[gadget_idx]}"
                     else:
                         # hovering property
@@ -84,7 +84,7 @@ class SelectionInfoBox:
         if selected_gad_prop_idx is not None:
             if selected_gad_prop_idx < len(gadget_icon_list):
                 # gadget selected
-                gad = self.__idx_to_gadget_idx(selected_gad_prop_idx)
+                gad = self.parent_screen.idx_to_gadget_idx(selected_gad_prop_idx)
                 textbox_str += f"<br>Currently Selected:<br>{GADGET_NAME_LIST[gad]}"
             else:
                 # property selected
@@ -139,19 +139,3 @@ class SelectionInfoBox:
             info_str += f"Is Destroyed: {destroyed}<br>"
 
         self.__field_info_str = info_str
-
-    def __idx_to_gadget_idx(self, idx):
-        """
-        Transforms between idx for UI-elements list and State Gadget idx
-        :param idx:     UI gadget idx
-        :return:        State gadget idx
-        """
-        character_ids = self.parent_screen.controller.lib_client_handler.lib_client.getChosenCharacters()
-        count = 0
-        for char_id in character_ids:
-            current_char = self.parent_screen.controller.lib_client_handler.lib_client.getState().getCharacters().findByUUID(
-                char_id)
-            if idx - count < current_char.getGadgets().size():
-                return current_char.getGadgets()[idx - count].getType()
-            else:
-                count += current_char.getGadgets().size()
