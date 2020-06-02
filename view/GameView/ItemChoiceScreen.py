@@ -74,6 +74,7 @@ class ItemChoiceScreen(BasicView):
         self.__padding = self.bottom_container.rect.width / 10
         self.__button_size = (self.bottom_container.rect.width / 3, self.bottom_container.rect.width / 12)
         self.__img_pad = 2 * self.__img_size[0]
+        self.waiting_label_counter = 0
 
         self.background = pygame.Surface((self.settings.window_width, self.settings.window_height))
         self.background.fill(self.manager.ui_theme.get_colour(None, None, 'dark_bg'))
@@ -99,6 +100,7 @@ class ItemChoiceScreen(BasicView):
         if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_PRESSED:
             self.selected_item(event.ui_element)
             self._kill_ui_elements()
+            self.waiting_label_counter += 1
 
         if event.type == pygame.USEREVENT and event.user_type == NETWORK_EVENT:
             if event.message_type == "RequestItemChoice":
@@ -112,8 +114,7 @@ class ItemChoiceScreen(BasicView):
         if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
             self.controller.to_main_menu()
 
-        # todo fix waiting for other player label only on event
-        if len(self.gadget_img_list) == 0 and len(self.char_img_list) == 0:
+        if self.waiting_label_counter == 8:
             self.waiting_label.set_text("Selection done. Waiting for other player.")
 
     def _check_character_hover(self) -> None:
