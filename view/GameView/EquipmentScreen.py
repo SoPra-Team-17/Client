@@ -66,7 +66,7 @@ class EquipmentScreen(BasicView):
         self.__padding = self.bottom_container.rect.width / 10
         self.__label_size = (self.bottom_container.rect.width / 3, self.bottom_container.rect.width / 4)
         self.__img_size = (128, 128)
-        self.__img_pad = 2.25 * self.__img_size[0]
+        self.__img_pad = 2 * self.__img_size[0]
 
         self._init_ui_elements()
 
@@ -125,24 +125,25 @@ class EquipmentScreen(BasicView):
         selected_characters = self.controller.lib_client_handler.lib_client.getChosenCharacters()
         selected_gadgets = self.controller.lib_client_handler.lib_client.getChosenGadgets()
 
+        print("Das ist ein einfacher Testttttt: ", selected_characters.size())
+
         for idx in range(selected_characters.size()):
             self.characters.append(DrawableImage(pygame.Rect(
-                (self.settings.window_width * .1 + idx * self.__img_pad,
-                 self.settings.window_height * .1),
-                (128, 128)),
-                # todo update assets
-                pygame.image.load(CHAR_PATH_LIST[0]),
-                selected_characters[idx]
+                (self.settings.window_width / 2 - self.__img_size[0] * (selected_characters.size() - 0.5) +
+                 idx * self.__img_pad, self.settings.window_height / 2 - self.__img_size[1] * 2), self.__img_size),
+            # todo update assets
+            pygame.image.load(CHAR_PATH_LIST[0]),
+            selected_characters[idx]
             ))
 
         for idx in range(selected_gadgets.size()):
             img = pygame.image.load(GADGET_PATH_LIST[selected_gadgets[idx]])
             img = pygame.transform.scale(img, self.__img_size)
             self.gadgets.append(DrawableImage(pygame.Rect(
-                (self.settings.window_width * .1 + idx * self.__img_pad * 3 / 4, self.settings.window_height * .45),
-                (128, 128)),
-                img,
-                selected_gadgets[idx]
+                (self.settings.window_width / 2 - self.__img_size[0] * (selected_gadgets.size() - 0.5) +
+                 idx * self.__img_pad, self.settings.window_height / 2 + self.__img_size[1] / 2), self.__img_size),
+            img,
+            selected_gadgets[idx]
             ))
 
         # number of dragable elements!

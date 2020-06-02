@@ -194,7 +194,7 @@ class ItemChoiceScreen(BasicView):
 
         for i in range(char_len):
             self.char_img_list.append(pygame_gui.elements.UIButton(
-                relative_rect=pygame.Rect((self.__img_pad * len(self.char_img_list), 0),
+                relative_rect=pygame.Rect((self.__img_pad * i, 0),
                                           self.__img_size),
                 text="",
                 manager=self.manager,
@@ -204,7 +204,7 @@ class ItemChoiceScreen(BasicView):
 
             self.char_name_list.append(pygame_gui.elements.UILabel(
                 relative_rect=pygame.Rect(
-                    (self.__img_pad * len(self.char_name_list), 0),
+                    (self.__img_pad * i, 0),
                     (self.__img_size[0], self.__img_size[1] / 2)),
                 text=f"TestChar{i}",
                 manager=self.manager,
@@ -214,7 +214,7 @@ class ItemChoiceScreen(BasicView):
 
         for i in range(gadget_len):
             self.gadget_img_list.append(pygame_gui.elements.UIButton(
-                relative_rect=pygame.Rect((self.__img_pad * len(self.gadget_img_list), 0),
+                relative_rect=pygame.Rect((self.__img_pad * i, 0),
                                           self.__img_size),
                 text="",
                 manager=self.manager,
@@ -223,7 +223,7 @@ class ItemChoiceScreen(BasicView):
             ))
             self.gadget_name_list.append(pygame_gui.elements.UILabel(
                 relative_rect=pygame.Rect(
-                    (self.__img_pad * len(self.gadget_name_list), 0),
+                    (self.__img_pad * i, 0),
                     (self.__img_size[0], self.__img_size[1] / 2)),
                 text=f"",
                 manager=self.manager,
