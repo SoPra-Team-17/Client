@@ -217,11 +217,24 @@ class BarTable(Drawable):
 
 
 class Character(Drawable):
-    def __init__(self, pos: WorldPoint, assets: AssetStorage) -> None:
+    def __init__(self, pos: WorldPoint, assets: AssetStorage, type="invalid", active=False) -> None:
+        """
+        Init of Character
+        :param pos:         Position on drawable map
+        :param assets:      asset storage
+        :param type:        character type in ["enemy", "invalid", "npc", "my", "janitor"]
+        """
         super(Character, self).__init__(pos, assets, (64, 64))
 
-        self.block_top = self.asset_storage.character_assets.block_image_top
-        self.block_bottom = self.asset_storage.character_assets.block_image_bottom
+        self.type = type
+
+        self.asset_dict = self.asset_storage.character_assets.asset_dict
+        if not active:
+            self.block_top = self.asset_dict.get(self.type).top
+            self.block_bottom = self.asset_dict.get(self.type).bottom
+        else:
+            self.block_top = self.asset_dict.get(self.type).active_top
+            self.block_bottom = self.asset_dict.get(self.type).active_bottom
 
         self.__TILEHEIGHT, self.__TILEWIDTH = (64, 64)
 
@@ -230,7 +243,8 @@ class Character(Drawable):
         v_x1, v_y1 = Transformations.trafo_draw_to_screen((self.point.x, self.point.y, self.point.z), camOffset,
                                                           (self.__TILEHEIGHT, self.__TILEWIDTH), window)
         # top block
-        v_x2, v_y2 = Transformations.trafo_draw_to_screen((self.point.x-1, self.point.y-1, self.point.z + 1), camOffset,
+        v_x2, v_y2 = Transformations.trafo_draw_to_screen((self.point.x - 1, self.point.y - 1, self.point.z + 1),
+                                                          camOffset,
                                                           (self.__TILEHEIGHT, self.__TILEWIDTH), window)
 
         # only draw block, when still inside visible window! accout for block size so block is not clipped on the edge
@@ -278,20 +292,6 @@ class Fog(Drawable):
         super(Fog, self).__init__(pos, assets, (64, 64))
 
         self.block = self.asset_storage.fog_assets.block_image
-        self.current_image = self.block
-
-    def hovering(self, focus: bool = False) -> None:
-        pass
-
-    def selected(self, selected: bool = False) -> None:
-        pass
-
-
-class Janitor(Drawable):
-    def __init__(self, pos: WorldPoint, assets: AssetStorage) -> None:
-        super(Janitor, self).__init__(pos, assets, (64, 64))
-
-        self.block = self.asset_storage.janitor_assets.block_image
         self.current_image = self.block
 
     def hovering(self, focus: bool = False) -> None:

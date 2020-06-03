@@ -4,6 +4,8 @@ Implements a storage class for all assets, so they're only loaded once at runtim
 from abc import ABC, abstractmethod
 import pygame
 
+from assets.GameView.CharactersIso.CharacterIsoPaths import CHARACTER_ISO_PATH_DICT
+
 __author__ = "Marco Deuscher"
 __date__ = "25.04.2020 (date of doc. creation)"
 
@@ -71,18 +73,35 @@ class BarTableAsset(DrawableAssets):
         self.block_image = pygame.transform.scale(self.block_image, (64, 64))
 
 
+class CharacterImages:
+    """
+    Small dataclass to store character iso images
+    """
+
+    def __init__(self, top, bottom, top_active, bottom_active):
+        self.top = top
+        self.bottom = bottom
+        self.active_top = top_active
+        self.active_bottom = bottom_active
+
+
 class CharacterAsset(DrawableAssets):
-    """
-    Load all char images at the beginning!
-    Then create dict[char_name, img]
-    Then in playingfieldscreen, where chars are drawn, get characterinformation by matching UUIDs and use
-    assets.dict.get(char_name) to access correct asset for character
-    """
     def __init__(self):
-        self.block_image_top = pygame.image.load("assets/GameView/character_top.png").convert_alpha()
-        self.block_image_bottom = pygame.image.load("assets/GameView/character_bottom.png").convert_alpha()
-        self.block_image_top = pygame.transform.scale(self.block_image_top, (64, 64))
-        self.block_image_bottom = pygame.transform.scale(self.block_image_bottom, (64, 64))
+        self.asset_dict = {}
+        for key, val in CHARACTER_ISO_PATH_DICT.items():
+            top = pygame.image.load(f"{CHARACTER_ISO_PATH_DICT[key]}/{key}_top.png")
+            top = pygame.transform.scale(top, (64, 64))
+
+            bottom = pygame.image.load(f"{CHARACTER_ISO_PATH_DICT[key]}/{key}_bottom.png")
+            bottom = pygame.transform.scale(bottom, (64, 64))
+
+            active_top = pygame.image.load(f"{CHARACTER_ISO_PATH_DICT[key]}/{key}_active_top.png")
+            active_top = pygame.transform.scale(active_top, (64, 64))
+
+            active_bottom = pygame.image.load(f"{CHARACTER_ISO_PATH_DICT[key]}/{key}_active_bottom.png")
+            active_bottom = pygame.transform.scale(active_bottom, (64, 64))
+
+            self.asset_dict[key] = CharacterImages(top, bottom, active_top, active_bottom)
 
 
 class GadgetAsset(DrawableAssets):
@@ -106,24 +125,19 @@ class FogAsset(DrawableAssets):
         self.block_image = pygame.transform.scale(self.block_image, (64, 64))
 
 
-class JanitorAsset(DrawableAssets):
-    def __init__(self):
-        self.block_image = pygame.image.load(
-            "assets/PolyPixel2D/assets_1024x1024/isometric_0018.png").convert_alpha()
-        self.block_image = pygame.transform.scale(self.block_image, (64, 64))
-
-
 class CatAsset(DrawableAssets):
     def __init__(self):
         self.block_image = pygame.image.load(
             "assets/GameView/cat.png").convert_alpha()
         self.block_image = pygame.transform.scale(self.block_image, (64, 64))
 
+
 class CocktailAsset(DrawableAssets):
     def __init__(self):
         self.block_image = pygame.image.load(
             "assets/GameView/cocktail.png").convert_alpha()
         self.block_image = pygame.transform.scale(self.block_image, (48, 48))
+
 
 class AssetStorage():
 
@@ -138,6 +152,5 @@ class AssetStorage():
         self.gadget_assets = GadgetAsset()
         self.safe_assets = SafeAsset()
         self.fog_assets = FogAsset()
-        self.janitor_assets = JanitorAsset()
         self.cat_assets = CatAsset()
         self.cocktail_assets = CocktailAsset()
