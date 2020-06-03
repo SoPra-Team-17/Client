@@ -1,5 +1,33 @@
 # Client
 
+## Installation
+The Client can only be installed manually.
+### Manual installation
+#### Prerequisites
+* Ubuntu 18.04
+* python 3.6 / 3.7
+* virtualenv / pip
+* CMake (at least version 3.10)
+* GNU-Make
+
+#### Installing the C++-Libs
+To install the C++ Libs run
+```
+./installCppLibs.sh
+```
+This will install all needed dependencies and will install die *libSopra_* under `/usr/local/lib`.
+
+By running 
+```
+pip install -r requirements.txt
+```
+all python dependencies are installed.
+
+## Usage
+To start the Client, execute
+```
+python3 run.py
+```
 
 ## Isometric View
 
