@@ -145,7 +145,7 @@ class HUDScreen(BasicView):
             self.__selected_gad_prop_idx = None
         elif type == "Gadget":
             # if selection is None, send action to pick up cocktail!
-            gad = self.__idx_to_gadget_idx(
+            gad = self.idx_to_gadget_idx(
                 self.__selected_gad_prop_idx) if self.__selected_gad_prop_idx is not None else cppyy.gbl.spy.gadget.GadgetEnum.COCKTAIL
             target = self.parent.parent.get_selected_field()
             ret = self.controller.send_game_operation(target=target, op_type=type, gadget=gad)
