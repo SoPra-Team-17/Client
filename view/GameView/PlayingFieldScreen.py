@@ -142,7 +142,7 @@ class PlayingFieldScreen(BasicView):
             if not char.getCoordinates().has_value():
                 continue
 
-            type = "npc"
+            type = "invalid"
 
             chosen_chars = self.controller.lib_client_handler.lib_client.getChosenCharacters()
             for chosen_chard_id in chosen_chars:

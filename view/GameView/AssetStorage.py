@@ -86,13 +86,6 @@ class CharacterImages:
 
 
 class CharacterAsset(DrawableAssets):
-    """
-    Load all char images at the beginning!
-    Then create dict[char_name, img]
-    Then in playingfieldscreen, where chars are drawn, get characterinformation by matching UUIDs and use
-    assets.dict.get(char_name) to access correct asset for character
-    """
-
     def __init__(self):
         self.asset_dict = {}
         for key, val in CHARACTER_ISO_PATH_DICT.items():
