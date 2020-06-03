@@ -217,7 +217,7 @@ class BarTable(Drawable):
 
 
 class Character(Drawable):
-    def __init__(self, pos: WorldPoint, assets: AssetStorage, type="npc", active=False) -> None:
+    def __init__(self, pos: WorldPoint, assets: AssetStorage, type="invalid", active=False) -> None:
         """
         Init of Character
         :param pos:         Position on drawable map
