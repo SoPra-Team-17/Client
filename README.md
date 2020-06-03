@@ -17,6 +17,7 @@ To install the C++ Libs run
 ```
 This will install all needed dependencies and will install die *libSopra_* under `/usr/local/lib`.
 
+#### Installing python dependencies
 By running 
 ```
 pip install -r requirements.txt
