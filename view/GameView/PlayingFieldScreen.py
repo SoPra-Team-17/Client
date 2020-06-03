@@ -32,14 +32,10 @@ class PlayingFieldScreen(BasicView):
         self.asset_storage = AssetStorage()
         self.camera = self.camera = Camera(camera_speed=.5)
 
-        # todo values are hardcoded, do in update_playingfield, when executed for the first time
-        map = DrawableMap((50, 50, 3))
-
         self.background_image = pygame.image.load("assets/GameView/background.png")
         self.background_image = pygame.transform.scale(self.background_image, (1920, 1080))
 
         self.map = FieldMap(settings)
-        self.map.map = map
 
     def draw(self):
         self.camera.move_camera(pygame.key.get_pressed())
@@ -70,9 +66,6 @@ class PlayingFieldScreen(BasicView):
         This method is called when a updated playing field is received over the network (Game Status message)
         :return:    None
         """
-        # old map is discarded
-        self.map.map = DrawableMap((50, 50, 3))
-
         state = self.controller.lib_client_handler.lib_client.getState()
         field_map = state.getMap()
 
@@ -81,6 +74,9 @@ class PlayingFieldScreen(BasicView):
         # todo expect rectangle shaped playing field
         self.map.x_max = n_rows
         self.map.y_max = field_map.getRowLength(0)
+
+        # old map is discarded
+        self.map.map = DrawableMap((self.map.x_max, self.map.y_max, 3))
 
         # wall around field
         for i in range(3):
