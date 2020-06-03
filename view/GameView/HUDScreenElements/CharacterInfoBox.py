@@ -1,8 +1,14 @@
+"""
+Implements character info box which displays information about the character (e.g. name, chips, ip, etc.)
+"""
 import pygame_gui
 import pygame
 import cppyy
 
 from cppyy.gbl.std import map, pair, set, vector
+
+__author__ = "Marco Deuscher"
+__date__ = "02.06.20 (creation)"
 
 cppyy.add_include_path("/usr/local/include/SopraClient")
 cppyy.add_include_path("/usr/local/include/SopraCommon")

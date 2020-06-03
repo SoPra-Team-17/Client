@@ -1,10 +1,19 @@
+"""
+Implements the selection info box, which displays information about the selected field and gadget / property
+"""
 import logging
 import pygame_gui
 import pygame
 import cppyy
 
 from view.GameView.Visuals.VisualGadget import GADGET_NAME_LIST, GADGET_PATH_LIST
+from view.GameView.Visuals.VisualFieldState import FIELD_STATE_NAME_LIST
 from view.ViewSettings import ViewSettings
+
+from cppyy.gbl.std import map, pair, set, vector
+
+__author__ = "Marco Deuscher"
+__date__ = "02.06.20 (creation)"
 
 cppyy.add_include_path("/usr/local/include/SopraClient")
 cppyy.add_include_path("/usr/local/include/SopraCommon")
@@ -14,6 +23,7 @@ cppyy.include("util/Point.hpp")
 cppyy.include("datatypes/gadgets/GadgetEnum.hpp")
 cppyy.include("datatypes/character/CharacterInformation.hpp")
 cppyy.include("network/messages/MetaInformationKey.hpp")
+cppyy.include("util/GameLogicUtils.hpp")
 
 
 class SelectionInfoBox:
@@ -121,21 +131,34 @@ class SelectionInfoBox:
         point_cpp = cppyy.gbl.spy.util.Point()
         point_cpp.x, point_cpp.y = field.x, field.y
         field_cpp = self.parent_screen.controller.lib_client_handler.lib_client.getState().getMap().getField(point_cpp)
-        # todo extract all relevant information from field and format to string
-        # todo get potential character standing on field! and display name and of own faction!
+
+        field_state = field_cpp.getFieldState()
+        info_str += f"Field state: <b>{FIELD_STATE_NAME_LIST[field_state]}</b><br>"
+
         foggy = field_cpp.isFoggy()
         info_str += f"Is Foggy: {foggy}<br>"
+
         if field_cpp.getGadget().has_value():
             gadget = field_cpp.getGadget().value().getType()
             info_str += f"Gadget: {GADGET_NAME_LIST[gadget]}<br>"
         if field_cpp.getChipAmount().has_value():
             chip_amount = field_cpp.getChipAmount().value()
             info_str += f"Chip Amount: {chip_amount}<br>"
-        if field_cpp.getSafeIndex().has_value():
-            safe_index = field_cpp.getSafeIndex().value()
-            info_str += f"Safe Index: {safe_index}<br>"
         if field_cpp.isDestroyed().has_value():
             destroyed = field_cpp.isDestroyed().value()
             info_str += f"Is Destroyed: {destroyed}<br>"
+
+        # get potential character standing on field
+        characters = self.parent_screen.controller.lib_client_handler.lib_client.getState().getCharacters()
+        char = cppyy.gbl.spy.util.GameLogicUtils.findInCharacterSetByCoordinates(characters, point_cpp)
+
+        info = self.parent_screen.controller.lib_client_handler.lib_client.getInformation()
+        variant = info[
+            cppyy.gbl.spy.network.messages.MetaInformationKey.CONFIGURATION_CHARACTER_INFORMATION]
+        char_info_vector = cppyy.gbl.std.get[vector[cppyy.gbl.spy.character.CharacterInformation]](variant)
+
+        for char_info in char_info_vector:
+            if char.getCharacterId() == char_info.getCharacterId():
+                info_str += f"Char. name: <b>{char_info.getName()}</b><br>"
 
         self.__field_info_str = info_str
