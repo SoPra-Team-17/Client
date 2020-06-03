@@ -37,9 +37,9 @@ class ItemChoiceScreen(BasicView):
             manager=self.manager)
 
         self.char_img_container = pygame_gui.core.UIContainer(
-            relative_rect=pygame.Rect((self.settings.window_width / 2 - self.__img_size[0] * 2.5,
-                                       self.settings.window_height / 2 - self.__img_size[1] * 2),
-                                      (self.__img_size[0] * 5, self.__img_size[1])),
+            relative_rect=pygame.Rect((self.settings.window_width / 2 - self.__img_size[0] * 3,
+                                       self.settings.window_height / 2 - self.__img_size[1] * 3),
+                                      (self.__img_size[0] * 6, self.__img_size[1] * 2)),
             manager=self.manager
         )
 
@@ -190,15 +190,16 @@ class ItemChoiceScreen(BasicView):
 
                     self.char_img_list[idx].normal_image = pygame.image.load(CHAR_PATH_LIST[0])
                     # todo pygame does not support rendering of escape characters!
-                    self.char_img_list[idx].hovered_image = self.font.render(name, True,
-                                                                             (255, 255, 255))
+                    # self.char_img_list[idx].hovered_image = self.font.render(name, True,
+                    #                                                         (255, 255, 255))
                     self.char_img_list[idx].rebuild()
 
     def _create_selection_buttons(self, gadget_len, char_len) -> None:
 
         for i in range(char_len):
             self.char_img_list.append(pygame_gui.elements.UIButton(
-                relative_rect=pygame.Rect((self.__img_pad * i, 0), self.__img_size),
+                relative_rect=pygame.Rect((self.__img_pad * i + self.__img_size[0] * 0.5,
+                                           self.__img_size[1]), self.__img_size),
                 text="",
                 manager=self.manager,
                 container=self.char_img_container,
@@ -261,7 +262,7 @@ class ItemChoiceScreen(BasicView):
 
         self.private_textbox = pygame_gui.elements.UITextBox(
             html_text=info_str,
-            relative_rect=pygame.Rect((self.__img_pad * idx, 0), self.__img_size),
+            relative_rect=pygame.Rect((self.__img_pad * idx, 0), (self.__img_pad, self.__img_pad)),
             manager=self.manager,
             container=self.char_img_container,
             object_id="#private_textbox"
