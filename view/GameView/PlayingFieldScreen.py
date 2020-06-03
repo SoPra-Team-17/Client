@@ -19,6 +19,13 @@ __author__ = "Marco Deuscher"
 __date__ = "25.04.2020 (date of doc. creation)"
 
 
+cppyy.add_include_path("/usr/local/include/SopraClient")
+cppyy.add_include_path("/usr/local/include/SopraCommon")
+cppyy.add_include_path("/usr/local/include/SopraNetwork")
+
+cppyy.include("datatypes/gadgets/GadgetEnum.hpp")
+
+
 class PlayingFieldScreen(BasicView):
     """
     This class contains all the relevant information for drawing the playing field
@@ -119,7 +126,10 @@ class PlayingFieldScreen(BasicView):
 
                 # check if field has gadget
                 if field.getGadget().has_value():
-                    self.map.map[WorldPoint(x, y, z=1)] = Gadget(WorldPoint(x, y, z=1), self.asset_storage)
+                    if field.getGadget().value().getType() == cppyy.gbl.spy.gadget.GadgetEnum.COCKTAIL:
+                        self.map.map[WorldPoint(x, y, z=2)] = Cocktail(WorldPoint(x, y, z=2), self.asset_storage)
+                    else:
+                        self.map.map[WorldPoint(x, y, z=1)] = Gadget(WorldPoint(x, y, z=1), self.asset_storage)
 
                 # check if field is foggy
                 if field.isFoggy():
