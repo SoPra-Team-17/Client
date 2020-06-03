@@ -9,6 +9,8 @@ from view.BasicView import BasicView
 from view.ViewSettings import ViewSettings
 from view.GameView.Visuals.VisualGadget import GADGET_NAME_LIST, GADGET_PATH_LIST
 from view.GameView.Visuals.VisualCharacter import CHAR_PATH_LIST
+from view.GameView.Visuals.VisualGender import GENDER_NAME_LIST
+from view.GameView.Visuals.VisualProperty import PROPERTY_NAME_LIST
 from controller.ControllerView import ControllerGameView
 from network.NetworkEvent import NETWORK_EVENT
 
@@ -179,12 +181,11 @@ class ItemChoiceScreen(BasicView):
                     # hier können jetzt eigenschaften aus characterdescription extrahiert werden
                     name = char.getName()
                     gender = char.getGender()
-                    feature_list = char.getFeatures()
+                    self.char_gender_list.append(char.getGender())
+                    self.char_feature_list.append(char.getFeatures())
 
                     self.char_name_list[idx].set_text(name)
                     self.char_name_list[idx].rebuild()
-
-                    self.char_gender_list.insert(idx, gender)
 
                     self.char_img_list[idx].normal_image = pygame.image.load(CHAR_PATH_LIST[0])
                     # todo pygame does not support rendering of escape characters!
@@ -248,9 +249,17 @@ class ItemChoiceScreen(BasicView):
     def _init_private_textbox(self, idx) -> None:
 
         # Creates a new textbox, which displays relevant information. Is placed above the hovered character image
+        info_str = ""
+        gender_opt = self.char_gender_list[idx]
+        if gender_opt.has_value():
+            info_str += f"Gender: <b>{GENDER_NAME_LIST[gender_opt.has_value()]}</b><br>"
+        info_str += "Properties: "
+        for prop in self.char_feature_list[idx]:
+            info_str += f"{PROPERTY_NAME_LIST[prop]}, "
+        info_str += "<br>"
 
         self.private_textbox = pygame_gui.elements.UITextBox(
-            html_text=f"Gender: <b>{self.char_gender_list[idx]}</b> Features:",
+            html_text=info_str,
             relative_rect=pygame.Rect((self.__img_pad * idx, 0), self.__img_size),
             manager=self.manager,
             container=self.char_img_container,
