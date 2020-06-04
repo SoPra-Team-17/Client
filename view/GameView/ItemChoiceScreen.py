@@ -8,7 +8,7 @@ import pygame
 from view.BasicView import BasicView
 from view.ViewSettings import ViewSettings
 from view.GameView.Visuals.VisualGadget import GADGET_NAME_LIST, GADGET_PATH_LIST
-from view.GameView.Visuals.VisualCharacter import CHAR_PATH_LIST
+from view.GameView.Visuals.VisualCharacter import CHAR_PATH_DICT
 from view.GameView.Visuals.VisualGender import GENDER_NAME_LIST
 from view.GameView.Visuals.VisualProperty import PROPERTY_NAME_LIST
 from controller.ControllerView import ControllerGameView
@@ -190,7 +190,9 @@ class ItemChoiceScreen(BasicView):
                     self.char_name_list[idx].set_text(name)
                     self.char_name_list[idx].rebuild()
 
-                    self.char_img_list[idx].normal_image = pygame.image.load(CHAR_PATH_LIST[0])
+                    img = pygame.image.load(CHAR_PATH_DICT.get("normal"))
+                    img = pygame.transform.scale(img, self.__img_size)
+                    self.char_img_list[idx].normal_image = img
                     # todo pygame does not support rendering of escape characters!
                     # self.char_img_list[idx].hovered_image = self.font.render(name, True,
                     #                                                         (255, 255, 255))

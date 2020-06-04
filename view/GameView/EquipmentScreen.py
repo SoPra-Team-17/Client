@@ -10,7 +10,7 @@ import pygame_gui
 from controller.ControllerView import ControllerGameView
 from network.NetworkEvent import NETWORK_EVENT
 from view.BasicView import BasicView
-from view.GameView.Visuals.VisualCharacter import CHAR_PATH_LIST
+from view.GameView.Visuals.VisualCharacter import CHAR_PATH_DICT
 from view.GameView.Visuals.VisualGadget import GADGET_PATH_LIST
 from view.ViewSettings import ViewSettings
 
@@ -138,12 +138,13 @@ class EquipmentScreen(BasicView):
         selected_gadgets = self.controller.lib_client_handler.lib_client.getChosenGadgets()
 
         for idx in range(selected_characters.size()):
+            img = pygame.image.load(CHAR_PATH_DICT.get("normal"))
+            img = pygame.transform.scale(img, (128, 128))
             self.characters.append(DrawableImage(pygame.Rect(
                 (self.settings.window_width / 2 - self.__img_pad * selected_characters.size() / 2 +
                  (self.__img_pad - self.__img_pad / self.pad) / 2 + idx * self.__img_pad,
                  self.settings.window_height / 2 - self.__img_size[1] * 2), self.__img_size),
-                # todo update assets
-                pygame.image.load(CHAR_PATH_LIST[0]),
+                img,
                 selected_characters[idx]
             ))
 

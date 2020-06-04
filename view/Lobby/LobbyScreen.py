@@ -12,11 +12,11 @@ from controller.ControllerView import ControllerLobby
 __author__ = "Marco Deuscher"
 __date__ = "20.05.20 (doc creation)"
 
+
 class LobbyScreen(BasicView):
     _valid_roles = ["Player", "Spectator"]
     _text_labels = {
         "connect": "Connect",
-        "reconnect": "Reconnect",
         "name": "Enter name",
         "role": _valid_roles[0],
         "return": "Return"
@@ -57,7 +57,6 @@ class LobbyScreen(BasicView):
         if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_PRESSED:
             switcher = {
                 self.connect_button: self.connect_pressed,
-                self.reconnect_button: self.controller.send_reconnect,
                 self.return_button: self.controller.to_main_menu
             }
             try:
@@ -95,14 +94,6 @@ class LobbyScreen(BasicView):
             manager=self.manager,
             container=self.container,
             object_id="#connect"
-        )
-
-        self.reconnect_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect((0, self.__padding * len(self.container.elements)), self.__buttonSize),
-            text=self._text_labels["reconnect"],
-            manager=self.manager,
-            container=self.container,
-            object_id="#reconnect"
         )
 
         self.name_entryline = pygame_gui.elements.UITextEntryLine(
