@@ -6,6 +6,6 @@ __author__ = "Marco Deuscher"
 __date__ = "20.05.20 (doc creation)"
 
 CHAR_PATH_DICT = {
-    "normal": "assets/GameView/character.png",
-    "active": "assets/GameView/character_active.png"
+    "normal": "assets/GameView/my_character_active.png",
+    "active": "assets/GameView/my_character_active.png"
 }
