@@ -12,6 +12,7 @@ from controller.ControllerView import ControllerGameView, ControllerMainMenu, Co
 from network.LibClientHandler import LibClientHandler
 from network.NetworkEvent import NETWORK_EVENT
 from view.GameView.GameView import GameView
+from view.GameView.SpectatorView import SpectatorView
 from view.Lobby.LobbyView import LobbyView
 from view.MainMenu.MainMenuView import MainMenuView
 from view.ViewSettings import ViewSettings
@@ -152,6 +153,13 @@ class Controller(ControllerGameView, ControllerMainMenu, ControllerLobby):
         :return:
         """
         self.active_views = [self.main_menu]
+
+    def selected_spectator_role(self) -> None:
+        """
+        Implements transition to game view, when spectator role is selected
+        :return:
+        """
+        self.gameView = SpectatorView(self.screen, self, self.view_settings)
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~SEND NETWORK MESSAGE~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # LobbyView Messages

@@ -76,6 +76,10 @@ class LobbyScreen(BasicView):
         ret = self.controller.send_hello(d["name"], d["role"])
         logging.info(f"Sending Hello successfull: {ret}")
 
+        # if hello was successfull, check if role has to be changed to spectator
+        if ret and d.get("role") == self._valid_roles[1]:
+            self.controller.selected_spectator_role()
+
     def _extract_info(self) -> dict:
         """
         Extract information from entryline and dropdown

@@ -12,7 +12,6 @@ from view.ViewSettings import ViewSettings
 from controller.ControllerView import ControllerGameView
 from util.Coordinates import WorldPoint
 
-
 __author__ = "Marco Deuscher"
 __date__ = "20.05.20 (doc creation)"
 
@@ -33,8 +32,6 @@ class GameView(BasicView):
         self.active_views = [self.item_choice_screen]
 
     def draw(self) -> None:
-        self.window.fill((50, 50, 50))
-
         for view in self.active_views:
             view.draw()
 
@@ -85,6 +82,6 @@ class GameView(BasicView):
         """
         Getter for the currently selected playing field
         todo return type for invalid selection!
-        :return:
+        :return: WorldPoint or None if no field is selected
         """
         return self.playing_field_screen.map.get_selected_coords()
