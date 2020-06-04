@@ -8,6 +8,7 @@ from view.BasicView import BasicView
 from view.ViewSettings import ViewSettings
 from view.GameView.Visuals.VisualGadget import GADGET_NAME_LIST, GADGET_PATH_LIST
 from view.GameView.Visuals.VisualProperty import PROPERTY_NAME_LIST, PROPERTY_PATH_LIST
+from view.GameView.Visuals.VisualCharacter import CHAR_PATH_DICT
 from view.GameView.HUDScreenElements.CharacterInfoBox import CharacterInfoBox
 from view.GameView.HUDScreenElements.SelectionInfoBox import SelectionInfoBox
 from controller.ControllerView import ControllerGameView
@@ -101,6 +102,8 @@ class HUDScreen(BasicView):
         elif event.type == pygame.USEREVENT and event.user_type == NETWORK_EVENT:
             if event.message_type == "GameStatus":
                 self.network_update()
+            elif event.message_type == "RequestGameOperation":
+                self._update_active_char(active=True)
         elif event.type == pygame.MOUSEBUTTONUP:
             # check if on one of the gadget / properties imgs
             for idx, icon in enumerate(self.gadget_icon_list + self.property_icon_list):
@@ -117,6 +120,7 @@ class HUDScreen(BasicView):
         todo: could return boolean if successfull
         :return:    None
         """
+        ret = False
         type = self.action_bar.selected_option
         if type == "Movement":
             target = self.parent.parent.get_selected_field()
@@ -153,6 +157,9 @@ class HUDScreen(BasicView):
             logging.info(f"Send Gadget Action successfull: {ret}")
             # reset gadget / property selection
             self.__selected_gad_prop_idx = None
+
+        if ret:
+            self._update_active_char(active=False)
 
     def _check_character_hover(self) -> None:
         """
@@ -271,7 +278,7 @@ class HUDScreen(BasicView):
         self.health_bar_list.clear()
 
         # test_surface to display images on character buttons
-        char_surface = pygame.image.load("assets/GameView/trash.png").convert_alpha()
+        char_surface = pygame.image.load(CHAR_PATH_DICT.get("normal")).convert_alpha()
         char_surface = pygame.transform.scale(char_surface, (int(self.__padding), int(self.__padding)))
 
         my_chars = self.controller.lib_client_handler.lib_client.getChosenCharacters()
@@ -337,6 +344,22 @@ class HUDScreen(BasicView):
         for char in self.char_image_list:
             char.normal_image = char_surface
             char.rebuild()
+
+    def _update_active_char(self, active) -> None:
+        active_char_id = self.controller.lib_client_handler.lib_client.getActiveCharacter()
+        active_gui_idx = 0
+
+        for idx, char_id in enumerate(self.controller.lib_client_handler.lib_client.getChosenCharacters()):
+            if char_id == active_char_id:
+                active_gui_idx = idx
+
+        key = "active" if active else "normal"
+
+        active_img = pygame.image.load(CHAR_PATH_DICT.get(key))
+        active_img = pygame.transform.scale(active_img, [int(self.__padding)] * 2)
+        self.char_image_list[active_gui_idx].normal_image = active_img
+        self.char_image_list[active_gui_idx].rebuild()
+        logging.info("Should have upated char pic")
 
     def _init_ui_elements(self) -> None:
         self.char_image_list = []
