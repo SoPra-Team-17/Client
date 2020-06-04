@@ -58,7 +58,10 @@ class EquipmentScreen(BasicView):
         # width and height of ui elements depends on img_size
         # vertical distance between ui elements depends on img_size[1]
         self.__img_size = (128, 128)
-        self.__img_pad = 2 * self.__img_size[0]
+        # horizontal distance between ui elements can be set by img_pad
+        # to do that, change variable pad
+        self.pad = 2
+        self.__img_pad = self.pad * self.__img_size[0]
 
         self.bottom_container = pygame_gui.core.UIContainer(
             relative_rect=pygame.Rect((self.settings.window_width * .465, self.settings.window_height * .7),
@@ -136,8 +139,9 @@ class EquipmentScreen(BasicView):
 
         for idx in range(selected_characters.size()):
             self.characters.append(DrawableImage(pygame.Rect(
-                (self.settings.window_width / 2 - self.__img_size[0] * (selected_characters.size() - 0.5) +
-                 idx * self.__img_pad, self.settings.window_height / 2 - self.__img_size[1] * 2), self.__img_size),
+                (self.settings.window_width / 2 - self.__img_pad * selected_characters.size() / 2 +
+                 (self.__img_pad - self.__img_pad / self.pad) / 2 + idx * self.__img_pad,
+                 self.settings.window_height / 2 - self.__img_size[1] * 2), self.__img_size),
                 # todo update assets
                 pygame.image.load(CHAR_PATH_LIST[0]),
                 selected_characters[idx]
@@ -147,7 +151,8 @@ class EquipmentScreen(BasicView):
             img = pygame.image.load(GADGET_PATH_LIST[selected_gadgets[idx]])
             img = pygame.transform.scale(img, self.__img_size)
             self.gadgets.append(DrawableImage(pygame.Rect(
-                (self.settings.window_width / 2 - self.__img_size[0] * (selected_gadgets.size() - 0.5) +
+                (self.settings.window_width / 2 - self.__img_pad * selected_gadgets.size() / 2 +
+                 (self.__img_pad - self.__img_pad / self.pad) / 2 +
                  idx * self.__img_pad, self.settings.window_height / 2 + self.__img_size[1] / 2), self.__img_size),
                 img,
                 selected_gadgets[idx]
