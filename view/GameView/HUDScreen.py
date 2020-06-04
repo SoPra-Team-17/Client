@@ -7,6 +7,7 @@ import cppyy
 from view.BasicView import BasicView
 from view.ViewSettings import ViewSettings
 from view.GameView.Visuals.VisualGadget import GADGET_NAME_LIST, GADGET_PATH_LIST
+from view.GameView.Visuals.VisualProperty import PROPERTY_NAME_LIST, PROPERTY_PATH_LIST
 from view.GameView.HUDScreenElements.CharacterInfoBox import CharacterInfoBox
 from view.GameView.HUDScreenElements.SelectionInfoBox import SelectionInfoBox
 from controller.ControllerView import ControllerGameView
@@ -177,33 +178,42 @@ class HUDScreen(BasicView):
         Updates icons based on new network upate. Gets information from model and creates icon bar based on that
         :return:    None
         """
+        # remove old gadgets
+        for gad in self.gadget_icon_list:
+            gad.kill()
+        for prop in self.property_icon_list:
+            prop.kill()
         self.gadget_icon_list.clear()
         self.property_icon_list.clear()
 
-        gadget_icon_surface = pygame.image.load("assets/GameView/axe.png")
-        gadget_icon_surface = pygame.transform.scale(gadget_icon_surface, [self.__icon_size] * 2)
-
-        property_icon_surface = pygame.image.load("assets/GameView/ClammyClothes.png")
-        property_icon_surface = pygame.transform.scale(property_icon_surface, [self.__icon_size] * 2)
-
         my_chars = self.controller.lib_client_handler.lib_client.getChosenCharacters()
+        count = 0
 
         for idx_char, char in enumerate(my_chars):
             char_gadgets = self.controller.lib_client_handler.lib_client.getState().getCharacters().findByUUID(
                 char).getGadgets()
 
-            # todo display correct gadget
-            for idx in range(char_gadgets.size()):
+            for idx, gad in enumerate(char_gadgets):
+                gad_idx = gad.getType()
+                gad_icon_surface = pygame.image.load(GADGET_PATH_LIST[gad_idx])
+                gad_icon_surface = pygame.transform.scale(gad_icon_surface, [self.__icon_size] * 2)
+
                 self.gadget_icon_list.append(pygame_gui.elements.UIButton(
                     relative_rect=pygame.Rect(
                         (idx_char * (self.__padding + self.__distance) + idx * self.__icon_size, 0),
-                        gadget_icon_surface.get_size()),
+                        gad_icon_surface.get_size()),
                     text="",
                     manager=self.manager,
                     container=self.container,
-                    object_id=f"#gadget_image0{idx_char}"
+                    object_id=f"#gadget_image0{idx_char + idx}"
                 ))
 
+                self.gadget_icon_list[count].normal_image = gad_icon_surface
+                self.gadget_icon_list[count].hovered_image = gad_icon_surface
+                self.gadget_icon_list[count].rebuild()
+                count += 1
+
+        count = 0
         for idx_char, char in enumerate(my_chars):
             current_char = self.controller.lib_client_handler.lib_client.getState().getCharacters().findByUUID(
                 char)
@@ -211,37 +221,46 @@ class HUDScreen(BasicView):
             hasObservation = current_char.hasProperty(cppyy.gbl.spy.character.PropertyEnum.OBSERVATION)
             hasBnB = current_char.hasProperty(cppyy.gbl.spy.character.PropertyEnum.BANG_AND_BURN)
 
-            # todo display correct property
+            pos = 0
             if hasObservation:
+                property_icon_surface = pygame.image.load(PROPERTY_PATH_LIST[0])
+                property_icon_surface = pygame.transform.scale(property_icon_surface, [self.__icon_size] * 2)
+
                 self.property_icon_list.append(pygame_gui.elements.UIButton(
                     relative_rect=pygame.Rect(
-                        (idx_char * (self.__padding + self.__distance) + self.__icon_size, self.__icon_size),
-                        gadget_icon_surface.get_size()),
+                        (idx_char * (self.__padding + self.__distance), self.__icon_size),
+                        property_icon_surface.get_size()),
                     text="",
                     manager=self.manager,
                     container=self.container,
                     object_id=f"#gadget_image0{idx_char}"
                 ))
+
+                self.property_icon_list[count].normal_image = property_icon_surface
+                self.property_icon_list[count].hovered_image = property_icon_surface
+                self.property_icon_list[count].rebuild()
+                pos += 1
+                count += 1
 
             if hasBnB:
+                property_icon_surface = pygame.image.load(PROPERTY_PATH_LIST[1])
+                property_icon_surface = pygame.transform.scale(property_icon_surface, [self.__icon_size] * 2)
+
                 self.property_icon_list.append(pygame_gui.elements.UIButton(
                     relative_rect=pygame.Rect(
-                        (idx_char * (self.__padding + self.__distance) + int(hasObservation) * self.__icon_size,
+                        (idx_char * (self.__padding + self.__distance) + pos * self.__icon_size,
                          self.__icon_size),
-                        gadget_icon_surface.get_size()),
+                        property_icon_surface.get_size()),
                     text="",
                     manager=self.manager,
                     container=self.container,
                     object_id=f"#gadget_image0{idx_char}"
                 ))
 
-        for gad in self.gadget_icon_list:
-            gad.normal_image = gadget_icon_surface
-            gad.rebuild()
-
-        for prop in self.property_icon_list:
-            prop.normal_image = property_icon_surface
-            prop.rebuild()
+                self.property_icon_list[count].normal_image = property_icon_surface
+                self.property_icon_list[count].hovered_image = property_icon_surface
+                self.property_icon_list[count].rebuild()
+                count += 1
 
     def _create_character_images(self) -> None:
         """
