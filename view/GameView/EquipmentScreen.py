@@ -55,7 +55,10 @@ class EquipmentScreen(BasicView):
         self.manager = pygame_gui.UIManager((self.settings.window_width, self.settings.window_height),
                                             "assets/GameView/GameViewTheme.json")
 
+        # width and height of ui elements depends on img_size
+        # vertical distance between ui elements depends on img_size[1]
         self.__img_size = (128, 128)
+        self.__img_pad = 2 * self.__img_size[0]
 
         self.bottom_container = pygame_gui.core.UIContainer(
             relative_rect=pygame.Rect((self.settings.window_width * .465, self.settings.window_height * .7),
@@ -63,8 +66,9 @@ class EquipmentScreen(BasicView):
             manager=self.manager)
 
         self.waiting_label_container = pygame_gui.core.UIContainer(
-            relative_rect=pygame.Rect((0, self.settings.window_height / 2 - self.__img_size[1] / 2),
-                                      (self.settings.window_width, self.__img_size[1])),
+            relative_rect=pygame.Rect((self.settings.window_width / 2 - self.__img_pad * 1.5,
+                                       self.settings.window_height / 2 - self.__img_size[1] / 2),
+                                      (self.__img_pad * 3, self.__img_size[1])),
             manager=self.manager
         )
 
@@ -72,7 +76,6 @@ class EquipmentScreen(BasicView):
         self.background.fill(self.manager.ui_theme.get_colour(None, None, 'dark_bg'))
 
         self.__padding = self.bottom_container.rect.width / 10
-        self.__img_pad = 2 * self.__img_size[0]
 
         self._init_ui_elements()
 
@@ -189,7 +192,7 @@ class EquipmentScreen(BasicView):
 
     def _init_ui_elements(self) -> None:
         self.waiting_label = pygame_gui.elements.UILabel(
-            relative_rect=pygame.Rect((0, 0), (self.settings.window_width, self.__img_size[1])),
+            relative_rect=pygame.Rect((0, 0), (self.__img_pad * 3, self.__img_size[1])),
             text="",
             manager=self.manager,
             container=self.waiting_label_container,

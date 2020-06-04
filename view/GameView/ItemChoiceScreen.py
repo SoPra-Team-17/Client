@@ -29,7 +29,11 @@ class ItemChoiceScreen(BasicView):
         self.manager = self.manager = pygame_gui.UIManager((self.settings.window_width, self.settings.window_height),
                                                            "assets/GameView/GameViewTheme.json")
 
+        # width and height of ui elements depend on img_size
+        # vertical distance between ui elements depends on img_size[1]
         self.__img_size = (128, 128)
+        # horizontal distance between ui elements can be set by img_pad
+        self.__img_pad = 2 * self.__img_size[0]
 
         self.bottom_container = pygame_gui.core.UIContainer(
             relative_rect=pygame.Rect((self.settings.window_width * .465, self.settings.window_height * .75),
@@ -37,43 +41,42 @@ class ItemChoiceScreen(BasicView):
             manager=self.manager)
 
         self.char_img_container = pygame_gui.core.UIContainer(
-            relative_rect=pygame.Rect((self.settings.window_width / 2 - self.__img_size[0] * 3,
+            relative_rect=pygame.Rect((self.settings.window_width / 2 - self.__img_pad * 1.5,
                                        self.settings.window_height / 2 - self.__img_size[1] * 3),
-                                      (self.__img_size[0] * 6, self.__img_size[1] * 2)),
+                                      (self.__img_pad * 3, self.__img_size[1] * 2)),
             manager=self.manager
         )
 
         self.char_name_container = pygame_gui.core.UIContainer(
-            relative_rect=pygame.Rect((self.settings.window_width / 2 - self.__img_size[0] * 2.5,
+            relative_rect=pygame.Rect((self.settings.window_width / 2 - self.__img_pad * 1.5,
                                        self.settings.window_height / 2 - self.__img_size[1]),
-                                      (self.__img_size[0] * 5, self.__img_size[1] / 2)),
+                                      (self.__img_pad * 3, self.__img_size[1] / 2)),
             manager=self.manager
         )
 
         self.gadget_img_container = pygame_gui.core.UIContainer(
-            relative_rect=pygame.Rect((self.settings.window_width / 2 - self.__img_size[0] * 2.5,
-                                       self.settings.window_height / 2 + self.__img_size[1] / 2),
-                                      (self.__img_size[0] * 5, self.__img_size[1])),
+            relative_rect=pygame.Rect((self.settings.window_width / 2 - self.__img_pad * 1.5,
+                                       self.settings.window_height / 2 - self.__img_size[1] / 2),
+                                      (self.__img_pad * 3, self.__img_size[1] * 2)),
             manager=self.manager
         )
 
         self.gadget_name_container = pygame_gui.core.UIContainer(
-            relative_rect=pygame.Rect((self.settings.window_width / 2 - self.__img_size[0] * 2.5,
+            relative_rect=pygame.Rect((self.settings.window_width / 2 - self.__img_pad * 1.5,
                                        self.settings.window_height / 2 + self.__img_size[1] * 1.5),
-                                      (self.__img_size[0] * 5, self.__img_size[1] / 2)),
+                                      (self.__img_pad * 3, self.__img_size[1] / 2)),
             manager=self.manager
         )
 
         self.waiting_label_container = pygame_gui.core.UIContainer(
-            relative_rect=pygame.Rect((self.settings.window_width / 2 - self.__img_size[0] * 2.5,
+            relative_rect=pygame.Rect((self.settings.window_width / 2 - self.__img_pad * 1.5,
                                        self.settings.window_height / 2 - self.__img_size[1] / 2),
-                                      (self.__img_size[0] * 5, self.__img_size[1])),
+                                      (self.__img_pad * 3, self.__img_size[1])),
             manager=self.manager
         )
 
         self.__padding = self.bottom_container.rect.width / 10
         self.__button_size = (self.bottom_container.rect.width / 3, self.bottom_container.rect.width / 12)
-        self.__img_pad = 2 * self.__img_size[0]
         self.waiting_label_counter = 0
 
         self.background = pygame.Surface((self.settings.window_width, self.settings.window_height))
@@ -181,7 +184,6 @@ class ItemChoiceScreen(BasicView):
                 if char_id == char.getCharacterId():
                     # hier können jetzt eigenschaften aus characterdescription extrahiert werden
                     name = char.getName()
-                    gender = char.getGender()
                     self.char_gender_list.append(char.getGender())
                     self.char_feature_list.append(char.getFeatures())
 
@@ -198,7 +200,7 @@ class ItemChoiceScreen(BasicView):
 
         for i in range(char_len):
             self.char_img_list.append(pygame_gui.elements.UIButton(
-                relative_rect=pygame.Rect((self.__img_pad * i + self.__img_size[0] * 0.5,
+                relative_rect=pygame.Rect((self.__img_pad * i + (self.__img_pad - self.__img_size[0]) / 2,
                                            self.__img_size[1]), self.__img_size),
                 text="",
                 manager=self.manager,
@@ -208,7 +210,7 @@ class ItemChoiceScreen(BasicView):
 
             self.char_name_list.append(pygame_gui.elements.UILabel(
                 relative_rect=pygame.Rect(
-                    (self.__img_pad * i, 0), (self.__img_size[0], self.__img_size[1] / 2)),
+                    (self.__img_pad * i, 0), (self.__img_pad, self.__img_size[1] / 2)),
                 text=f"TestChar{i}",
                 manager=self.manager,
                 container=self.char_name_container,
@@ -217,7 +219,8 @@ class ItemChoiceScreen(BasicView):
 
         for i in range(gadget_len):
             self.gadget_img_list.append(pygame_gui.elements.UIButton(
-                relative_rect=pygame.Rect((self.__img_pad * i, 0), self.__img_size),
+                relative_rect=pygame.Rect((self.__img_pad * i + (self.__img_pad - self.__img_size[0]) / 2,
+                                           self.__img_size[1]), self.__img_size),
                 text="",
                 manager=self.manager,
                 container=self.gadget_img_container,
@@ -225,7 +228,7 @@ class ItemChoiceScreen(BasicView):
             ))
             self.gadget_name_list.append(pygame_gui.elements.UILabel(
                 relative_rect=pygame.Rect(
-                    (self.__img_pad * i, 0), (self.__img_size[0], self.__img_size[1] / 2)),
+                    (self.__img_pad * i, 0), (self.__img_pad, self.__img_size[1] / 2)),
                 text=f"",
                 manager=self.manager,
                 container=self.gadget_name_container,
@@ -241,7 +244,7 @@ class ItemChoiceScreen(BasicView):
         self.char_feature_list = []
         self.private_textbox = None
         self.waiting_label = pygame_gui.elements.UILabel(
-            relative_rect=pygame.Rect((0, 0), (self.__img_size[0] * 5, self.__img_size[1])),
+            relative_rect=pygame.Rect((0, 0), (self.__img_pad * 3, self.__img_size[1])),
             text="",
             manager=self.manager,
             container=self.waiting_label_container,
@@ -262,7 +265,7 @@ class ItemChoiceScreen(BasicView):
 
         self.private_textbox = pygame_gui.elements.UITextBox(
             html_text=info_str,
-            relative_rect=pygame.Rect((self.__img_pad * idx, 0), (self.__img_pad, self.__img_pad)),
+            relative_rect=pygame.Rect((self.__img_pad * idx, 0), (self.__img_pad, self.__img_size[1] * 2)),
             manager=self.manager,
             container=self.char_img_container,
             object_id="#private_textbox"
