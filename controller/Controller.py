@@ -1,19 +1,20 @@
 """
 Implements the Controller, which is the first object created. Handles all interactions between network, user and views
 """
-import sys
 import logging
-import pygame
+import sys
+
 import cppyy
+import pygame
 from cppyy.gbl.std import map, pair, set, vector
 
-from view.ViewSettings import ViewSettings
-from view.MainMenu.MainMenuView import MainMenuView
-from view.GameView.GameView import GameView
-from view.Lobby.LobbyView import LobbyView
 from controller.ControllerView import ControllerGameView, ControllerMainMenu, ControllerLobby
 from network.LibClientHandler import LibClientHandler
 from network.NetworkEvent import NETWORK_EVENT
+from view.GameView.GameView import GameView
+from view.Lobby.LobbyView import LobbyView
+from view.MainMenu.MainMenuView import MainMenuView
+from view.ViewSettings import ViewSettings
 
 cppyy.add_include_path("/usr/local/include/SopraClient")
 cppyy.add_include_path("/usr/local/include/SopraCommon")
@@ -217,7 +218,7 @@ class Controller(ControllerGameView, ControllerMainMenu, ControllerLobby):
             logging.info("Movement op will be send to network")
         elif op_type == "Retire":
             operation = cppyy.gbl.spy.gameplay.RetireAction(active_char)
-            logging.info("Retire operation will be sond to network")
+            logging.info("Retire operation will be send to network")
         elif op_type == "Spy":
             operation = cppyy.gbl.spy.gameplay.SpyAction(active_char, target)
         elif op_type == "Gamble":

@@ -19,6 +19,13 @@ __author__ = "Marco Deuscher"
 __date__ = "25.04.2020 (date of doc. creation)"
 
 
+cppyy.add_include_path("/usr/local/include/SopraClient")
+cppyy.add_include_path("/usr/local/include/SopraCommon")
+cppyy.add_include_path("/usr/local/include/SopraNetwork")
+
+cppyy.include("datatypes/gadgets/GadgetEnum.hpp")
+
+
 class PlayingFieldScreen(BasicView):
     """
     This class contains all the relevant information for drawing the playing field
@@ -32,14 +39,10 @@ class PlayingFieldScreen(BasicView):
         self.asset_storage = AssetStorage()
         self.camera = self.camera = Camera(camera_speed=.5)
 
-        # todo values are hardcoded, do in update_playingfield, when executed for the first time
-        map = DrawableMap((50, 50, 3))
-
         self.background_image = pygame.image.load("assets/GameView/background.png")
         self.background_image = pygame.transform.scale(self.background_image, (1920, 1080))
 
         self.map = FieldMap(settings)
-        self.map.map = map
 
     def draw(self):
         self.camera.move_camera(pygame.key.get_pressed())
@@ -70,9 +73,6 @@ class PlayingFieldScreen(BasicView):
         This method is called when a updated playing field is received over the network (Game Status message)
         :return:    None
         """
-        # old map is discarded
-        self.map.map = DrawableMap((50, 50, 3))
-
         state = self.controller.lib_client_handler.lib_client.getState()
         field_map = state.getMap()
 
@@ -81,6 +81,9 @@ class PlayingFieldScreen(BasicView):
         # todo expect rectangle shaped playing field
         self.map.x_max = n_rows
         self.map.y_max = field_map.getRowLength(0)
+
+        # old map is discarded
+        self.map.map = DrawableMap((self.map.x_max, self.map.y_max, 3))
 
         # wall around field
         for i in range(3):
@@ -123,7 +126,10 @@ class PlayingFieldScreen(BasicView):
 
                 # check if field has gadget
                 if field.getGadget().has_value():
-                    self.map.map[WorldPoint(x, y, z=1)] = Gadget(WorldPoint(x, y, z=1), self.asset_storage)
+                    if field.getGadget().value().getType() == cppyy.gbl.spy.gadget.GadgetEnum.COCKTAIL:
+                        self.map.map[WorldPoint(x, y, z=2)] = Cocktail(WorldPoint(x, y, z=2), self.asset_storage)
+                    else:
+                        self.map.map[WorldPoint(x, y, z=1)] = Gadget(WorldPoint(x, y, z=1), self.asset_storage)
 
                 # check if field is foggy
                 if field.isFoggy():
