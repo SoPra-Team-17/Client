@@ -13,6 +13,7 @@ from network.NetworkEvent import NETWORK_EVENT
 __author__ = "Marco Deuscher"
 __date__ = "20.05.20 (doc creation)"
 
+
 class LobbyView(BasicView):
 
     def __init__(self, window: pygame.display, controller: ControllerLobby, settings: ViewSettings) -> None:
