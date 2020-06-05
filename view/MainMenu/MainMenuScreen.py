@@ -38,7 +38,7 @@ class MainMenuScreen(BasicView):
         self._init_ui_elements()
 
         # load title image
-        self.titleImage = pygame.image.load("assets/Menu/TitleImage.png")
+        self.titleImage = pygame.image.load("assets/MainMenu/TitleImage.png")
         logging.info("MainMenuScreen init done")
 
     def draw(self) -> None:
