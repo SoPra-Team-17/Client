@@ -4,4 +4,5 @@ build:
 
 .PHONY: run
 run:
+	xhost local:docker
 	docker run --rm --volume="${HOME}/.Xauthority:/root/.Xauthority:rw" --env="DISPLAY" --net=host soprateam17/client
