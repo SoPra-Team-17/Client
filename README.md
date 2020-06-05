@@ -8,6 +8,10 @@ Build the docker container `soprateam17/client` with
 ```bash
 make build
 ```
+or pull the prebuilt container for the `develop` branch from dockerhub:
+```bash
+docker pull soprateam17/client
+```
 
 Run the container with
 ```
