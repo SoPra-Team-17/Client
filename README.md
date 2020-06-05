@@ -1,7 +1,19 @@
 # Client
 
 ## Installation
-The Client can only be installed manually.
+The Client can be installed manually or using docker.
+
+### Docker
+Build the docker container `soprateam17/client` with
+```bash
+make build
+```
+
+Run the container with
+```
+make run
+```
+
 ### Manual installation
 #### Prerequisites
 * Ubuntu 18.04
