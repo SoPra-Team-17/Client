@@ -91,17 +91,16 @@ class SpectatorView(BasicView):
         return self.playing_field_screen.map.get_selected_coords()
 
     def _on_meta_received(self):
-        # todo does not work!
-        info = self.controller.lib_client_handler.lib_client.getInformation()
-        variant = info[cppyy.gbl.spy.network.messages.MetaInformationKey.FACTION_PLAYER1]
-        print(variant)
-        """
-        self.player_one_id = cppyy.gbl.std.get[vector[cppyy.gbl.spy.util.UUID]](variant)
         meta_info = self.controller.lib_client_handler.lib_client.getInformation()
-    
+
         variant = meta_info[
-            cppyy.gbl.spy.network.messages.MetaInformationKey.FACTION_PLAYER1]
+            cppyy.gbl.spy.network.messages.MetaInformationKey.CONFIGURATION_CHARACTER_INFORMATION]
+        char_info_vector = cppyy.gbl.std.get[vector[cppyy.gbl.spy.character.CharacterInformation]](variant)
+        for char_info in char_info_vector:
+            print(char_info)
+
+        variant = meta_info[
+            cppyy.gbl.spy.network.messages.MetaInformationKey.FACTION_NEUTRAL]
         self.player_one_id = cppyy.gbl.std.get[vector[cppyy.gbl.spy.util.UUID]](variant)
         for id in self.player_one_id:
             print(f"Player1.id: {id}")
-        """
