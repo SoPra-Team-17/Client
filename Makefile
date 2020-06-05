@@ -1,6 +1,6 @@
 .PHONY: build
 build:
-	sudo docker build -t soprateam17/client .
+	docker build -t soprateam17/client .
 
 .PHONY: run
 run:
