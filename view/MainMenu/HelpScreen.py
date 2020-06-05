@@ -14,7 +14,7 @@ __date__ = "25.04.2020 (date of doc. creation)"
 
 
 class HelpScreen(BasicView):
-    with open("assets/Menu/help_text.html") as f:
+    with open("assets/MainMenu/help_text.html") as f:
         _help_text = f.read()
         _help_text = _help_text.replace("\n", "")
 

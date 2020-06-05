@@ -4,7 +4,7 @@ Implements a storage class for all assets, so they're only loaded once at runtim
 from abc import ABC, abstractmethod
 import pygame
 
-from assets.GameView.CharactersIso.CharacterIsoPaths import CHARACTER_ISO_PATH_DICT
+from assets.GameView.CharacterIso.CharacterIsoPaths import CHARACTER_ISO_PATH_DICT
 
 __author__ = "Marco Deuscher"
 __date__ = "25.04.2020 (date of doc. creation)"
@@ -24,7 +24,7 @@ class DrawableAssets(ABC):
 class FloorAssets(DrawableAssets):
     def __init__(self):
         self.block_image = pygame.image.load(
-            "assets/GameView/IsoAssets/PNG/Platformertiles/platformerTile_11.png").convert_alpha()
+            "assets/GameView/Playingfield/Floor.png").convert_alpha()
         self.block_image = pygame.transform.scale(self.block_image, (64, 64))
 
         self.hovered_image = self.block_image.copy()
@@ -43,33 +43,33 @@ class FloorAssets(DrawableAssets):
 class WallAssets(DrawableAssets):
     def __init__(self):
         self.block_image = pygame.image.load(
-            "assets/GameView/IsoAssets/PNG/VoxelTiles/voxelTile_30.png").convert_alpha()
+            "assets/GameView/Playingfield/Wall.png").convert_alpha()
         self.block_image = pygame.transform.scale(self.block_image, (64, 64))
 
 
 class FireplaceAsset(DrawableAssets):
     def __init__(self):
         self.block_image = pygame.image.load(
-            "assets/GameView/IsoAssets/PNG/VoxelTiles/voxelTile_17.png").convert_alpha()
+            "assets/GameView/Playingfield/Fireplace.png").convert_alpha()
         self.block_image = pygame.transform.scale(self.block_image, (64, 64))
 
 
 class RouletteTableAsset(DrawableAssets):
     def __init__(self):
         self.block_image = pygame.image.load(
-            "assets/GameView/IsoAssets/PNG/VoxelTiles/voxelTile_18.png").convert_alpha()
+            "assets/GameView/Playingfield/Roulettetable.png").convert_alpha()
         self.block_image = pygame.transform.scale(self.block_image, (64, 64))
 
 
 class BarSeatAsset(DrawableAssets):
     def __init__(self):
-        self.block_image = pygame.image.load("assets/GameView/Chair1.png").convert_alpha()
+        self.block_image = pygame.image.load("assets/GameView/Playingfield/Chair1.png").convert_alpha()
         self.block_image = pygame.transform.scale(self.block_image, (64, 64))
 
 
 class BarTableAsset(DrawableAssets):
     def __init__(self):
-        self.block_image = pygame.image.load("assets/GameView/Desk1.png").convert_alpha()
+        self.block_image = pygame.image.load("assets/GameView/Playingfield/Desk1.png").convert_alpha()
         self.block_image = pygame.transform.scale(self.block_image, (64, 64))
 
 
@@ -107,35 +107,35 @@ class CharacterAsset(DrawableAssets):
 class GadgetAsset(DrawableAssets):
     def __init__(self):
         self.block_image = pygame.image.load(
-            "assets/GameView/IsoAssets/PNG/Platformertiles/platformerTile_23.png").convert_alpha()
+            "assets/GameView/Playingfield/Gadget.png").convert_alpha()
         self.block_image = pygame.transform.scale(self.block_image, (64, 64))
 
 
 class SafeAsset(DrawableAssets):
     def __init__(self):
         self.block_image = pygame.image.load(
-            "assets/GameView/IsoAssets/PNG/Platformertiles/platformerTile_40.png").convert_alpha()
+            "assets/GameView/Playingfield/Safe.png").convert_alpha()
         self.block_image = pygame.transform.scale(self.block_image, (64, 64))
 
 
 class FogAsset(DrawableAssets):
     def __init__(self):
         self.block_image = pygame.image.load(
-            "assets/PolyPixel2D/assets_1024x1024/isometric_0063.png").convert_alpha()
+            "assets/GameView/Playingfield/Fog.png").convert_alpha()
         self.block_image = pygame.transform.scale(self.block_image, (64, 64))
 
 
 class CatAsset(DrawableAssets):
     def __init__(self):
         self.block_image = pygame.image.load(
-            "assets/GameView/cat.png").convert_alpha()
+            "assets/GameView/Playingfield/cat.png").convert_alpha()
         self.block_image = pygame.transform.scale(self.block_image, (64, 64))
 
 
 class CocktailAsset(DrawableAssets):
     def __init__(self):
         self.block_image = pygame.image.load(
-            "assets/GameView/cocktail.png").convert_alpha()
+            "assets/GameView/Playingfield/cocktail.png").convert_alpha()
         self.block_image = pygame.transform.scale(self.block_image, (48, 48))
 
 
