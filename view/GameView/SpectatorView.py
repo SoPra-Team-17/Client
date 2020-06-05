@@ -1,7 +1,10 @@
 """
 Implements interface between Specator view and controller
 """
+import logging
+import time
 import pygame
+import cppyy
 
 from view.BasicView import BasicView
 from view.GameView.PlayingFieldScreen import PlayingFieldScreen
@@ -9,6 +12,16 @@ from view.GameView.SpectatorChoiceScreen import SpectatorChoiceScreen
 from view.ViewSettings import ViewSettings
 from controller.ControllerView import ControllerSpectatorView
 from util.Coordinates import WorldPoint
+from network.NetworkEvent import NETWORK_EVENT
+
+from cppyy.gbl.std import map, pair, set, vector
+
+cppyy.add_include_path("/usr/local/include/SopraClient")
+cppyy.add_include_path("/usr/local/include/SopraCommon")
+cppyy.add_include_path("/usr/local/include/SopraNetwork")
+
+cppyy.include("network/messages/MetaInformationKey.hpp")
+cppyy.include("util/UUID.hpp")
 
 __author__ = "Marco Deuscher"
 __date__ = "04.06.20 (creation)"
@@ -27,6 +40,10 @@ class SpectatorView(BasicView):
 
         self.active_views = [self.spectator_choice_screen]
 
+        self.player_one_id = None
+        self.player_two_id = None
+        self.player_neutral_id = None
+
     def draw(self) -> None:
         for view in self.active_views:
             view.draw()
@@ -34,8 +51,9 @@ class SpectatorView(BasicView):
         pygame.display.flip()
 
     def receive_event(self, event: pygame.event.Event) -> None:
-        # todo filter events to hud!
-
+        if event.type == pygame.USEREVENT and event.user_type == NETWORK_EVENT:
+            if event.message_type == "MetaInformation":
+                self._on_meta_received()
         for view in self.active_views:
             view.receive_event(event)
 
@@ -45,6 +63,14 @@ class SpectatorView(BasicView):
         Also updates playing field with the prev. received network update, same for hud screen
         :return: None
         """
+        # get metainformation, make sure message was alreafy received before updating
+        key_list = [cppyy.gbl.spy.network.messages.MetaInformationKey.CONFIGURATION_CHARACTER_INFORMATION,
+                    cppyy.gbl.spy.network.messages.MetaInformationKey.FACTION_PLAYER1,
+                    cppyy.gbl.spy.network.messages.MetaInformationKey.FACTION_PLAYER2,
+                    cppyy.gbl.spy.network.messages.MetaInformationKey.FACTION_NEUTRAL]
+        ret = self.controller.send_request_meta_information(key_list)
+        logging.info(f"Send Request Metainformation successfull: {ret}\nWaiting for Metainformation")
+
         # todo add hud to active view
         self.active_views = [self.playing_field_screen]
         self.playing_field_screen.update_playingfield()
@@ -63,3 +89,19 @@ class SpectatorView(BasicView):
         :return: WorldPoint or None if no field is selected
         """
         return self.playing_field_screen.map.get_selected_coords()
+
+    def _on_meta_received(self):
+        # todo does not work!
+        info = self.controller.lib_client_handler.lib_client.getInformation()
+        variant = info[cppyy.gbl.spy.network.messages.MetaInformationKey.FACTION_PLAYER1]
+        print(variant)
+        """
+        self.player_one_id = cppyy.gbl.std.get[vector[cppyy.gbl.spy.util.UUID]](variant)
+        meta_info = self.controller.lib_client_handler.lib_client.getInformation()
+    
+        variant = meta_info[
+            cppyy.gbl.spy.network.messages.MetaInformationKey.FACTION_PLAYER1]
+        self.player_one_id = cppyy.gbl.std.get[vector[cppyy.gbl.spy.util.UUID]](variant)
+        for id in self.player_one_id:
+            print(f"Player1.id: {id}")
+        """

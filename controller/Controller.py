@@ -134,9 +134,10 @@ class Controller(ControllerGameView, ControllerMainMenu, ControllerLobby):
         self.gameView.to_item_choice()
 
         # on transition to game_view request meta information for character names from server
-        key_list = [cppyy.gbl.spy.network.messages.MetaInformationKey.CONFIGURATION_CHARACTER_INFORMATION]
-        ret = self.send_request_meta_information(key_list)
-        logging.info(f"Send Request Metainformation successfull: {ret}")
+        if type(self.gameView) == GameView:
+            key_list = [cppyy.gbl.spy.network.messages.MetaInformationKey.CONFIGURATION_CHARACTER_INFORMATION]
+            ret = self.send_request_meta_information(key_list)
+            logging.info(f"Send Request Metainformation successfull: {ret}")
 
     def exit_game(self) -> None:
         """
@@ -160,6 +161,7 @@ class Controller(ControllerGameView, ControllerMainMenu, ControllerLobby):
         :return:
         """
         self.gameView = SpectatorView(self.screen, self, self.view_settings)
+        self.to_game_view()
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~SEND NETWORK MESSAGE~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # LobbyView Messages
