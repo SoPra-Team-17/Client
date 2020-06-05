@@ -113,7 +113,7 @@ class SelectionInfoBox:
                 update = True
 
         if self.parent_screen.controller.lib_client_handler.lib_client.isGamePaused():
-            textbox_str += "<b>Game is paused!</b>"
+            textbox_str += "<b>Game is paused!</b><br>"
 
         if update:
             self.info_textbox.html_text = textbox_str
