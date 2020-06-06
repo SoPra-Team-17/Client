@@ -215,10 +215,8 @@ class Controller(ControllerGameView, ControllerMainMenu, ControllerLobby):
 
         if op_type == "Movement":
             operation = cppyy.gbl.spy.gameplay.Movement(False, target, active_char, active_char_coords)
-            logging.info("Movement op will be send to network")
         elif op_type == "Retire":
             operation = cppyy.gbl.spy.gameplay.RetireAction(active_char)
-            logging.info("Retire operation will be send to network")
         elif op_type == "Spy":
             operation = cppyy.gbl.spy.gameplay.SpyAction(active_char, target)
         elif op_type == "Gamble":
