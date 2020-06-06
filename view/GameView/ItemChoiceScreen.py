@@ -111,7 +111,8 @@ class ItemChoiceScreen(BasicView):
 
         if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_ON_UNHOVERED:
             # check if character image is currently unhovered, if so kill private textbox
-            self.private_textbox.kill()
+            if self.private_textbox is not None:
+                self.private_textbox.kill()
 
         if event.type == pygame.USEREVENT and event.user_type == NETWORK_EVENT:
             if event.message_type == "RequestItemChoice":
@@ -277,7 +278,9 @@ class ItemChoiceScreen(BasicView):
             img.kill()
             name.kill()
 
-        self.private_textbox.kill()
+        if self.private_textbox is not None:
+            self.private_textbox.kill()
+
         self.char_name_list.clear()
         self.char_img_list.clear()
         self.gadget_name_list.clear()
