@@ -92,8 +92,6 @@ class ItemChoiceScreen(BasicView):
     def draw(self) -> None:
         self.manager.update(1 / self.settings.frame_rate)
 
-        self._check_character_hover()
-
         self.window.blit(self.background, (0, 0))
         self.manager.draw_ui(self.window)
 
@@ -104,6 +102,16 @@ class ItemChoiceScreen(BasicView):
             self.selected_item(event.ui_element)
             self._kill_ui_elements()
             self.waiting_label_counter += 1
+
+        if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_ON_HOVERED:
+            # check if character image is currently hovered, if so init private textbox on this char
+            for idx, button in enumerate(self.char_img_list):
+                if button.check_hover(1 / self.settings.frame_rate, False):
+                    self._init_private_textbox(idx)
+
+        if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_ON_UNHOVERED:
+            # check if character image is currently unhovered, if so kill private textbox
+            self.private_textbox.kill()
 
         if event.type == pygame.USEREVENT and event.user_type == NETWORK_EVENT:
             if event.message_type == "RequestItemChoice":
@@ -119,19 +127,6 @@ class ItemChoiceScreen(BasicView):
 
         if self.waiting_label_counter == 8:
             self.waiting_label.set_text("Selection done. Waiting for other player.")
-
-    def _check_character_hover(self) -> None:
-        """
-        Check if character image is currently hovered, if so init private textbox on this char
-        :return:    None
-        """
-        if self.private_textbox is not None:
-            self.private_textbox.kill()
-            self.private_textbox = None
-
-        for idx, button in enumerate(self.char_img_list):
-            if button.check_hover(1 / self.settings.frame_rate, False):
-                self._init_private_textbox(idx)
 
     def selected_item(self, element) -> None:
         """
@@ -282,6 +277,7 @@ class ItemChoiceScreen(BasicView):
             img.kill()
             name.kill()
 
+        self.private_textbox.kill()
         self.char_name_list.clear()
         self.char_img_list.clear()
         self.gadget_name_list.clear()
