@@ -68,6 +68,12 @@ class EquipmentScreen(BasicView):
                                       (self.settings.window_width / 4, self.settings.window_height / 8)),
             manager=self.manager)
 
+        self.char_name_container = pygame_gui.core.UIContainer(
+            relative_rect=pygame.Rect((0, self.settings.window_height / 2 - self.__img_size[1]),
+                                      (self.settings.window_width, self.__img_size[1] / 2)),
+            manager=self.manager
+        )
+
         self.waiting_label_container = pygame_gui.core.UIContainer(
             relative_rect=pygame.Rect((self.settings.window_width / 2 - self.__img_pad * 1.5,
                                        self.settings.window_height / 2 - self.__img_size[1] / 2),
@@ -136,6 +142,25 @@ class EquipmentScreen(BasicView):
         """
         selected_characters = self.controller.lib_client_handler.lib_client.getChosenCharacters()
         selected_gadgets = self.controller.lib_client_handler.lib_client.getChosenGadgets()
+        selected_characters_names = []
+
+        for idx in range(len(selected_characters)):
+            selected_characters_names.append(pygame_gui.elements.UILabel(
+                relative_rect=pygame.Rect((
+                    self.settings.window_width / 2 - self.__img_pad * selected_characters.size() / 2 +
+                    idx * self.__img_pad, 0), (self.__img_pad, self.__img_size[1] / 2)),
+                text="",
+                manager=self.manager,
+                container=self.char_name_container,
+                object_id=f"#char_name_label0{idx}"
+            ))
+
+        for idx, char_id in enumerate(selected_characters):
+            for char in self.controller.lib_client_handler.lib_client.getCharacterSettings():
+                if char_id == char.getCharacterId():
+                    name = char.getName()
+                    selected_characters_names[idx].set_text(name)
+                    selected_characters_names[idx].rebuild()
 
         for idx in range(selected_characters.size()):
             img = pygame.image.load(CHAR_PATH_DICT.get("normal"))
