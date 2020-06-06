@@ -9,6 +9,7 @@ import cppyy
 from view.BasicView import BasicView
 from view.GameView.PlayingFieldScreen import PlayingFieldScreen
 from view.GameView.SpectatorChoiceScreen import SpectatorChoiceScreen
+from view.GameView.SpectatorHUDScreen import SpectatorHUDScreen
 from view.ViewSettings import ViewSettings
 from controller.ControllerView import ControllerSpectatorView
 from util.Coordinates import WorldPoint
@@ -32,11 +33,14 @@ class SpectatorView(BasicView):
     This class implements the interface of the specator view class to the controller
     """
 
-    def __init__(self, window: pygame.display, controller: ControllerSpectatorView, settings: ViewSettings):
+    def __init__(self, window: pygame.display, controller: ControllerSpectatorView, parent, settings: ViewSettings):
         super(SpectatorView, self).__init__(window, controller, settings)
+
+        self.parent = parent
 
         self.playing_field_screen = PlayingFieldScreen(self.window, self.controller, self, self.settings)
         self.spectator_choice_screen = SpectatorChoiceScreen(self.window, self.controller, self, self.settings)
+        self.spectator_HUD_screen = SpectatorHUDScreen(self.window, self.controller, self, self.settings)
 
         self.active_views = [self.spectator_choice_screen]
 
@@ -71,11 +75,6 @@ class SpectatorView(BasicView):
         ret = self.controller.send_request_meta_information(key_list)
         logging.info(f"Send Request Metainformation successfull: {ret}\nWaiting for Metainformation")
 
-        # todo add hud to active view
-        self.active_views = [self.playing_field_screen]
-        self.playing_field_screen.update_playingfield()
-        # todo update hud
-
     def to_item_choice(self) -> None:
         """
         This method implements the transition to the item choice for the specator
@@ -94,13 +93,18 @@ class SpectatorView(BasicView):
         meta_info = self.controller.lib_client_handler.lib_client.getInformation()
 
         variant = meta_info[
-            cppyy.gbl.spy.network.messages.MetaInformationKey.CONFIGURATION_CHARACTER_INFORMATION]
-        char_info_vector = cppyy.gbl.std.get[vector[cppyy.gbl.spy.character.CharacterInformation]](variant)
-        for char_info in char_info_vector:
-            print(char_info)
+            cppyy.gbl.spy.network.messages.MetaInformationKey.FACTION_NEUTRAL]
+        self.player_neutral_id = cppyy.gbl.std.get[vector[cppyy.gbl.spy.util.UUID]](variant)
 
         variant = meta_info[
-            cppyy.gbl.spy.network.messages.MetaInformationKey.FACTION_NEUTRAL]
+            cppyy.gbl.spy.network.messages.MetaInformationKey.FACTION_PLAYER1]
         self.player_one_id = cppyy.gbl.std.get[vector[cppyy.gbl.spy.util.UUID]](variant)
-        for id in self.player_one_id:
-            print(f"Player1.id: {id}")
+
+        variant = meta_info[
+            cppyy.gbl.spy.network.messages.MetaInformationKey.FACTION_PLAYER2]
+        self.player_two_id = cppyy.gbl.std.get[vector[cppyy.gbl.spy.util.UUID]](variant)
+
+        # wait until meta information is received, then start game
+        self.active_views = [self.playing_field_screen, self.spectator_HUD_screen]
+        self.playing_field_screen.update_playingfield()
+        self.spectator_HUD_screen.network_update()

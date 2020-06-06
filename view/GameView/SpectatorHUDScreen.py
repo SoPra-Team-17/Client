@@ -54,8 +54,8 @@ class SpectatorHUDScreen(BasicView):
             manager=self.manager
         )
 
-        self.character_info_box = CharacterInfoBox(self, self.container, self.manager)
-        self.selection_info_box = SelectionInfoBox(self, self.container, self.manager, self.settings)
+        # self.character_info_box = CharacterInfoBox(self, self.container, self.manager)
+        # self.selection_info_box = SelectionInfoBox(self, self.container, self.manager, self.settings)
 
         # padding to set responsive size of character buttons
         self.__padding = (self.container.rect.width / 2 - 5 * self.__distance) / 7
@@ -76,9 +76,7 @@ class SpectatorHUDScreen(BasicView):
 
     def draw(self) -> None:
         self.manager.update(1 / self.settings.frame_rate)
-        self._check_character_hover()
-        self.selection_info_box.update_textbox(self.gadget_icon_list, self.property_icon_list,
-                                               self.__selected_gad_prop_idx)
+        self._update_text_box()
 
         self.window.blit(self.background, (0, self.container.rect.y))
         self.manager.draw_ui(self.window)
@@ -97,12 +95,14 @@ class SpectatorHUDScreen(BasicView):
         elif event.type == pygame.USEREVENT and event.user_type == NETWORK_EVENT:
             if event.message_type == "GameStatus":
                 self.network_update()
+        """
         elif event.type == pygame.MOUSEBUTTONUP:
             # check if on one of the gadget / properties imgs
             for idx, icon in enumerate(self.gadget_icon_list + self.property_icon_list):
                 if icon.check_hover(1 / self.settings.frame_rate, False):
                     logging.info(f"Selected gad_prob_idx: {idx}")
                     self.__selected_gad_prop_idx = idx
+        """
 
     def menu_button_pressed(self) -> None:
         self.controller.to_main_menu()
@@ -112,6 +112,7 @@ class SpectatorHUDScreen(BasicView):
         Check if character image is currently hovered, if so init private textbox on this char
         :return:    None
         """
+        return
         self.character_info_box.reset()
 
         for idx, button in enumerate(self.char_image_list):
@@ -134,14 +135,14 @@ class SpectatorHUDScreen(BasicView):
         self.char_image_list_p1.clear()
         self.char_image_list_p2.clear()
 
-        char_surface = pygame.image.load(CHAR_PATH_DICT.get("normal")).convert_alpha()
-        char_surface = pygame.transform.scale(char_surface, (int(self.__padding), int(self.__padding)))
+        char_surface_normal = pygame.image.load(CHAR_PATH_DICT.get("normal")).convert_alpha()
+        char_surface_normal = pygame.transform.scale(char_surface_normal, (int(self.__padding), int(self.__padding)))
 
         for idx, char_id in enumerate(self.parent.player_one_id):
             self.char_image_list_p1.append(
                 pygame_gui.elements.UIButton(
                     relative_rect=pygame.Rect((idx * (self.__padding + self.__distance), 2 * self.__icon_size),
-                                              char_surface.get_size()),
+                                              char_surface_normal.get_size()),
                     text="",
                     manager=self.manager,
                     container=self.container,
@@ -161,6 +162,8 @@ class SpectatorHUDScreen(BasicView):
                 )
             )
 
+            self.char_image_list_p1[idx].normal_image = char_surface_normal
+            self.char_image_list_p1[idx].rebuild()
             # get hp of char
             current_char = self.controller.lib_client_handler.lib_client.getState().getCharacters().findByUUID(
                 char_id)
@@ -176,7 +179,7 @@ class SpectatorHUDScreen(BasicView):
                     relative_rect=pygame.Rect(
                         (self.container.rect.width - (idx + 1) * (self.__padding + self.__distance),
                          2 * self.__icon_size),
-                        char_surface.get_size()),
+                        char_surface_normal.get_size()),
                     text="",
                     manager=self.manager,
                     container=self.container,
@@ -188,13 +191,16 @@ class SpectatorHUDScreen(BasicView):
                 pygame_gui.elements.UIScreenSpaceHealthBar(
                     relative_rect=pygame.Rect(
                         (self.container.rect.width - (idx + 1) * (self.__padding + self.__distance),
-                         2 * self.__icon_size),
-                        char_surface.get_size()),
+                         self.__padding + self.__distance + 2 * self.__icon_size),
+                        (self.__padding, 25)),
                     manager=self.manager,
                     container=self.container,
                     object_id=f"#health_bar0{idx}",
                 )
             )
+
+            self.char_image_list_p2[idx].normal_image = char_surface_normal
+            self.char_image_list_p2[idx].rebuild()
 
             # get hp of char
             current_char = self.controller.lib_client_handler.lib_client.getState().getCharacters().findByUUID(
@@ -395,6 +401,17 @@ class SpectatorHUDScreen(BasicView):
             object_id="#menu_button"
         )
 
+        self.selected_info_box = pygame_gui.elements.UITextBox(
+            relative_rect=pygame.Rect(
+                (self.container.rect.width / 2 - self.__button_size[0] / 2,
+                 0),
+                (self.__button_size[0], self.container.rect.height - self.__button_size[1])),
+            html_text="",
+            manager=self.manager,
+            container=self.container,
+            object_id="#selected_info_box"
+        )
+
     def idx_to_gadget_idx(self, idx) -> int:
         """
         Transforms between idx for UI-elements list and State Gadget idx
@@ -411,3 +428,21 @@ class SpectatorHUDScreen(BasicView):
                 return current_char.getGadgets()[idx - count].getType()
             else:
                 count += current_char.getGadgets().size()
+
+    def _update_text_box(self) -> None:
+        update = False
+        textbox_str = ""
+
+        if self.parent.get_selected_field() is not None:
+            # selected field information
+            field = self.parent.parent.get_selected_field()
+            # only update string, when selected field has changed
+            if field != self.selected_field:
+                self.selected_field = field
+                info_str = SelectionInfoBox.create_field_info_string(self.controller, field)
+                textbox_str += f"<br>Field: {info_str}"
+                update = True
+
+        if update:
+            self.selected_info_box.html_text = textbox_str
+            self.selected_info_box.rebuild()
