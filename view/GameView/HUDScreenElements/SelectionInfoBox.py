@@ -112,6 +112,9 @@ class SelectionInfoBox:
                 textbox_str += f"<br>Field: {self.__field_info_str}"
                 update = True
 
+        if self.parent_screen.controller.lib_client_handler.lib_client.isGamePaused():
+            textbox_str += "<b>Game is paused!</b><br>"
+
         if update:
             self.info_textbox.html_text = textbox_str
             self.info_textbox.rebuild()
