@@ -96,19 +96,19 @@ class HUDScreen(BasicView):
             }
             try:
                 switcher.get(event.ui_element)()
-            except TypeError as t:
-                logging.error(traceback.format_exc())
+            except TypeError:
                 logging.warning("Element not found in dict")
         elif event.type == pygame.USEREVENT and event.user_type == NETWORK_EVENT:
             if event.message_type == "GameStatus":
                 self.network_update()
             elif event.message_type == "RequestGameOperation":
                 self._update_active_char(active=True)
+            elif event.message_type == "GamePause":
+                self.selection_info_box.update_textbox()
         elif event.type == pygame.MOUSEBUTTONUP:
             # check if on one of the gadget / properties imgs
             for idx, icon in enumerate(self.gadget_icon_list + self.property_icon_list):
                 if icon.check_hover(1 / self.settings.frame_rate, False):
-                    logging.info(f"Selected gad_prob_idx: {idx}")
                     self.__selected_gad_prop_idx = idx
 
     def menu_button_pressed(self) -> None:
@@ -359,7 +359,6 @@ class HUDScreen(BasicView):
         active_img = pygame.transform.scale(active_img, [int(self.__padding)] * 2)
         self.char_image_list[active_gui_idx].normal_image = active_img
         self.char_image_list[active_gui_idx].rebuild()
-        logging.info("Should have upated char pic")
 
     def _init_ui_elements(self) -> None:
         self.char_image_list = []

@@ -71,6 +71,7 @@ class SpectatorHUDScreen(BasicView):
         self.__selected_gad_prop_idx = None
 
         self.selected_field = None
+        self.private_textbox = None
 
         logging.info("HudScreen init done")
 
@@ -95,6 +96,12 @@ class SpectatorHUDScreen(BasicView):
         elif event.type == pygame.USEREVENT and event.user_type == NETWORK_EVENT:
             if event.message_type == "GameStatus":
                 self.network_update()
+        elif event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_ON_HOVERED:
+            self._check_character_hover()
+        elif event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_ON_UNHOVERED:
+            logging.info("Unhovered kill textbox")
+            if self.private_textbox is not None:
+                self.private_textbox.kill()
 
     def menu_button_pressed(self) -> None:
         self.controller.to_main_menu()
@@ -104,12 +111,18 @@ class SpectatorHUDScreen(BasicView):
         Check if character image is currently hovered, if so init private textbox on this char
         :return:    None
         """
-        return
-        self.character_info_box.reset()
+        # self.character_info_box.reset()
 
-        for idx, button in enumerate(self.char_image_list):
+        for idx, button in enumerate(self.char_image_list_p1):
             if button.check_hover(1 / self.settings.frame_rate, False):
-                self.character_info_box.update_textbox(idx)
+                # self.character_info_box.update_textbox(idx)
+                self._update_character_info_box(idx, player_one=True)
+                return
+
+        for idx, button in enumerate(self.char_image_list_p2):
+            if button.check_hover(1 / self.settings.frame_rate, False):
+                self._update_character_info_box(idx, player_one=False)
+                return
 
     def network_update(self) -> None:
         """
@@ -438,3 +451,40 @@ class SpectatorHUDScreen(BasicView):
         if update:
             self.selected_info_box.html_text = textbox_str
             self.selected_info_box.rebuild()
+
+    def _update_character_info_box(self, idx: int, player_one: bool) -> None:
+        char_id = self.parent.player_one_id[idx] if player_one else self.parent.player_two_id[idx]
+        char = self.controller.lib_client_handler.lib_client.getState().getCharacters().findByUUID(char_id)
+
+        hp = char.getHealthPoints()
+        chips = char.getChips()
+        ip = char.getIntelligencePoints()
+        info = self.controller.lib_client_handler.lib_client.getInformation()
+        variant = info[
+            cppyy.gbl.spy.network.messages.MetaInformationKey.CONFIGURATION_CHARACTER_INFORMATION]
+        char_info_vector = cppyy.gbl.std.get[vector[cppyy.gbl.spy.character.CharacterInformation]](variant)
+
+        name = ""
+        for char_info in char_info_vector:
+            if char_id == char_info.getCharacterId():
+                name = char_info.getName()
+
+        if player_one:
+            self.private_textbox = pygame_gui.elements.UITextBox(
+                html_text=f"<b>{name}</b><b>HP:</b>{hp}<br><b>IP:</b>{ip}<br><b>Chips:</b>{chips}<br>",
+                relative_rect=pygame.Rect((idx * (self.__padding + self.__distance), 2 * self.__icon_size),
+                                          (self.__padding, self.__padding)),
+                manager=self.manager,
+                container=self.container,
+                object_id="#private_textbox"
+            )
+        else:
+            self.private_textbox = pygame_gui.elements.UITextBox(
+                html_text=f"<b>{name}</b><b>HP:</b>{hp}<br><b>IP:</b>{ip}<br><b>Chips:</b>{chips}<br>",
+                relative_rect=pygame.Rect((self.container.rect.width - (idx + 1) * (self.__padding + self.__distance),
+                                           2 * self.__icon_size),
+                                          (self.__padding, self.__padding)),
+                manager=self.manager,
+                container=self.container,
+                object_id="#private_textbox"
+            )

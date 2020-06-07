@@ -43,6 +43,8 @@ class SpectatorView(BasicView):
 
         self.active_views = [self.spectator_choice_screen]
 
+        self.__send_meta = False
+
         self.player_one_id = None
         self.player_two_id = None
         self.player_neutral_id = None
@@ -67,12 +69,14 @@ class SpectatorView(BasicView):
         :return: None
         """
         # get metainformation, make sure message was alreafy received before updating
-        key_list = [cppyy.gbl.spy.network.messages.MetaInformationKey.CONFIGURATION_CHARACTER_INFORMATION,
-                    cppyy.gbl.spy.network.messages.MetaInformationKey.FACTION_PLAYER1,
-                    cppyy.gbl.spy.network.messages.MetaInformationKey.FACTION_PLAYER2,
-                    cppyy.gbl.spy.network.messages.MetaInformationKey.FACTION_NEUTRAL]
-        ret = self.controller.send_request_meta_information(key_list)
-        logging.info(f"Send Request Metainformation successfull: {ret}\nWaiting for Metainformation")
+        if not self.__send_meta:
+            key_list = [cppyy.gbl.spy.network.messages.MetaInformationKey.CONFIGURATION_CHARACTER_INFORMATION,
+                        cppyy.gbl.spy.network.messages.MetaInformationKey.FACTION_PLAYER1,
+                        cppyy.gbl.spy.network.messages.MetaInformationKey.FACTION_PLAYER2,
+                        cppyy.gbl.spy.network.messages.MetaInformationKey.FACTION_NEUTRAL]
+            ret = self.controller.send_request_meta_information(key_list)
+            self.__send_meta = True
+            logging.info(f"Send Request Metainformation successfull: {ret}\nWaiting for Metainformation")
 
     def to_item_choice(self) -> None:
         """
