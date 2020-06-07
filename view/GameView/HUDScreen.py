@@ -434,19 +434,18 @@ class HUDScreen(BasicView):
 
         )
 
-
-def idx_to_gadget_idx(self, idx) -> int:
-    """
-    Transforms between idx for UI-elements list and State Gadget idx
-    :param idx:     UI gadget idx
-    :return:        State gadget idx
-    """
-    character_ids = self.controller.lib_client_handler.lib_client.getChosenCharacters()
-    count = 0
-    for char_id in character_ids:
-        current_char = self.controller.lib_client_handler.lib_client.getState().getCharacters().findByUUID(
-            char_id)
-        if idx - count < current_char.getGadgets().size():
-            return current_char.getGadgets()[idx - count].getType()
-        else:
-            count += current_char.getGadgets().size()
+    def idx_to_gadget_idx(self, idx) -> int:
+        """
+        Transforms between idx for UI-elements list and State Gadget idx
+        :param idx:     UI gadget idx
+        :return:        State gadget idx
+        """
+        character_ids = self.controller.lib_client_handler.lib_client.getChosenCharacters()
+        count = 0
+        for char_id in character_ids:
+            current_char = self.controller.lib_client_handler.lib_client.getState().getCharacters().findByUUID(
+                char_id)
+            if idx - count < current_char.getGadgets().size():
+                return current_char.getGadgets()[idx - count].getType()
+            else:
+                count += current_char.getGadgets().size()
