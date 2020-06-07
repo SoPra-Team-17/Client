@@ -41,6 +41,8 @@ class HUDScreen(BasicView):
     __button_size = (150, 35)
     __dropdown_size = (200, 35)
 
+    _valid_stake_inputs = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
+
     def __init__(self, window: pygame.display, controller: ControllerGameView, settings: ViewSettings,
                  parent: BasicView) -> None:
         super(HUDScreen, self).__init__(window, controller, settings)
@@ -114,7 +116,7 @@ class HUDScreen(BasicView):
     def menu_button_pressed(self) -> None:
         self.controller.to_main_menu()
 
-    def send_action_pressed(self) -> None:
+    def send_action_pressed(self) -> bool:
         """
         Extract for action relevant information from GUI-Elements and call controller, which then calls the network
         todo: could return boolean if successfull
@@ -134,11 +136,13 @@ class HUDScreen(BasicView):
             ret = self.controller.send_game_operation(op_type=type)
             logging.info(f"Send Retire Action successfull: {ret}")
         elif type == "Gamble":
-            # todo way needed to specify stake!
-            stake = 1
+            stake_str = self.stake_entry_line.get_text()
+            if stake_str == "":
+                return False
+            stake = int(stake_str)
             target = self.parent.parent.get_selected_field()
             ret = self.controller.send_game_operation(target=target, op_type=type, stake=stake)
-            logging.info(f"Send Gamble Action successfull {ret}")
+            logging.info(f"Stake={stake}. Send Gamble Action successfull {ret}")
         elif type == "Property":
             # Observation = 0, BangAndBurn = 1
             prop = self.__selected_gad_prop_idx - len(self.gadget_icon_list)
@@ -160,6 +164,8 @@ class HUDScreen(BasicView):
 
         if ret:
             self._update_active_char(active=False)
+
+        return ret
 
     def _check_character_hover(self) -> None:
         """
@@ -382,6 +388,30 @@ class HUDScreen(BasicView):
             object_id="#action_bar",
         )
 
+        self.stake_entry_line = pygame_gui.elements.UITextEntryLine(
+            relative_rect=pygame.Rect(
+                (self.container.rect.width - 2 * self.__distance - self.__button_size[0] - self.__status_textbox_width -
+                 self.__dropdown_size[0], self.__dropdown_size[1]),
+                self.__dropdown_size),
+            manager=self.manager,
+            container=self.container,
+            object_id="#stake_entry_line"
+        )
+
+        self.stake_entry_line.set_text("1")
+        self.stake_entry_line.allowed_characters = self._valid_stake_inputs
+
+        self.stake_text_label = pygame_gui.elements.UILabel(
+            text="Enter gambling stake",
+            relative_rect=pygame.Rect(
+                (self.container.rect.width - 2 * self.__distance - self.__button_size[0] - self.__status_textbox_width -
+                 self.__dropdown_size[0], 0),
+                self.__dropdown_size),
+            manager=self.manager,
+            container=self.container,
+            object_id="#stake_text_label"
+        )
+
         self.menu_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(
                 (self.container.rect.width - self.__button_size[0], self.container.rect.height - self.__button_size[1]),
@@ -390,6 +420,7 @@ class HUDScreen(BasicView):
             manager=self.manager,
             container=self.container,
             object_id="#menu_button"
+
         )
 
         self.send_action_button = pygame_gui.elements.UIButton(
