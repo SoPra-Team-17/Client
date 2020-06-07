@@ -95,14 +95,6 @@ class SpectatorHUDScreen(BasicView):
         elif event.type == pygame.USEREVENT and event.user_type == NETWORK_EVENT:
             if event.message_type == "GameStatus":
                 self.network_update()
-        """
-        elif event.type == pygame.MOUSEBUTTONUP:
-            # check if on one of the gadget / properties imgs
-            for idx, icon in enumerate(self.gadget_icon_list + self.property_icon_list):
-                if icon.check_hover(1 / self.settings.frame_rate, False):
-                    logging.info(f"Selected gad_prob_idx: {idx}")
-                    self.__selected_gad_prop_idx = idx
-        """
 
     def menu_button_pressed(self) -> None:
         self.controller.to_main_menu()
@@ -435,7 +427,7 @@ class SpectatorHUDScreen(BasicView):
 
         if self.parent.get_selected_field() is not None:
             # selected field information
-            field = self.parent.parent.get_selected_field()
+            field = self.parent.get_selected_field()
             # only update string, when selected field has changed
             if field != self.selected_field:
                 self.selected_field = field

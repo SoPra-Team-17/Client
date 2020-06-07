@@ -23,6 +23,7 @@ cppyy.add_include_path("/usr/local/include/SopraNetwork")
 
 cppyy.include("network/messages/MetaInformationKey.hpp")
 cppyy.include("util/UUID.hpp")
+cppyy.include("datatypes/character/FactionEnum.hpp")
 
 __author__ = "Marco Deuscher"
 __date__ = "04.06.20 (creation)"
@@ -33,10 +34,8 @@ class SpectatorView(BasicView):
     This class implements the interface of the specator view class to the controller
     """
 
-    def __init__(self, window: pygame.display, controller: ControllerSpectatorView, parent, settings: ViewSettings):
+    def __init__(self, window: pygame.display, controller: ControllerSpectatorView, settings: ViewSettings):
         super(SpectatorView, self).__init__(window, controller, settings)
-
-        self.parent = parent
 
         self.playing_field_screen = PlayingFieldScreen(self.window, self.controller, self, self.settings)
         self.spectator_choice_screen = SpectatorChoiceScreen(self.window, self.controller, self, self.settings)
@@ -103,6 +102,22 @@ class SpectatorView(BasicView):
         variant = meta_info[
             cppyy.gbl.spy.network.messages.MetaInformationKey.FACTION_PLAYER2]
         self.player_two_id = cppyy.gbl.std.get[vector[cppyy.gbl.spy.util.UUID]](variant)
+
+        # sort into libclient lists
+        # todo uncomment when libclient is updated
+        """
+        for neutral_id in self.player_neutral_id:
+            self.controller.lib_client_handler.lib_client.setFaction(neutral_id,
+                                                                     cppyy.gbl.spy.character.FactionEnum.NEUTRAL)
+
+        for player1_id in self.player_one_id:
+            self.controller.lib_client_handler.lib_client.setFaction(player1_id,
+                                                                     cppyy.gbl.spy.character.FactionEnum.PLAYER1)
+
+        for player2_id in self.player_two_id:
+            self.controller.lib_client_handler.lib_client.setFaction(player2_id,
+                                                                     cppyy.gbl.spy.character.FactionEnum.PLAYER2)
+        """
 
         # wait until meta information is received, then start game
         self.active_views = [self.playing_field_screen, self.spectator_HUD_screen]
