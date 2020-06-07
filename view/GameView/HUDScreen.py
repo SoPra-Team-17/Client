@@ -11,6 +11,7 @@ from view.GameView.Visuals.VisualProperty import PROPERTY_NAME_LIST, PROPERTY_PA
 from view.GameView.Visuals.VisualCharacter import CHAR_PATH_DICT
 from view.GameView.HUDScreenElements.CharacterInfoBox import CharacterInfoBox
 from view.GameView.HUDScreenElements.SelectionInfoBox import SelectionInfoBox
+from view.GameView.HUDScreenElements.OperationStatusBox import OperationStatusBox
 from controller.ControllerView import ControllerGameView
 from network.NetworkEvent import NETWORK_EVENT
 
@@ -60,6 +61,7 @@ class HUDScreen(BasicView):
 
         self.character_info_box = CharacterInfoBox(self, self.container, self.manager)
         self.selection_info_box = SelectionInfoBox(self, self.container, self.manager, self.settings)
+        self.operation_status_box = OperationStatusBox(self, self.container, self.manager, self.settings)
 
         # padding to set responsive size of character buttons
         self.__padding = (self.container.rect.width / 2 - 5 * self.__distance) / 7
@@ -165,6 +167,9 @@ class HUDScreen(BasicView):
         if ret:
             self._update_active_char(active=False)
 
+        # update op. status box
+        self.operation_status_box.update_valid_op(was_valid=ret)
+
         return ret
 
     def _check_character_hover(self) -> None:
@@ -185,6 +190,7 @@ class HUDScreen(BasicView):
         """
         self._create_character_images()
         self._update_icons()
+        self.operation_status_box.update_successfull_op()
 
     def _update_icons(self) -> None:
         """
@@ -434,19 +440,18 @@ class HUDScreen(BasicView):
 
         )
 
-
-def idx_to_gadget_idx(self, idx) -> int:
-    """
-    Transforms between idx for UI-elements list and State Gadget idx
-    :param idx:     UI gadget idx
-    :return:        State gadget idx
-    """
-    character_ids = self.controller.lib_client_handler.lib_client.getChosenCharacters()
-    count = 0
-    for char_id in character_ids:
-        current_char = self.controller.lib_client_handler.lib_client.getState().getCharacters().findByUUID(
-            char_id)
-        if idx - count < current_char.getGadgets().size():
-            return current_char.getGadgets()[idx - count].getType()
-        else:
-            count += current_char.getGadgets().size()
+    def idx_to_gadget_idx(self, idx) -> int:
+        """
+        Transforms between idx for UI-elements list and State Gadget idx
+        :param idx:     UI gadget idx
+        :return:        State gadget idx
+        """
+        character_ids = self.controller.lib_client_handler.lib_client.getChosenCharacters()
+        count = 0
+        for char_id in character_ids:
+            current_char = self.controller.lib_client_handler.lib_client.getState().getCharacters().findByUUID(
+                char_id)
+            if idx - count < current_char.getGadgets().size():
+                return current_char.getGadgets()[idx - count].getType()
+            else:
+                count += current_char.getGadgets().size()
