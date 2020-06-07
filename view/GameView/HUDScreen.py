@@ -24,13 +24,17 @@ cppyy.include("util/Point.hpp")
 cppyy.include("datatypes/gadgets/GadgetEnum.hpp")
 cppyy.include("datatypes/character/CharacterInformation.hpp")
 cppyy.include("network/messages/MetaInformationKey.hpp")
+cppyy.include("datatypes/character/FactionEnum.hpp")
+cppyy.include("util/GameLogicUtils.hpp")
 
 
 class HUDScreen(BasicView):
-    __element_names = {"menu": "Menu", "send_action": "SendAction"}
+    __element_names = {"menu": "Menu", "send_action": "SendAction", "mark_char": "Assign char."}
     # starting option of dropdown
     __actionbar_starting_opt = "Select Action"
     __actionbar_options = ["Gadget", "Gamble", "Spy", "Movement", "Retire", "Property"]
+    __markbar_starting_opt = "Select Faction"
+    __markbar_options = ["Enemy", "NPC"]
 
     __status_textbox_width = 200
     __info_textbox_width = 200
@@ -92,7 +96,8 @@ class HUDScreen(BasicView):
         if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_PRESSED:
             switcher = {
                 self.menu_button: self.menu_button_pressed,
-                self.send_action_button: self.send_action_pressed
+                self.send_action_button: self.send_action_pressed,
+                self.mark_character_button: self.mark_character_pressed
             }
             try:
                 switcher.get(event.ui_element)()
@@ -160,6 +165,34 @@ class HUDScreen(BasicView):
 
         if ret:
             self._update_active_char(active=False)
+
+    def mark_character_pressed(self) -> None:
+        ret = False
+        selected = self.mark_character_bar.selected_option
+        target = self.parent.parent.get_selected_field()
+
+        if selected in self.__markbar_options and target is not None:
+            # check if person is on field
+            state = self.controller.lib_client_handler.lib_client.getState()
+            target_cpp = cppyy.gbl.spy.util.Point()
+            target_cpp.x, target_cpp.y = target.x, target.y
+            personOnField = cppyy.gbl.spy.util.GameLogicUtils.isPersonOnField(state, target_cpp)
+
+            if not personOnField:
+                return
+
+            target_id = cppyy.gbl.spy.util.GameLogicUtils.findInCharacterSetByCoordinates(state.getCharacters(),
+                                                                                          target_cpp).getCharacterId()
+            print(f"TargetId: {target_id}")
+            """
+            am_i_p1 = self.controller.lib_client_handler.lib_client.amIPlayer1()
+            enemy = cppyy.gbl.spy.character.FactionEnum.PLAYER2 if am_i_p1 else cppyy.gbl.spy.character.FactionEnum.PLAYER1
+            faction = cppyy.gbl.spy.character.FactionEnum.NEUTRAL if selected == "NPC" else enemy
+
+            ret = self.controller.lib_client_handler.lib_client.setFaction(target_id, faction)
+            """
+
+        # todo update op. box based on value
 
     def _check_character_hover(self) -> None:
         """
@@ -384,7 +417,7 @@ class HUDScreen(BasicView):
 
         self.menu_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(
-                (self.container.rect.width - self.__button_size[0], self.container.rect.height - self.__button_size[1]),
+                (self.container.rect.width - self.__button_size[0], 0),
                 (self.__button_size)),
             text=self.__element_names["menu"],
             manager=self.manager,
@@ -394,13 +427,34 @@ class HUDScreen(BasicView):
 
         self.send_action_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect((self.container.rect.width - self.__button_size[0],
-                                       self.container.rect.height - 2 * self.__button_size[1] - self.__distance),
-                                      (self.__button_size)),
+                                       self.__button_size[1] + self.__distance),
+                                      self.__button_size),
             text=self.__element_names["send_action"],
             manager=self.manager,
             container=self.container,
             object_id="#send_action"
 
+        )
+
+        self.mark_character_button = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect((self.container.rect.width - self.__button_size[0],
+                                       self.container.rect.height - self.__button_size[1]),
+                                      (self.__button_size)),
+            text=self.__element_names["mark_char"],
+            manager=self.manager,
+            container=self.container,
+            object_id="#mark_char_button"
+        )
+
+        self.mark_character_bar = pygame_gui.elements.UIDropDownMenu(
+            relative_rect=pygame.Rect((self.container.rect.width - self.__button_size[0],
+                                       self.container.rect.height - 2 * self.__button_size[1] - self.__distance),
+                                      (self.__button_size)),
+            starting_option=self.__markbar_starting_opt,
+            options_list=self.__markbar_options,
+            manager=self.manager,
+            container=self.container,
+            object_id="#mark_char_bar"
         )
 
     def idx_to_gadget_idx(self, idx) -> int:
