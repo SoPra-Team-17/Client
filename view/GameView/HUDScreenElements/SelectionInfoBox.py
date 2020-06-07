@@ -24,6 +24,7 @@ cppyy.include("datatypes/gadgets/GadgetEnum.hpp")
 cppyy.include("datatypes/character/CharacterInformation.hpp")
 cppyy.include("network/messages/MetaInformationKey.hpp")
 cppyy.include("util/GameLogicUtils.hpp")
+cppyy.include("datatypes/character/PropertyEnum.hpp")
 
 
 class SelectionInfoBox:
@@ -87,8 +88,10 @@ class SelectionInfoBox:
                         textbox_str += f"Hovering Gadget:<br>{GADGET_NAME_LIST[gadget_idx]}"
                     else:
                         # hovering property
-                        property = "Observation" if idx - len(gadget_icon_list) == 0 else "Bang and Burn"
-                        textbox_str += f"Hovering Property:<br>{property}"
+                        property = self.parent_screen.idx_to_property_idx(selected_gad_prop_idx)
+                        property_str = "Observation" if property == cppyy.gbl.spy.character.PropertyEnum.OBSERVATION \
+                            else "Bang and Burn"
+                        textbox_str += f"<br>Hovering Property:<br>{property_str}"
                 break
 
         if selected_gad_prop_idx is not None:
@@ -98,9 +101,10 @@ class SelectionInfoBox:
                 textbox_str += f"<br>Currently Selected:<br>{GADGET_NAME_LIST[gad]}"
             else:
                 # property selected
-                property = "Observation" if selected_gad_prop_idx - len(
-                    gadget_icon_list) == 0 else "Bang and Burn"
-                textbox_str += f"<br>Currently Selected:<br>{property}"
+                property = self.parent_screen.idx_to_property_idx(selected_gad_prop_idx)
+                property_str = "Observation" if property == cppyy.gbl.spy.character.PropertyEnum.OBSERVATION \
+                    else "Bang and Burn"
+                textbox_str += f"<br>Currently Selected:<br>{property_str}"
 
         if self.parent_screen.parent.parent.get_selected_field() is not None:
             # selected field information

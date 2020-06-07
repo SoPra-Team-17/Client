@@ -145,7 +145,7 @@ class HUDScreen(BasicView):
             logging.info(f"Stake={stake}. Send Gamble Action successfull {ret}")
         elif type == "Property":
             # Observation = 0, BangAndBurn = 1
-            prop = self.__selected_gad_prop_idx - len(self.gadget_icon_list)
+            prop = self.idx_to_property_idx(self.__selected_gad_prop_idx)
             logging.info(f"Property: {prop}")
             target = self.parent.parent.get_selected_field()
             ret = self.controller.send_game_operation(target=target, op_type=type, property=prop)
@@ -449,3 +449,32 @@ class HUDScreen(BasicView):
                 return current_char.getGadgets()[idx - count].getType()
             else:
                 count += current_char.getGadgets().size()
+
+    def idx_to_property_idx(self, idx) -> int:
+        """
+        Transforms between idx for UI-elements list and state property idx
+        :param idx:     UI property idx
+        :return:        State property idx
+        """
+        idx -= len(self.gadget_icon_list)
+
+        character_ids = self.controller.lib_client_handler.lib_client.getChosenCharacters()
+        count = 0
+
+        for char_id in character_ids:
+            current_char = self.controller.lib_client_handler.lib_client.getState().getCharacters().findByUUID(
+                char_id)
+
+            hasObservation = current_char.hasProperty(cppyy.gbl.spy.character.PropertyEnum.OBSERVATION)
+            hasBnB = current_char.hasProperty(cppyy.gbl.spy.character.PropertyEnum.BANG_AND_BURN)
+
+            count += int(hasObservation) + int(hasBnB)
+
+            if (count - 1) > idx:
+                # character found and has both observation and bang and burn
+                return cppyy.gbl.spy.character.PropertyEnum.OBSERVATION if (count - 1) == idx \
+                    else cppyy.gbl.spy.character.PropertyEnum.BANG_AND_BURN
+            elif (count - 1) == idx:
+                # character has only one of the properties
+                return cppyy.gbl.spy.character.PropertyEnum.OBSERVATION if hasObservation \
+                    else cppyy.gbl.spy.character.PropertyEnum.BANG_AND_BURN
