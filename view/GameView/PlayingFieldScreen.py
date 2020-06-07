@@ -134,7 +134,17 @@ class PlayingFieldScreen(BasicView):
             for chosen_chard_id in chosen_chars:
                 if chosen_chard_id == char.getCharacterId():
                     type = "my"
-            # todo compare to other lists (enemy etc.)
+
+            npc_chars = self.controller.lib_client_handler.lib_client.getNpcFactionList()
+            for npc_char_id in npc_chars:
+                if npc_char_id == char.getCharacterId():
+                    type = "npc"
+
+            enemy_chars = self.controller.lib_client_handler.lib_client.getEnemyFactionList()
+            for enemy_char_id in enemy_chars:
+                if enemy_char_id == char.getCharacterId():
+                    type = "enemy"
+
             point = char.getCoordinates().value()
             self.map.map[WorldPoint(point.x, point.y, z=1)] = Character(WorldPoint(point.x, point.y, z=1),
                                                                         self.asset_storage, type=type)
