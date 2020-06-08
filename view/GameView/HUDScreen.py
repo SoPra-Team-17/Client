@@ -108,7 +108,8 @@ class HUDScreen(BasicView):
             elif event.message_type == "RequestGameOperation":
                 self._update_active_char(active=True)
             elif event.message_type == "GamePause":
-                self.selection_info_box.update_textbox()
+                self.selection_info_box.update_textbox(self.gadget_icon_list, self.property_icon_list,
+                                                       self.__selected_gad_prop_idx)
         elif event.type == pygame.MOUSEBUTTONUP:
             # check if on one of the gadget / properties imgs
             for idx, icon in enumerate(self.gadget_icon_list + self.property_icon_list):
