@@ -42,7 +42,6 @@ class SelectionInfoBox:
         self.settings = settings
 
         self.__hovered_count = 0
-        self.__field_info_str = ""
 
         self.info_textbox = pygame_gui.elements.UITextBox(
             html_text="",
@@ -80,27 +79,27 @@ class SelectionInfoBox:
 
                 if self.__hovered_count > self.__hovering_threshold:
                     update = True
-                    logging.info("Should update gad/prop")
                     if idx < len(gadget_icon_list):
                         # hovering gadget
                         gadget_idx = self.parent_screen.idx_to_gadget_idx(idx)
-                        textbox_str += f"Hovering Gadget:<br>{GADGET_NAME_LIST[gadget_idx]}"
+                        textbox_str += f"<b>Hovering Gadget:</b><br>{GADGET_NAME_LIST[gadget_idx]}<br>"
                     else:
                         # hovering property
                         property = "Observation" if idx - len(gadget_icon_list) == 0 else "Bang and Burn"
-                        textbox_str += f"Hovering Property:<br>{property}"
+                        textbox_str += f"<b>Hovering Property:</b><br>{property}"
                 break
 
         if selected_gad_prop_idx is not None:
             if selected_gad_prop_idx < len(gadget_icon_list):
                 # gadget selected
                 gad = self.parent_screen.idx_to_gadget_idx(selected_gad_prop_idx)
-                textbox_str += f"<br>Currently Selected:<br>{GADGET_NAME_LIST[gad]}"
+                textbox_str += f"<b>Selected Gadget:</b><br>{GADGET_NAME_LIST[gad]}<br>"
+                textbox_str += self._get_gadget_info(gad)
             else:
                 # property selected
                 property = "Observation" if selected_gad_prop_idx - len(
                     gadget_icon_list) == 0 else "Bang and Burn"
-                textbox_str += f"<br>Currently Selected:<br>{property}"
+                textbox_str += f"<br><b>Selected Property:</b><br>{property}"
 
         if self.parent_screen.parent.parent.get_selected_field() is not None:
             # selected field information
@@ -108,8 +107,7 @@ class SelectionInfoBox:
             # only update string, when selected field has changed
             if field != self.parent_screen.selected_field:
                 self.parent_screen.selected_field = field
-                self.__create_field_info_string(field)
-                textbox_str += f"<br>Field: {self.__field_info_str}"
+                textbox_str += f"<br>{self.__create_field_info_string(field)}<br>"
                 update = True
 
         if self.parent_screen.controller.lib_client_handler.lib_client.isGamePaused():
@@ -120,11 +118,11 @@ class SelectionInfoBox:
             self.info_textbox.rebuild()
             self.__hovered_count = 0
 
-    def __create_field_info_string(self, field) -> None:
+    def __create_field_info_string(self, field) -> str:
         """
         Gets the selected field and creates a html string, to be displayed in the info box
         todo create state, so this is only done, when the selected field has changed
-        :return:
+        :return:    formatted html-str
         """
 
         logging.info("Updating field info string")
@@ -134,22 +132,6 @@ class SelectionInfoBox:
         point_cpp = cppyy.gbl.spy.util.Point()
         point_cpp.x, point_cpp.y = field.x, field.y
         field_cpp = self.parent_screen.controller.lib_client_handler.lib_client.getState().getMap().getField(point_cpp)
-
-        field_state = field_cpp.getFieldState()
-        info_str += f"Field state: <b>{FIELD_STATE_NAME_LIST[field_state]}</b><br>"
-
-        foggy = field_cpp.isFoggy()
-        info_str += f"Is Foggy: {foggy}<br>"
-
-        if field_cpp.getGadget().has_value():
-            gadget = field_cpp.getGadget().value().getType()
-            info_str += f"Gadget: {GADGET_NAME_LIST[gadget]}<br>"
-        if field_cpp.getChipAmount().has_value():
-            chip_amount = field_cpp.getChipAmount().value()
-            info_str += f"Chip Amount: {chip_amount}<br>"
-        if field_cpp.isDestroyed().has_value():
-            destroyed = field_cpp.isDestroyed().value()
-            info_str += f"Is Destroyed: {destroyed}<br>"
 
         # get potential character standing on field
         characters = self.parent_screen.controller.lib_client_handler.lib_client.getState().getCharacters()
@@ -162,6 +144,41 @@ class SelectionInfoBox:
 
         for char_info in char_info_vector:
             if char.getCharacterId() == char_info.getCharacterId():
-                info_str += f"Char. name: <b>{char_info.getName()}</b><br>"
+                info_str += f"<b>Name:</b><br>{char_info.getName()}<br>"
 
-        self.__field_info_str = info_str
+        field_state = field_cpp.getFieldState()
+        info_str += f"<b>Field state:</b><br>{FIELD_STATE_NAME_LIST[field_state]}<br><br>"
+
+        if field_cpp.getGadget().has_value():
+            gadget = field_cpp.getGadget().value().getType()
+            info_str += f"<b>Gadget:</b><br>{GADGET_NAME_LIST[gadget]}<br>"
+        if field_cpp.getChipAmount().has_value():
+            chip_amount = field_cpp.getChipAmount().value()
+            info_str += f"<b>Chip Amount:</b> {chip_amount}<br>"
+        if field_cpp.isDestroyed().has_value():
+            destroyed = field_cpp.isDestroyed().value()
+            info_str += f"<b>Destroyed:</b> {destroyed}<br>"
+
+        return info_str
+
+    def _get_gadget_info(self, gadget_index) -> str:
+        """
+        Get info of selected gadget (usages left)
+        :param gadget_index:
+        :return:    formatted html-str
+        """
+        info_str = ""
+        chosen_chars = self.parent_screen.controller.lib_client_handler.lib_client.getChosenCharacters()
+        state = self.parent_screen.controller.lib_client_handler.lib_client.getState()
+
+        for char_id in chosen_chars:
+            char = state.getCharacters().findByUUID(char_id)
+            gadget_opt = char.getGadget(cppyy.gbl.spy.gadget.GadgetEnum(gadget_index))
+            if not gadget_opt.has_value():
+                continue
+
+            usages_left_opt = gadget_opt.value().getUsagesLeft()
+            if usages_left_opt.has_value():
+                info_str += f"<b>Usages left:</b> {usages_left_opt.value()}<br>"
+
+        return info_str
