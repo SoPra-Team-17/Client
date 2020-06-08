@@ -8,7 +8,7 @@ RUN apt update && apt -y install sudo git cmake g++
 
 RUN ./installCppLibs.sh
 
-RUN apt -y install python3-pip
+RUN apt -y install python3-pip xsel
 
 COPY . /client
 
