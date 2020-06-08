@@ -11,6 +11,8 @@ from cppyy import addressof, bind_object
 
 from view.ViewSettings import ViewSettings
 
+from cppyy.gbl.std import map, pair, set, vector
+
 __author__ = "Marco Deuscher"
 __date__ = "07.06.2020 (creation)"
 
@@ -53,6 +55,7 @@ class OperationStatusBox:
 
         self.__prev_valid = False
         self.__prev_successfull = False
+        self.__is_enemy = None
         self.__keys = 0
 
         self.__box_str = ""
@@ -68,7 +71,9 @@ class OperationStatusBox:
         if op_vec.empty():
             return
 
-        # todo when libclient pr is done, get isenemy pair and lastOpSuccessfull and display!
+        self.__prev_successfull = self.parent_screen.controller.lib_client_handler.lib_client.lastOpSuccessful()
+        self.__is_enemy = self.parent_screen.controller.lib_client_handler.lib_client.isEnemy()
+        self._update_textbox()
 
     def update_textbox(self) -> None:
         """
@@ -85,8 +90,32 @@ class OperationStatusBox:
         else:
             self.__box_str += "Operation was <b>not valid</b><br><br>"
 
+        if self.__prev_successfull:
+            self.__box_str += "Last valid operation was <b>successful</b><br><br>"
+        else:
+            self.__box_str += "Last valid operation was <b>not successful</b><br><br>"
+
         safe_combs = self.parent_screen.controller.lib_client_handler.lib_client.getState().getMySafeCombinations()
         self.__box_str += f"Team has <b>{safe_combs.size()}</b> safe combinations<br>"
+
+        if self.__is_enemy.has_value():
+            is_enemy = self.__is_enemy.value()
+            # character id (second) and isEnemy (first)
+            char_id = is_enemy.second
+            enemy = is_enemy.first
+
+            # get name of character
+            info = self.parent_screen.controller.lib_client_handler.lib_client.getInformation()
+            variant = info[
+                cppyy.gbl.spy.network.messages.MetaInformationKey.CONFIGURATION_CHARACTER_INFORMATION]
+            char_info_vector = cppyy.gbl.std.get[vector[cppyy.gbl.spy.character.CharacterInformation]](variant)
+            name = ""
+            for char_info in char_info_vector:
+                if char_id == char_info.getCharacterId():
+                    name = char_info.getName()
+                    break
+
+            self.__box_str += f"{name} is enemy: <b>{enemy}</b>"
 
         self.textbox.html_text = self.__box_str
         self.textbox.rebuild()
