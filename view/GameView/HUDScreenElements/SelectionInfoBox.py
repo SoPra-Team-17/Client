@@ -88,7 +88,7 @@ class SelectionInfoBox:
                         textbox_str += f"Hovering Gadget:<br>{GADGET_NAME_LIST[gadget_idx]}"
                     else:
                         # hovering property
-                        property = self.parent_screen.idx_to_property_idx(selected_gad_prop_idx)
+                        property = self.parent_screen.idx_to_property_idx(idx)
                         property_str = "Observation" if property == cppyy.gbl.spy.character.PropertyEnum.OBSERVATION \
                             else "Bang and Burn"
                         textbox_str += f"<br>Hovering Property:<br>{property_str}"
