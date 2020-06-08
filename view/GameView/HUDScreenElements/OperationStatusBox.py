@@ -7,8 +7,6 @@ import pygame
 import pygame_gui
 import cppyy
 
-from cppyy import addressof, bind_object
-
 from view.ViewSettings import ViewSettings
 
 from cppyy.gbl.std import map, pair, set, vector
@@ -45,7 +43,7 @@ class OperationStatusBox:
         self.textbox = pygame_gui.elements.UITextBox(
             html_text="",
             relative_rect=pygame.Rect(
-                (self.container.rect.width - self.__distance - self.__button_size[0] - self.__info_textbox_width -
+                (self.container.rect.width - self.__distance - self.__button_size[0] * .75 - self.__info_textbox_width -
                  3 * self.__button_size[0], 0),
                 (self.__info_textbox_width, self.container.rect.height)),
             manager=self.manager,
@@ -77,10 +75,10 @@ class OperationStatusBox:
 
     def update_textbox(self) -> None:
         """
-        Interface to screen to udpate textbox
+        Interface to screen to update textbox
         :return:    None
         """
-        self.update_textbox()
+        self._update_textbox()
 
     def _update_textbox(self) -> None:
         self.__box_str = ""
@@ -98,7 +96,7 @@ class OperationStatusBox:
         safe_combs = self.parent_screen.controller.lib_client_handler.lib_client.getState().getMySafeCombinations()
         self.__box_str += f"Team has <b>{safe_combs.size()}</b> safe combinations<br>"
 
-        if self.__is_enemy.has_value():
+        if self.__is_enemy is not None and self.__is_enemy.has_value():
             is_enemy = self.__is_enemy.value()
             # character id (second) and isEnemy (first)
             char_id = is_enemy.second
