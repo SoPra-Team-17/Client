@@ -470,13 +470,11 @@ class HUDScreen(BasicView):
 
             count += int(hasObservation) + int(hasBnB)
 
-            logging.info(f"Add: obs:{int(hasObservation)} bnb: {int(hasBnB)}")
-
-            if (count - 1) > idx:
-                # character found and has both observation and bang and burn
-                return cppyy.gbl.spy.character.PropertyEnum.OBSERVATION if (count - 1) == idx \
-                    else cppyy.gbl.spy.character.PropertyEnum.BANG_AND_BURN
-            elif (count - 1) == idx:
-                # character has only one of the properties
-                return cppyy.gbl.spy.character.PropertyEnum.OBSERVATION if hasObservation \
-                    else cppyy.gbl.spy.character.PropertyEnum.BANG_AND_BURN
+            if count > idx:
+                # found char
+                if hasObservation and hasBnB:
+                    return cppyy.gbl.spy.character.PropertyEnum.OBSERVATION if (count - 2) == idx \
+                        else cppyy.gbl.spy.character.PropertyEnum.BANG_AND_BURN
+                else:
+                    return cppyy.gbl.spy.character.PropertyEnum.OBSERVATION if hasObservation \
+                        else cppyy.gbl.spy.character.PropertyEnum.BANG_AND_BURN
