@@ -90,6 +90,7 @@ class HUDScreen(BasicView):
 
     def receive_event(self, event: pygame.event.Event) -> None:
         self.manager.process_events(event)
+        self.handle_shortcuts(event)
 
         if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_PRESSED:
             switcher = {
@@ -106,7 +107,8 @@ class HUDScreen(BasicView):
             elif event.message_type == "RequestGameOperation":
                 self._update_active_char(active=True)
             elif event.message_type == "GamePause":
-                self.selection_info_box.update_textbox()
+                self.selection_info_box.update_textbox(self.gadget_icon_list, self.property_icon_list,
+                                                       self.__selected_gad_prop_idx)
         elif event.type == pygame.MOUSEBUTTONUP:
             # check if on one of the gadget / properties imgs
             for idx, icon in enumerate(self.gadget_icon_list + self.property_icon_list):
@@ -449,3 +451,24 @@ class HUDScreen(BasicView):
                 return current_char.getGadgets()[idx - count].getType()
             else:
                 count += current_char.getGadgets().size()
+
+    def handle_shortcuts(self, event) -> None:
+        if event.type != pygame.KEYUP:
+            return
+
+        if event.key == pygame.K_g:
+            self.action_bar.selected_option = self.__actionbar_options[0]
+        elif event.key == pygame.K_b:
+            self.action_bar.selected_option = self.__actionbar_options[1]
+        elif event.key == pygame.K_s:
+            self.action_bar.selected_option = self.__actionbar_options[2]
+        elif event.key == pygame.K_m:
+            self.action_bar.selected_option = self.__actionbar_options[3]
+        elif event.key == pygame.K_r:
+            self.action_bar.selected_option = self.__actionbar_options[4]
+        elif event.key == pygame.K_p:
+            self.action_bar.selected_option = self.__actionbar_options[5]
+        elif event.key == pygame.K_RETURN:
+            self.send_action_pressed()
+
+        self.action_bar.rebuild()
