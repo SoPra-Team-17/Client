@@ -159,6 +159,8 @@ class SelectionInfoBox:
             destroyed = field_cpp.isDestroyed().value()
             info_str += f"<b>Destroyed:</b> {destroyed}<br>"
 
+        info_str += f"x={field.x} y={field.y}"
+
         return info_str
 
     def _get_gadget_info(self, gadget_index) -> str:
