@@ -16,6 +16,7 @@ __date__ = "02.06.2020 (creation)"
 class SettingsScreen(BasicView):
     _text_buttons = {
         "pause_game": "Pause Game",
+        "unpause_game": "Unpause Game",
         "leave_game": "Leave Game",
         "return": "Return to Game",
         "shortcuts": "Shortcuts"
@@ -78,27 +79,50 @@ class SettingsScreen(BasicView):
         if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
             self._return_pressed()
 
-    def _pause_pressed(self):
+    def _pause_pressed(self) -> None:
+        """
+        Function called when pause/unpause button is pressed
+        :return:    None
+        """
         # toggle game paused
         paused = self.controller.lib_client_handler.lib_client.isGamePaused()
         ret = self.controller.send_request_game_pause(not paused)
         logging.info(f"Successfully sent pause_message: {ret}")
 
-    def _leave_pressed(self):
+    def _leave_pressed(self) -> None:
+        """
+        Function called when leave game button is pressed
+        :return:    None
+        """
         ret = self.controller.send_game_leave()
         logging.info(f"Successfully sent game leave message: {ret}")
         if ret:
             self.controller.to_main_menu()
 
-    def _return_pressed(self):
+    def _return_pressed(self) -> None:
+        """
+        Function called when return to playing field button is pressed
+        :return:    None
+        """
         self.parent_view.parent.to_playing_field()
 
     def _update_label(self) -> None:
+        """
+        Function updating label of UILabel and UIButton
+        Displays pause/unpause based on current state
+        :return:    None
+        """
         paused = self.controller.lib_client_handler.lib_client.isGamePaused()
         label_str = "Game is paused" if paused else "Game is not paused"
         self.pause_state_label.set_text(label_str)
+        key = "unpause_game" if paused else "pause_game"
+        self.pause_game_button.set_text(self._text_buttons.get(key))
 
     def _update_shortcuts_textbox(self) -> None:
+        """
+        Updates shortcuts textbox, when shortcut button is pressed
+        :return:    None
+        """
         if self.shortcuts_help_textbox is not None:
             self.shortcuts_help_textbox.kill()
             self.shortcuts_help_textbox = None
