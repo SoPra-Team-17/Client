@@ -1,19 +1,20 @@
 """
 Implements the Controller, which is the first object created. Handles all interactions between network, user and views
 """
-import sys
 import logging
-import pygame
+import sys
+
 import cppyy
+import pygame
 from cppyy.gbl.std import map, pair, set, vector
 
-from view.ViewSettings import ViewSettings
-from view.MainMenu.MainMenuView import MainMenuView
-from view.GameView.GameView import GameView
-from view.Lobby.LobbyView import LobbyView
 from controller.ControllerView import ControllerGameView, ControllerMainMenu, ControllerLobby
 from network.LibClientHandler import LibClientHandler
 from network.NetworkEvent import NETWORK_EVENT
+from view.GameView.GameView import GameView
+from view.Lobby.LobbyView import LobbyView
+from view.MainMenu.MainMenuView import MainMenuView
+from view.ViewSettings import ViewSettings
 
 cppyy.add_include_path("/usr/local/include/SopraClient")
 cppyy.add_include_path("/usr/local/include/SopraCommon")
@@ -214,10 +215,8 @@ class Controller(ControllerGameView, ControllerMainMenu, ControllerLobby):
 
         if op_type == "Movement":
             operation = cppyy.gbl.spy.gameplay.Movement(False, target, active_char, active_char_coords)
-            logging.info("Movement op will be send to network")
         elif op_type == "Retire":
             operation = cppyy.gbl.spy.gameplay.RetireAction(active_char)
-            logging.info("Retire operation will be sond to network")
         elif op_type == "Spy":
             operation = cppyy.gbl.spy.gameplay.SpyAction(active_char, target)
         elif op_type == "Gamble":
@@ -225,13 +224,8 @@ class Controller(ControllerGameView, ControllerMainMenu, ControllerLobby):
             operation = cppyy.gbl.spy.gameplay.GambleAction(False, target, active_char, stake)
         elif op_type == "Property":
             property = kwargs["property"]
-            # property = 0 --> Observation, property = 1 --> Bang and Burn
-            if property == 0:
-                operation = cppyy.gbl.spy.gameplay.PropertyAction(False, target, active_char,
-                                                                  cppyy.gbl.spy.character.PropertyEnum(15))
-            elif property == 1:
-                operation = cppyy.gbl.spy.gameplay.PropertyAction(False, target, active_char,
-                                                                  cppyy.gbl.spy.character.PropertyEnum(12))
+            operation = cppyy.gbl.spy.gameplay.PropertyAction(False, target, active_char,
+                                                              cppyy.gbl.spy.character.PropertyEnum(property))
         elif op_type == "Gadget":
             gadget = kwargs["gadget"]
             gadget_cpp = cppyy.gbl.spy.gadget.GadgetEnum(gadget)

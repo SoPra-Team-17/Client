@@ -7,6 +7,12 @@ import cppyy
 from view.BasicView import BasicView
 from view.ViewSettings import ViewSettings
 from view.GameView.Visuals.VisualGadget import GADGET_NAME_LIST, GADGET_PATH_LIST
+from view.GameView.Visuals.VisualProperty import PROPERTY_NAME_LIST, PROPERTY_PATH_LIST
+from view.GameView.Visuals.VisualCharacter import CHAR_PATH_DICT
+from view.GameView.HUDScreenElements.CharacterInfoBox import CharacterInfoBox
+from view.GameView.HUDScreenElements.SelectionInfoBox import SelectionInfoBox
+from view.GameView.HUDScreenElements.OperationStatusBox import OperationStatusBox
+from view.GameView.HUDScreenElements.OperationLogBox import OperationLogBox
 from controller.ControllerView import ControllerGameView
 from network.NetworkEvent import NETWORK_EVENT
 
@@ -17,6 +23,7 @@ cppyy.add_include_path("/usr/local/include/SopraCommon")
 cppyy.add_include_path("/usr/local/include/SopraNetwork")
 
 cppyy.include("util/Point.hpp")
+cppyy.include("datatypes/character/PropertyEnum.hpp")
 cppyy.include("datatypes/gadgets/GadgetEnum.hpp")
 cppyy.include("datatypes/character/CharacterInformation.hpp")
 cppyy.include("network/messages/MetaInformationKey.hpp")
@@ -36,8 +43,8 @@ class HUDScreen(BasicView):
     __icon_size = 32
     __button_size = (150, 35)
     __dropdown_size = (200, 35)
-    # todo: hack find better solution
-    __hovering_threshold = 15
+
+    _valid_stake_inputs = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
 
     def __init__(self, window: pygame.display, controller: ControllerGameView, settings: ViewSettings,
                  parent: BasicView) -> None:
@@ -54,6 +61,11 @@ class HUDScreen(BasicView):
             manager=self.manager
         )
 
+        self.character_info_box = CharacterInfoBox(self, self.container, self.manager)
+        self.selection_info_box = SelectionInfoBox(self, self.container, self.manager, self.settings)
+        self.operation_status_box = OperationStatusBox(self, self.container, self.manager, self.settings)
+        self.operation_log_box = OperationLogBox(self, self.container, self.manager, self.settings)
+
         # padding to set responsive size of character buttons
         self.__padding = (self.container.rect.width / 2 - 5 * self.__distance) / 7
         self.font = pygame.font.Font("assets/GameView/Montserrat-Regular.ttf", 20)
@@ -63,13 +75,11 @@ class HUDScreen(BasicView):
 
         self._init_ui_elements()
 
-        self.__hovered_icon_idx = None
-        self.__hovered_count = 0
+        self.hovered_icon_idx = None
 
-        self.__selected_gad_prob_idx = None
+        self.__selected_gad_prop_idx = None
 
-        self.__selected_field = None
-        self.__field_info_str = ""
+        self.selected_field = None
 
         logging.info("HudScreen init done")
 
@@ -77,7 +87,8 @@ class HUDScreen(BasicView):
         self.manager.update(1 / self.settings.frame_rate)
 
         self._check_character_hover()
-        self._update_textbox()
+        self.selection_info_box.update_textbox(self.gadget_icon_list, self.property_icon_list,
+                                               self.__selected_gad_prop_idx)
 
         self.window.blit(self.background, (0, self.container.rect.y))
         self.manager.draw_ui(self.window)
@@ -92,28 +103,32 @@ class HUDScreen(BasicView):
             }
             try:
                 switcher.get(event.ui_element)()
-            except TypeError as t:
-                logging.error(traceback.format_exc())
+            except TypeError:
                 logging.warning("Element not found in dict")
         elif event.type == pygame.USEREVENT and event.user_type == NETWORK_EVENT:
             if event.message_type == "GameStatus":
                 self.network_update()
+            elif event.message_type == "RequestGameOperation":
+                self._update_active_char(active=True)
+            elif event.message_type == "GamePause":
+                self.selection_info_box.update_textbox(self.gadget_icon_list, self.property_icon_list,
+                                                       self.__selected_gad_prop_idx)
         elif event.type == pygame.MOUSEBUTTONUP:
             # check if on one of the gadget / properties imgs
             for idx, icon in enumerate(self.gadget_icon_list + self.property_icon_list):
                 if icon.check_hover(1 / self.settings.frame_rate, False):
-                    logging.info(f"Selected gad_prob_idx: {idx}")
-                    self.__selected_gad_prob_idx = idx
+                    self.__selected_gad_prop_idx = idx
 
     def menu_button_pressed(self) -> None:
         self.parent.parent.to_settings()
 
-    def send_action_pressed(self) -> None:
+    def send_action_pressed(self) -> bool:
         """
         Extract for action relevant information from GUI-Elements and call controller, which then calls the network
         todo: could return boolean if successfull
         :return:    None
         """
+        ret = False
         type = self.action_bar.selected_option
         if type == "Movement":
             target = self.parent.parent.get_selected_field()
@@ -127,97 +142,50 @@ class HUDScreen(BasicView):
             ret = self.controller.send_game_operation(op_type=type)
             logging.info(f"Send Retire Action successfull: {ret}")
         elif type == "Gamble":
-            # todo way needed to specify stake!
-            stake = 1
+            stake_str = self.stake_entry_line.get_text()
+            if stake_str == "":
+                return False
+            stake = int(stake_str)
             target = self.parent.parent.get_selected_field()
             ret = self.controller.send_game_operation(target=target, op_type=type, stake=stake)
-            logging.info(f"Send Gamble Action successfull {ret}")
+            logging.info(f"Stake={stake}. Send Gamble Action successfull {ret}")
         elif type == "Property":
             # Observation = 0, BangAndBurn = 1
-            prop = self.__selected_gad_prob_idx - len(self.gadget_icon_list)
+            prop = self.idx_to_property_idx(self.__selected_gad_prop_idx)
             logging.info(f"Property: {prop}")
             target = self.parent.parent.get_selected_field()
             ret = self.controller.send_game_operation(target=target, op_type=type, property=prop)
             logging.info(f"Send Property Action successfull: {ret}")
             # reset gadget / property selection
-            self.__selected_gad_prob_idx = None
+            self.__selected_gad_prop_idx = None
         elif type == "Gadget":
             # if selection is None, send action to pick up cocktail!
-            gad = self.__idx_to_gadget_idx(
-                self.__selected_gad_prob_idx) if self.__selected_gad_prob_idx is not None else cppyy.gbl.spy.gadget.GadgetEnum.COCKTAIL
+            gad = self.idx_to_gadget_idx(
+                self.__selected_gad_prop_idx) if self.__selected_gad_prop_idx is not None else cppyy.gbl.spy.gadget.GadgetEnum.COCKTAIL
             target = self.parent.parent.get_selected_field()
             ret = self.controller.send_game_operation(target=target, op_type=type, gadget=gad)
             logging.info(f"Send Gadget Action successfull: {ret}")
             # reset gadget / property selection
-            self.__selected_gad_prob_idx = None
+            self.__selected_gad_prop_idx = None
+
+        if ret:
+            self._update_active_char(active=False)
+
+        # update op. status box
+        self.operation_status_box.update_valid_op(was_valid=ret)
+
+        return ret
 
     def _check_character_hover(self) -> None:
         """
         Check if character image is currently hovered, if so init private textbox on this char
         :return:    None
         """
-        if self.private_textbox is not None:
-            self.private_textbox.kill()
-            self.private_textbox = None
+        self.character_info_box.reset()
 
         for idx, button in enumerate(self.char_image_list):
             if button.check_hover(1 / self.settings.frame_rate, False):
-                self._init_private_textbox(idx)
-
-    def _update_textbox(self) -> None:
-        """
-        Updates text inside textbox
-        todo improve performance of this method --> laggs when field on pf is selected
-        :return:    None
-        """
-        # check if any button is hovered --> update
-        update = False
-        textbox_str = ""
-        for idx, icon in enumerate(self.gadget_icon_list + self.property_icon_list):
-            if icon.check_hover(1 / self.settings.frame_rate, False):
-                if idx == self.__hovered_icon_idx:
-                    self.__hovered_count += 1
-                else:
-                    self.__hovered_icon_idx = idx
-                    continue
-
-                if self.__hovered_count > self.__hovering_threshold:
-                    update = True
-                    if idx < len(self.gadget_icon_list):
-                        # hovering gadget
-                        gadget_idx = self.__idx_to_gadget_idx(idx)
-                        textbox_str += f"Hovering Gadget:<br>{GADGET_NAME_LIST[gadget_idx]}"
-                    else:
-                        # hovering property
-                        property = "Observation" if idx - len(self.gadget_icon_list) == 0 else "Bang and Burn"
-                        textbox_str += f"Hovering Property:<br>{property}"
-                break
-
-        if self.__selected_gad_prob_idx is not None:
-            if self.__selected_gad_prob_idx < len(self.gadget_icon_list):
-                # gadget selected
-                gad = self.__idx_to_gadget_idx(self.__selected_gad_prob_idx)
-                textbox_str += f"<br>Currently Selected:<br>{GADGET_NAME_LIST[gad]}"
-            else:
-                # property selected
-                property = "Observation" if self.__selected_gad_prob_idx - len(
-                    self.gadget_icon_list) == 0 else "Bang and Burn"
-                textbox_str += f"<br>Currently Selected:<br>{property}"
-
-        if self.parent.parent.get_selected_field() is not None:
-            # selected field information
-            field = self.parent.parent.get_selected_field()
-            # only update string, when selected field has changed
-            if field != self.__selected_field:
-                self.__selected_field = field
-                self.__create_field_info_string(field)
-                textbox_str += f"<br>Field: {self.__field_info_str}"
-                update = True
-
-        if update:
-            self.info_textbox.html_text = textbox_str
-            self.info_textbox.rebuild()
-            self.__hovered_count = 0
+                self.character_info_box.update_textbox(idx)
 
     def network_update(self) -> None:
         """
@@ -226,39 +194,50 @@ class HUDScreen(BasicView):
         """
         self._create_character_images()
         self._update_icons()
+        self.operation_status_box.update_successfull_op()
+        self.operation_log_box.update_textbox()
 
     def _update_icons(self) -> None:
         """
         Updates icons based on new network upate. Gets information from model and creates icon bar based on that
         :return:    None
         """
+        # remove old gadgets
+        for gad in self.gadget_icon_list:
+            gad.kill()
+        for prop in self.property_icon_list:
+            prop.kill()
         self.gadget_icon_list.clear()
         self.property_icon_list.clear()
 
-        gadget_icon_surface = pygame.image.load("assets/GameView/axe.png")
-        gadget_icon_surface = pygame.transform.scale(gadget_icon_surface, [self.__icon_size] * 2)
-
-        property_icon_surface = pygame.image.load("assets/GameView/ClammyClothes.png")
-        property_icon_surface = pygame.transform.scale(property_icon_surface, [self.__icon_size] * 2)
-
         my_chars = self.controller.lib_client_handler.lib_client.getChosenCharacters()
+        count = 0
 
         for idx_char, char in enumerate(my_chars):
             char_gadgets = self.controller.lib_client_handler.lib_client.getState().getCharacters().findByUUID(
                 char).getGadgets()
 
-            # todo display correct gadget
-            for idx in range(char_gadgets.size()):
+            for idx, gad in enumerate(char_gadgets):
+                gad_idx = gad.getType()
+                gad_icon_surface = pygame.image.load(GADGET_PATH_LIST[gad_idx])
+                gad_icon_surface = pygame.transform.scale(gad_icon_surface, [self.__icon_size] * 2)
+
                 self.gadget_icon_list.append(pygame_gui.elements.UIButton(
                     relative_rect=pygame.Rect(
                         (idx_char * (self.__padding + self.__distance) + idx * self.__icon_size, 0),
-                        gadget_icon_surface.get_size()),
+                        gad_icon_surface.get_size()),
                     text="",
                     manager=self.manager,
                     container=self.container,
-                    object_id=f"#gadget_image0{idx_char}"
+                    object_id=f"#gadget_image0{idx_char + idx}"
                 ))
 
+                self.gadget_icon_list[count].normal_image = gad_icon_surface
+                self.gadget_icon_list[count].hovered_image = gad_icon_surface
+                self.gadget_icon_list[count].rebuild()
+                count += 1
+
+        count = 0
         for idx_char, char in enumerate(my_chars):
             current_char = self.controller.lib_client_handler.lib_client.getState().getCharacters().findByUUID(
                 char)
@@ -266,37 +245,46 @@ class HUDScreen(BasicView):
             hasObservation = current_char.hasProperty(cppyy.gbl.spy.character.PropertyEnum.OBSERVATION)
             hasBnB = current_char.hasProperty(cppyy.gbl.spy.character.PropertyEnum.BANG_AND_BURN)
 
-            # todo display correct property
+            pos = 0
             if hasObservation:
+                property_icon_surface = pygame.image.load(PROPERTY_PATH_LIST[0])
+                property_icon_surface = pygame.transform.scale(property_icon_surface, [self.__icon_size] * 2)
+
                 self.property_icon_list.append(pygame_gui.elements.UIButton(
                     relative_rect=pygame.Rect(
-                        (idx_char * (self.__padding + self.__distance) + self.__icon_size, self.__icon_size),
-                        gadget_icon_surface.get_size()),
+                        (idx_char * (self.__padding + self.__distance), self.__icon_size),
+                        property_icon_surface.get_size()),
                     text="",
                     manager=self.manager,
                     container=self.container,
                     object_id=f"#gadget_image0{idx_char}"
                 ))
+
+                self.property_icon_list[count].normal_image = property_icon_surface
+                self.property_icon_list[count].hovered_image = property_icon_surface
+                self.property_icon_list[count].rebuild()
+                pos += 1
+                count += 1
 
             if hasBnB:
+                property_icon_surface = pygame.image.load(PROPERTY_PATH_LIST[1])
+                property_icon_surface = pygame.transform.scale(property_icon_surface, [self.__icon_size] * 2)
+
                 self.property_icon_list.append(pygame_gui.elements.UIButton(
                     relative_rect=pygame.Rect(
-                        (idx_char * (self.__padding + self.__distance) + int(hasObservation) * self.__icon_size,
+                        (idx_char * (self.__padding + self.__distance) + pos * self.__icon_size,
                          self.__icon_size),
-                        gadget_icon_surface.get_size()),
+                        property_icon_surface.get_size()),
                     text="",
                     manager=self.manager,
                     container=self.container,
                     object_id=f"#gadget_image0{idx_char}"
                 ))
 
-        for gad in self.gadget_icon_list:
-            gad.normal_image = gadget_icon_surface
-            gad.rebuild()
-
-        for prop in self.property_icon_list:
-            prop.normal_image = property_icon_surface
-            prop.rebuild()
+                self.property_icon_list[count].normal_image = property_icon_surface
+                self.property_icon_list[count].hovered_image = property_icon_surface
+                self.property_icon_list[count].rebuild()
+                count += 1
 
     def _create_character_images(self) -> None:
         """
@@ -307,7 +295,7 @@ class HUDScreen(BasicView):
         self.health_bar_list.clear()
 
         # test_surface to display images on character buttons
-        char_surface = pygame.image.load("assets/GameView/trash.png").convert_alpha()
+        char_surface = pygame.image.load(CHAR_PATH_DICT.get("normal")).convert_alpha()
         char_surface = pygame.transform.scale(char_surface, (int(self.__padding), int(self.__padding)))
 
         my_chars = self.controller.lib_client_handler.lib_client.getChosenCharacters()
@@ -374,6 +362,21 @@ class HUDScreen(BasicView):
             char.normal_image = char_surface
             char.rebuild()
 
+    def _update_active_char(self, active) -> None:
+        active_char_id = self.controller.lib_client_handler.lib_client.getActiveCharacter()
+        active_gui_idx = 0
+
+        for idx, char_id in enumerate(self.controller.lib_client_handler.lib_client.getChosenCharacters()):
+            if char_id == active_char_id:
+                active_gui_idx = idx
+
+        key = "active" if active else "normal"
+
+        active_img = pygame.image.load(CHAR_PATH_DICT.get(key))
+        active_img = pygame.transform.scale(active_img, [int(self.__padding)] * 2)
+        self.char_image_list[active_gui_idx].normal_image = active_img
+        self.char_image_list[active_gui_idx].rebuild()
+
     def _init_ui_elements(self) -> None:
         self.char_image_list = []
         self.health_bar_list = []
@@ -396,6 +399,30 @@ class HUDScreen(BasicView):
             object_id="#action_bar",
         )
 
+        self.stake_entry_line = pygame_gui.elements.UITextEntryLine(
+            relative_rect=pygame.Rect(
+                (self.container.rect.width - 2 * self.__distance - self.__button_size[0] - self.__status_textbox_width -
+                 self.__dropdown_size[0], self.__dropdown_size[1]),
+                self.__dropdown_size),
+            manager=self.manager,
+            container=self.container,
+            object_id="#stake_entry_line"
+        )
+
+        self.stake_entry_line.set_text("1")
+        self.stake_entry_line.allowed_characters = self._valid_stake_inputs
+
+        self.stake_text_label = pygame_gui.elements.UILabel(
+            text="Enter gambling stake",
+            relative_rect=pygame.Rect(
+                (self.container.rect.width - 2 * self.__distance - self.__button_size[0] - self.__status_textbox_width -
+                 self.__dropdown_size[0], 0),
+                self.__dropdown_size),
+            manager=self.manager,
+            container=self.container,
+            object_id="#stake_text_label"
+        )
+
         self.menu_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(
                 (self.container.rect.width - self.__button_size[0], self.container.rect.height - self.__button_size[1]),
@@ -404,6 +431,7 @@ class HUDScreen(BasicView):
             manager=self.manager,
             container=self.container,
             object_id="#menu_button"
+
         )
 
         self.send_action_button = pygame_gui.elements.UIButton(
@@ -417,51 +445,7 @@ class HUDScreen(BasicView):
 
         )
 
-        self.info_textbox = pygame_gui.elements.UITextBox(
-            html_text="",
-            relative_rect=pygame.Rect(
-                (self.container.rect.width - self.__button_size[0] - self.__distance - self.__info_textbox_width, 0),
-                (self.__info_textbox_width, self.container.rect.height)),
-            manager=self.manager,
-            container=self.container,
-            object_id="info_textbox"
-        )
-
-
-    def _init_private_textbox(self, idx) -> None:
-        """
-        Creates a new textbox, which displays relevant information. Is placed above the hovered character image
-        todo properly format textboxes
-        :param idx:     Idx of hovered character in UI-List
-        :return:        None
-        """
-        char_id = self.controller.lib_client_handler.lib_client.getChosenCharacters()[idx]
-        char = self.controller.lib_client_handler.lib_client.getState().getCharacters().findByUUID(char_id)
-
-        hp = char.getHealthPoints()
-        chips = char.getChips()
-        ip = char.getIntelligencePoints()
-        info = self.controller.lib_client_handler.lib_client.getInformation()
-        variant = info[
-            cppyy.gbl.spy.network.messages.MetaInformationKey.CONFIGURATION_CHARACTER_INFORMATION]
-        char_info_vector = cppyy.gbl.std.get[vector[cppyy.gbl.spy.character.CharacterInformation]](variant)
-
-        chosen_char_id = self.controller.lib_client_handler.lib_client.getChosenCharacters()[idx]
-        name = ""
-        for char_info in char_info_vector:
-            if chosen_char_id == char_info.getCharacterId():
-                name = char_info.getName()
-
-        self.private_textbox = pygame_gui.elements.UITextBox(
-            html_text=f"<b>{name}</b><b>HP:</b>{hp}<br><b>IP:</b>{ip}<br><b>Chips:</b>{chips}<br>",
-            relative_rect=pygame.Rect((idx * (self.__padding + self.__distance), 2 * self.__icon_size),
-                                      (self.__padding, self.__padding)),
-            manager=self.manager,
-            container=self.container,
-            object_id="#private_textbox"
-        )
-
-    def __idx_to_gadget_idx(self, idx):
+    def idx_to_gadget_idx(self, idx) -> int:
         """
         Transforms between idx for UI-elements list and State Gadget idx
         :param idx:     UI gadget idx
@@ -470,41 +454,43 @@ class HUDScreen(BasicView):
         character_ids = self.controller.lib_client_handler.lib_client.getChosenCharacters()
         count = 0
         for char_id in character_ids:
-            current_char = self.controller.lib_client_handler.lib_client.getState().getCharacters().findByUUID(char_id)
+            current_char = self.controller.lib_client_handler.lib_client.getState().getCharacters().findByUUID(
+                char_id)
             if idx - count < current_char.getGadgets().size():
                 return current_char.getGadgets()[idx - count].getType()
             else:
                 count += current_char.getGadgets().size()
 
-    def __create_field_info_string(self, field) -> None:
+    def idx_to_property_idx(self, idx) -> int:
         """
-        Gets the selected field and creates a html string, to be displayed in the info box
-        todo create state, so this is only done, when the selected field has changed
-        :return:
+        Transforms between idx for UI-elements list and state property idx
+        :param idx:     UI property idx
+        :return:        State property idx
         """
+        idx -= len(self.gadget_icon_list)
 
-        logging.info("Updating field info string")
+        character_ids = self.controller.lib_client_handler.lib_client.getChosenCharacters()
+        count = 0
 
-        info_str = ""
+        for char_id in character_ids:
+            current_char = self.controller.lib_client_handler.lib_client.getState().getCharacters().findByUUID(
+                char_id)
 
-        point_cpp = cppyy.gbl.spy.util.Point()
-        point_cpp.x, point_cpp.y = field.x, field.y
-        field_cpp = self.controller.lib_client_handler.lib_client.getState().getMap().getField(point_cpp)
-        # todo extract all relevant information from field and format to string
-        # todo get potential character standing on field! and display name and of own faction!
-        foggy = field_cpp.isFoggy()
-        info_str += f"Is Foggy: {foggy}<br>"
-        if field_cpp.getGadget().has_value():
-            gadget = field_cpp.getGadget().value().getType()
-            info_str += f"Gadget: {GADGET_NAME_LIST[gadget]}<br>"
-        if field_cpp.getChipAmount().has_value():
-            chip_amount = field_cpp.getChipAmount().value()
-            info_str += f"Chip Amount: {chip_amount}<br>"
-        if field_cpp.getSafeIndex().has_value():
-            safe_index = field_cpp.getSafeIndex().value()
-            info_str += f"Safe Index: {safe_index}<br>"
-        if field_cpp.isDestroyed().has_value():
-            destroyed = field_cpp.isDestroyed().value()
-            info_str += f"Is Destroyed: {destroyed}<br>"
+            hasObservation = current_char.hasProperty(cppyy.gbl.spy.character.PropertyEnum.OBSERVATION)
+            hasBnB = current_char.hasProperty(cppyy.gbl.spy.character.PropertyEnum.BANG_AND_BURN)
 
-        self.__field_info_str = info_str
+            count += int(hasObservation) + int(hasBnB)
+
+            if count > idx:
+                # found char
+                if hasObservation and hasBnB:
+                    return cppyy.gbl.spy.character.PropertyEnum.OBSERVATION if (count - 2) == idx \
+                        else cppyy.gbl.spy.character.PropertyEnum.BANG_AND_BURN
+                else:
+                    return cppyy.gbl.spy.character.PropertyEnum.OBSERVATION if hasObservation \
+                        else cppyy.gbl.spy.character.PropertyEnum.BANG_AND_BURN
+
+    @staticmethod
+    def prop_idx_to_string(prop_idx) -> str:
+        return "Observation" if prop_idx == cppyy.gbl.spy.character.PropertyEnum.OBSERVATION \
+            else "Bang and Burn"

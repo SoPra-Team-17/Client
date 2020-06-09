@@ -11,7 +11,7 @@ GADGET_NAME_LIST = ["Invalid", "Hairdryer", "Mole die", "Technicolor Prism", "Bo
                     "Mirror of Wilderness", "Pocket Litter", "Cocktail", "Anti-Plague Mask"]
 
 GADGET_PATH_LIST = [
-    "assets/GameView/axe.png",  # 0
+    "assets/GameView/Gadgets2D/axe.png",  # 0
     "assets/GameView/Gadgets2D/HairDryer.png",  # 1
     "assets/GameView/Gadgets2D/MoleDie.png",  # 2
     "assets/GameView/Gadgets2D/TechnicolorPrism.png",  # 3
