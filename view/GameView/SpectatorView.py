@@ -108,20 +108,20 @@ class SpectatorView(BasicView):
         self.player_two_id = cppyy.gbl.std.get[vector[cppyy.gbl.spy.util.UUID]](variant)
 
         # sort into libclient lists
-        # todo uncomment when libclient is updated
-        """
         for neutral_id in self.player_neutral_id:
-            self.controller.lib_client_handler.lib_client.setFaction(neutral_id,
+            ret = self.controller.lib_client_handler.lib_client.setFaction(neutral_id,
                                                                      cppyy.gbl.spy.character.FactionEnum.NEUTRAL)
+            logging.info(f"Succesfully added char to NEUTRAL: {ret}")
 
         for player1_id in self.player_one_id:
-            self.controller.lib_client_handler.lib_client.setFaction(player1_id,
+            ret = self.controller.lib_client_handler.lib_client.setFaction(player1_id,
                                                                      cppyy.gbl.spy.character.FactionEnum.PLAYER1)
+            logging.info(f"Succesfully added char to PLAYER1: {ret}")
 
         for player2_id in self.player_two_id:
-            self.controller.lib_client_handler.lib_client.setFaction(player2_id,
+            ret = self.controller.lib_client_handler.lib_client.setFaction(player2_id,
                                                                      cppyy.gbl.spy.character.FactionEnum.PLAYER2)
-        """
+            logging.info(f"Succesfully added char to PLAYER2: {ret}")
 
         # wait until meta information is received, then start game
         self.active_views = [self.playing_field_screen, self.spectator_HUD_screen]
