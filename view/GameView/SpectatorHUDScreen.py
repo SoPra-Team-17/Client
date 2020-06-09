@@ -13,6 +13,7 @@ from view.GameView.Visuals.VisualProperty import PROPERTY_PATH_LIST, PROPERTY_NA
 from view.GameView.Visuals.VisualCharacter import CHAR_PATH_DICT
 from view.GameView.HUDScreenElements.CharacterInfoBox import CharacterInfoBox
 from view.GameView.HUDScreenElements.SelectionInfoBox import SelectionInfoBox
+from view.GameView.HUDScreenElements.OperationLogBox import OperationLogBox
 from controller.ControllerView import ControllerSpectatorView
 from network.NetworkEvent import NETWORK_EVENT
 
@@ -36,7 +37,7 @@ class SpectatorHUDScreen(BasicView):
     __distance = 10
     # size of gadget and property icons
     __icon_size = 32
-    __button_size = (150, 35)
+    __button_size = (200, 35)
     __dropdown_size = (200, 35)
 
     def __init__(self, window: pygame.display, controller: ControllerSpectatorView, parent,
@@ -54,8 +55,7 @@ class SpectatorHUDScreen(BasicView):
             manager=self.manager
         )
 
-        # self.character_info_box = CharacterInfoBox(self, self.container, self.manager)
-        # self.selection_info_box = SelectionInfoBox(self, self.container, self.manager, self.settings)
+        self.operation_log_box = OperationLogBox(self, self.container, self.manager, self.settings)
 
         # padding to set responsive size of character buttons
         self.__padding = (self.container.rect.width / 2 - 5 * self.__distance) / 7
@@ -78,6 +78,7 @@ class SpectatorHUDScreen(BasicView):
     def draw(self) -> None:
         self.manager.update(1 / self.settings.frame_rate)
         self._update_text_box()
+        self._check_character_hover()
 
         self.window.blit(self.background, (0, self.container.rect.y))
         self.manager.draw_ui(self.window)
@@ -96,12 +97,6 @@ class SpectatorHUDScreen(BasicView):
         elif event.type == pygame.USEREVENT and event.user_type == NETWORK_EVENT:
             if event.message_type == "GameStatus":
                 self.network_update()
-        elif event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_ON_HOVERED:
-            self._check_character_hover()
-        elif event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_ON_UNHOVERED:
-            logging.info("Unhovered kill textbox")
-            if self.private_textbox is not None:
-                self.private_textbox.kill()
 
     def menu_button_pressed(self) -> None:
         self.controller.to_main_menu()
@@ -111,7 +106,9 @@ class SpectatorHUDScreen(BasicView):
         Check if character image is currently hovered, if so init private textbox on this char
         :return:    None
         """
-        # self.character_info_box.reset()
+        if self.private_textbox is not None:
+            self.private_textbox.kill()
+            self.private_textbox = None
 
         for idx, button in enumerate(self.char_image_list_p1):
             if button.check_hover(1 / self.settings.frame_rate, False):
@@ -131,6 +128,7 @@ class SpectatorHUDScreen(BasicView):
         """
         self._create_character_images()
         self._update_icons()
+        self.operation_log_box.update_textbox()
 
     def _create_character_images(self) -> None:
         """
@@ -397,7 +395,7 @@ class SpectatorHUDScreen(BasicView):
 
         self.menu_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(
-                (self.container.rect.width / 2 - self.__button_size[0] / 2,
+                (self.container.rect.width * .55,
                  self.container.rect.height - self.__button_size[1]),
                 (self.__button_size)),
             text=self.__element_names["menu"],
@@ -408,7 +406,7 @@ class SpectatorHUDScreen(BasicView):
 
         self.selected_info_box = pygame_gui.elements.UITextBox(
             relative_rect=pygame.Rect(
-                (self.container.rect.width / 2 - self.__button_size[0] / 2,
+                (self.container.rect.width * .55,
                  0),
                 (self.__button_size[0], self.container.rect.height - self.__button_size[1])),
             html_text="",

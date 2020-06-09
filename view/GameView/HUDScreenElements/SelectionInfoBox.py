@@ -109,7 +109,7 @@ class SelectionInfoBox:
             # only update string, when selected field has changed
             if field != self.parent_screen.selected_field:
                 self.parent_screen.selected_field = field
-                textbox_str += f"<br>{self.__create_field_info_string(field)}<br>"
+                textbox_str += f"<br>{self.create_field_info_string(self.parent_screen.controller, field)}<br>"
                 update = True
 
         if self.parent_screen.controller.lib_client_handler.lib_client.isGamePaused():
