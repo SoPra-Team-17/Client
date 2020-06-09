@@ -117,10 +117,6 @@ class EquipmentScreen(BasicView):
                 logging.info("Go to playing field")
                 self.parent_view.to_playing_field()
 
-        # todo debug escape, has to be removed at some point
-        if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-            self.controller.to_main_menu()
-
     def _send_selection(self) -> None:
         # convert map to uuid -> gadget
         network_map = {}
