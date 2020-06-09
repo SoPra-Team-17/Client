@@ -17,8 +17,18 @@ class SettingsScreen(BasicView):
     _text_buttons = {
         "pause_game": "Pause Game",
         "leave_game": "Leave Game",
-        "return": "Return to Game"
+        "return": "Return to Game",
+        "shortcuts": "Shortcuts"
     }
+
+    _shortcuts_help_str = "<b>Shortcuts</b><br><br>" \
+                          "<b>Actions</b><br>" \
+                          "m: Movement<br>g: Gadget<br>b: Gamble<br>s: Spy<br>p: Property<br>r: Retire<br>" \
+                          "<br><b>Execution</b><br>" \
+                          "enter: send action<br>"
+
+    __shortcuts_position = (200, 200)
+    __shortcuts_size = (250, 280)
 
     def __init__(self, window: pygame.display, controller: ControllerGameView, parent, settings: ViewSettings) -> None:
         super(SettingsScreen, self).__init__(window, controller, settings)
@@ -57,7 +67,8 @@ class SettingsScreen(BasicView):
             switcher = {
                 self.pause_game_button: self._pause_pressed,
                 self.leave_game_button: self._leave_pressed,
-                self.return_to_game_button: self._return_pressed
+                self.return_to_game_button: self._return_pressed,
+                self.shortcuts_help_button: self._update_shortcuts_textbox
             }
             try:
                 switcher.get(event.ui_element)()
@@ -87,7 +98,22 @@ class SettingsScreen(BasicView):
         label_str = "Game is paused" if paused else "Game is not paused"
         self.pause_state_label.set_text(label_str)
 
+    def _update_shortcuts_textbox(self) -> None:
+        if self.shortcuts_help_textbox is not None:
+            self.shortcuts_help_textbox.kill()
+            self.shortcuts_help_textbox = None
+            return
+
+        self.shortcuts_help_textbox = pygame_gui.elements.UITextBox(
+            html_text=self._shortcuts_help_str,
+            relative_rect=pygame.Rect(self.__shortcuts_position, self.__shortcuts_size),
+            manager=self.manager,
+            object_id="#shortcut_textbox"
+        )
+
     def _init_ui_elements(self):
+        self.shortcuts_help_textbox = None
+
         self.pause_state_label = pygame_gui.elements.UILabel(
             relative_rect=pygame.Rect((0,
                                        self.__padding * len(
@@ -108,6 +134,17 @@ class SettingsScreen(BasicView):
             manager=self.manager,
             container=self.container,
             object_id="#pause_button"
+        )
+
+        self.shortcuts_help_button = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect((0,
+                                       self.__padding * len(
+                                           self.container.elements)),
+                                      self.__buttonSize),
+            text=self._text_buttons["shortcuts"],
+            manager=self.manager,
+            container=self.container,
+            object_id="#shortcuts_button"
         )
 
         self.leave_game_button = pygame_gui.elements.UIButton(
