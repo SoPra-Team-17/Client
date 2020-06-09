@@ -45,6 +45,7 @@ class SettingsScreen(BasicView):
 
     def draw(self) -> None:
         self.manager.update(1 / self.settings.frame_rate)
+        self._update_label()
 
         self.window.blit(self.background, (0, 0))
         self.manager.draw_ui(self.window)
@@ -81,7 +82,23 @@ class SettingsScreen(BasicView):
     def _return_pressed(self):
         self.parent_view.parent.to_playing_field()
 
+    def _update_label(self) -> None:
+        paused = self.controller.lib_client_handler.lib_client.isGamePaused()
+        label_str = "Game is paused" if paused else "Game is not paused"
+        self.pause_state_label.set_text(label_str)
+
     def _init_ui_elements(self):
+        self.pause_state_label = pygame_gui.elements.UILabel(
+            relative_rect=pygame.Rect((0,
+                                       self.__padding * len(
+                                           self.container.elements)),
+                                      self.__buttonSize),
+            text="",
+            manager=self.manager,
+            container=self.container,
+            object_id="#pause_state_label"
+        )
+
         self.pause_game_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect((0,
                                        self.__padding * len(
