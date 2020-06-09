@@ -87,8 +87,7 @@ class SelectionInfoBox:
                     else:
                         # hovering property
                         property = self.parent_screen.idx_to_property_idx(idx)
-                        property_str = "Observation" if property == cppyy.gbl.spy.character.PropertyEnum.OBSERVATION \
-                            else "Bang and Burn"
+                        property_str = self.parent_screen.prop_idx_to_string(property)
                         textbox_str += f"<br>Hovering Property:<br>{property_str}"
                 break
 
@@ -101,8 +100,7 @@ class SelectionInfoBox:
             else:
                 # property selected
                 property = self.parent_screen.idx_to_property_idx(selected_gad_prop_idx)
-                property_str = "Observation" if property == cppyy.gbl.spy.character.PropertyEnum.OBSERVATION \
-                    else "Bang and Burn"
+                property_str = self.parent_screen.prop_idx_to_string(property)
                 textbox_str += f"<br>Currently Selected:<br>{property_str}"
 
         if self.parent_screen.parent.parent.get_selected_field() is not None:

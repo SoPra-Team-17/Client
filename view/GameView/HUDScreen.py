@@ -21,6 +21,7 @@ cppyy.add_include_path("/usr/local/include/SopraCommon")
 cppyy.add_include_path("/usr/local/include/SopraNetwork")
 
 cppyy.include("util/Point.hpp")
+cppyy.include("datatypes/character/PropertyEnum.hpp")
 cppyy.include("datatypes/gadgets/GadgetEnum.hpp")
 cppyy.include("datatypes/character/CharacterInformation.hpp")
 cppyy.include("network/messages/MetaInformationKey.hpp")
@@ -478,3 +479,8 @@ class HUDScreen(BasicView):
                 else:
                     return cppyy.gbl.spy.character.PropertyEnum.OBSERVATION if hasObservation \
                         else cppyy.gbl.spy.character.PropertyEnum.BANG_AND_BURN
+
+    @staticmethod
+    def prop_idx_to_string(prop_idx) -> str:
+        return "Observation" if prop_idx == cppyy.gbl.spy.character.PropertyEnum.OBSERVATION \
+            else "Bang and Burn"
