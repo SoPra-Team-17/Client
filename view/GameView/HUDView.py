@@ -35,3 +35,10 @@ class HUDView(BasicView):
         :return:        true if for HUD, false if for gameView
         """
         return self.hudScreen.container.rect.collidepoint(pygame.mouse.get_pos())
+
+    def received_strike(self) -> None:
+        """
+        Interface to game view when a strike was recieved
+        :return:    None
+        """
+        self.hudScreen.strike_display_box.update_textbox()

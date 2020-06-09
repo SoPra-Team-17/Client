@@ -11,7 +11,7 @@ from view.GameView.EquipmentScreen import EquipmentScreen
 from view.ViewSettings import ViewSettings
 from controller.ControllerView import ControllerGameView
 from util.Coordinates import WorldPoint
-
+from network.NetworkEvent import NETWORK_EVENT
 
 __author__ = "Marco Deuscher"
 __date__ = "20.05.20 (doc creation)"
@@ -46,6 +46,10 @@ class GameView(BasicView):
             self.hud_view.receive_event(event)
             return
 
+        if event.type == pygame.USEREVENT and event.user_type == NETWORK_EVENT:
+            if event.message_type == "Strike":
+                self.hud_view.received_strike()
+
         for view in self.active_views:
             view.receive_event(event)
 
@@ -58,6 +62,8 @@ class GameView(BasicView):
         self.active_views = [self.playing_field_screen, self.hud_view]
         self.playing_field_screen.update_playingfield()
         self.hud_view.hudScreen.network_update()
+        # init strike counter
+        self.hud_view.received_strike()
 
     def to_item_choice(self) -> None:
         """
