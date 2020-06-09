@@ -67,6 +67,8 @@ class GameOverScreen(BasicView):
                 logging.warning("Could not find UI-Element in dict")
 
     def _return_pressed(self):
+        ret = self.controller.send_game_leave()
+        logging.info(f"Successfully send game leave: {ret}")
         self.controller.to_main_menu()
 
     def network_update(self) -> None:
