@@ -57,7 +57,7 @@ class LobbyScreen(BasicView):
         if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_PRESSED:
             switcher = {
                 self.connect_button: self.connect_pressed,
-                self.return_button: self.controller.to_main_menu
+                self.return_button: self.return_pressed
             }
             try:
                 switcher.get(event.ui_element)()
@@ -79,6 +79,15 @@ class LobbyScreen(BasicView):
         # if hello was successfull, check if role has to be changed to spectator
         if ret and d.get("role") == self._valid_roles[1]:
             self.controller.selected_spectator_role()
+
+    def return_pressed(self) -> None:
+        """
+        Return button pressed, send game leave to server
+        :return:    None
+        """
+        ret = self.controller.send_game_leave()
+        logging.info(f"Successfully send game leave to server: {ret}")
+        self.controller.to_main_menu()
 
     def _extract_info(self) -> dict:
         """

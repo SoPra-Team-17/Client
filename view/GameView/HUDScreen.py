@@ -11,6 +11,8 @@ from view.GameView.Visuals.VisualProperty import PROPERTY_NAME_LIST, PROPERTY_PA
 from view.GameView.Visuals.VisualCharacter import CHAR_PATH_DICT
 from view.GameView.HUDScreenElements.CharacterInfoBox import CharacterInfoBox
 from view.GameView.HUDScreenElements.SelectionInfoBox import SelectionInfoBox
+from view.GameView.HUDScreenElements.OperationStatusBox import OperationStatusBox
+from view.GameView.HUDScreenElements.OperationLogBox import OperationLogBox
 from controller.ControllerView import ControllerGameView
 from network.NetworkEvent import NETWORK_EVENT
 
@@ -21,6 +23,7 @@ cppyy.add_include_path("/usr/local/include/SopraCommon")
 cppyy.add_include_path("/usr/local/include/SopraNetwork")
 
 cppyy.include("util/Point.hpp")
+cppyy.include("datatypes/character/PropertyEnum.hpp")
 cppyy.include("datatypes/gadgets/GadgetEnum.hpp")
 cppyy.include("datatypes/character/CharacterInformation.hpp")
 cppyy.include("network/messages/MetaInformationKey.hpp")
@@ -41,6 +44,8 @@ class HUDScreen(BasicView):
     __button_size = (150, 35)
     __dropdown_size = (200, 35)
 
+    _valid_stake_inputs = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
+
     def __init__(self, window: pygame.display, controller: ControllerGameView, settings: ViewSettings,
                  parent: BasicView) -> None:
         super(HUDScreen, self).__init__(window, controller, settings)
@@ -58,6 +63,8 @@ class HUDScreen(BasicView):
 
         self.character_info_box = CharacterInfoBox(self, self.container, self.manager)
         self.selection_info_box = SelectionInfoBox(self, self.container, self.manager, self.settings)
+        self.operation_status_box = OperationStatusBox(self, self.container, self.manager, self.settings)
+        self.operation_log_box = OperationLogBox(self, self.container, self.manager, self.settings)
 
         # padding to set responsive size of character buttons
         self.__padding = (self.container.rect.width / 2 - 5 * self.__distance) / 7
@@ -104,7 +111,8 @@ class HUDScreen(BasicView):
             elif event.message_type == "RequestGameOperation":
                 self._update_active_char(active=True)
             elif event.message_type == "GamePause":
-                self.selection_info_box.update_textbox()
+                self.selection_info_box.update_textbox(self.gadget_icon_list, self.property_icon_list,
+                                                       self.__selected_gad_prop_idx)
         elif event.type == pygame.MOUSEBUTTONUP:
             # check if on one of the gadget / properties imgs
             for idx, icon in enumerate(self.gadget_icon_list + self.property_icon_list):
@@ -114,7 +122,7 @@ class HUDScreen(BasicView):
     def menu_button_pressed(self) -> None:
         self.controller.to_main_menu()
 
-    def send_action_pressed(self) -> None:
+    def send_action_pressed(self) -> bool:
         """
         Extract for action relevant information from GUI-Elements and call controller, which then calls the network
         todo: could return boolean if successfull
@@ -134,14 +142,16 @@ class HUDScreen(BasicView):
             ret = self.controller.send_game_operation(op_type=type)
             logging.info(f"Send Retire Action successfull: {ret}")
         elif type == "Gamble":
-            # todo way needed to specify stake!
-            stake = 1
+            stake_str = self.stake_entry_line.get_text()
+            if stake_str == "":
+                return False
+            stake = int(stake_str)
             target = self.parent.parent.get_selected_field()
             ret = self.controller.send_game_operation(target=target, op_type=type, stake=stake)
-            logging.info(f"Send Gamble Action successfull {ret}")
+            logging.info(f"Stake={stake}. Send Gamble Action successfull {ret}")
         elif type == "Property":
             # Observation = 0, BangAndBurn = 1
-            prop = self.__selected_gad_prop_idx - len(self.gadget_icon_list)
+            prop = self.idx_to_property_idx(self.__selected_gad_prop_idx)
             logging.info(f"Property: {prop}")
             target = self.parent.parent.get_selected_field()
             ret = self.controller.send_game_operation(target=target, op_type=type, property=prop)
@@ -161,6 +171,11 @@ class HUDScreen(BasicView):
         if ret:
             self._update_active_char(active=False)
 
+        # update op. status box
+        self.operation_status_box.update_valid_op(was_valid=ret)
+
+        return ret
+
     def _check_character_hover(self) -> None:
         """
         Check if character image is currently hovered, if so init private textbox on this char
@@ -179,6 +194,8 @@ class HUDScreen(BasicView):
         """
         self._create_character_images()
         self._update_icons()
+        self.operation_status_box.update_successfull_op()
+        self.operation_log_box.update_textbox()
 
     def _update_icons(self) -> None:
         """
@@ -382,6 +399,30 @@ class HUDScreen(BasicView):
             object_id="#action_bar",
         )
 
+        self.stake_entry_line = pygame_gui.elements.UITextEntryLine(
+            relative_rect=pygame.Rect(
+                (self.container.rect.width - 2 * self.__distance - self.__button_size[0] - self.__status_textbox_width -
+                 self.__dropdown_size[0], self.__dropdown_size[1]),
+                self.__dropdown_size),
+            manager=self.manager,
+            container=self.container,
+            object_id="#stake_entry_line"
+        )
+
+        self.stake_entry_line.set_text("1")
+        self.stake_entry_line.allowed_characters = self._valid_stake_inputs
+
+        self.stake_text_label = pygame_gui.elements.UILabel(
+            text="Enter gambling stake",
+            relative_rect=pygame.Rect(
+                (self.container.rect.width - 2 * self.__distance - self.__button_size[0] - self.__status_textbox_width -
+                 self.__dropdown_size[0], 0),
+                self.__dropdown_size),
+            manager=self.manager,
+            container=self.container,
+            object_id="#stake_text_label"
+        )
+
         self.menu_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(
                 (self.container.rect.width - self.__button_size[0], self.container.rect.height - self.__button_size[1]),
@@ -390,6 +431,7 @@ class HUDScreen(BasicView):
             manager=self.manager,
             container=self.container,
             object_id="#menu_button"
+
         )
 
         self.send_action_button = pygame_gui.elements.UIButton(
@@ -418,3 +460,37 @@ class HUDScreen(BasicView):
                 return current_char.getGadgets()[idx - count].getType()
             else:
                 count += current_char.getGadgets().size()
+
+    def idx_to_property_idx(self, idx) -> int:
+        """
+        Transforms between idx for UI-elements list and state property idx
+        :param idx:     UI property idx
+        :return:        State property idx
+        """
+        idx -= len(self.gadget_icon_list)
+
+        character_ids = self.controller.lib_client_handler.lib_client.getChosenCharacters()
+        count = 0
+
+        for char_id in character_ids:
+            current_char = self.controller.lib_client_handler.lib_client.getState().getCharacters().findByUUID(
+                char_id)
+
+            hasObservation = current_char.hasProperty(cppyy.gbl.spy.character.PropertyEnum.OBSERVATION)
+            hasBnB = current_char.hasProperty(cppyy.gbl.spy.character.PropertyEnum.BANG_AND_BURN)
+
+            count += int(hasObservation) + int(hasBnB)
+
+            if count > idx:
+                # found char
+                if hasObservation and hasBnB:
+                    return cppyy.gbl.spy.character.PropertyEnum.OBSERVATION if (count - 2) == idx \
+                        else cppyy.gbl.spy.character.PropertyEnum.BANG_AND_BURN
+                else:
+                    return cppyy.gbl.spy.character.PropertyEnum.OBSERVATION if hasObservation \
+                        else cppyy.gbl.spy.character.PropertyEnum.BANG_AND_BURN
+
+    @staticmethod
+    def prop_idx_to_string(prop_idx) -> str:
+        return "Observation" if prop_idx == cppyy.gbl.spy.character.PropertyEnum.OBSERVATION \
+            else "Bang and Burn"

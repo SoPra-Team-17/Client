@@ -122,10 +122,6 @@ class ItemChoiceScreen(BasicView):
                 logging.info("Entering equipment choice phase")
                 self.parent_view.to_equipment()
 
-        # todo debug, has to be removed at some point
-        if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-            self.controller.to_main_menu()
-
         if self.waiting_label_counter == 8:
             self.waiting_label.set_text("Selection done. Waiting for other player.")
 

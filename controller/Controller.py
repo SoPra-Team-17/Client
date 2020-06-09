@@ -234,13 +234,8 @@ class Controller(ControllerGameView, ControllerMainMenu, ControllerLobby):
             operation = cppyy.gbl.spy.gameplay.GambleAction(False, target, active_char, stake)
         elif op_type == "Property":
             property = kwargs["property"]
-            # property = 0 --> Observation, property = 1 --> Bang and Burn
-            if property == 0:
-                operation = cppyy.gbl.spy.gameplay.PropertyAction(False, target, active_char,
-                                                                  cppyy.gbl.spy.character.PropertyEnum(15))
-            elif property == 1:
-                operation = cppyy.gbl.spy.gameplay.PropertyAction(False, target, active_char,
-                                                                  cppyy.gbl.spy.character.PropertyEnum(12))
+            operation = cppyy.gbl.spy.gameplay.PropertyAction(False, target, active_char,
+                                                              cppyy.gbl.spy.character.PropertyEnum(property))
         elif op_type == "Gadget":
             gadget = kwargs["gadget"]
             gadget_cpp = cppyy.gbl.spy.gadget.GadgetEnum(gadget)

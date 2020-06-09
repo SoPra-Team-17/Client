@@ -38,10 +38,6 @@ class GameView(BasicView):
         pygame.display.flip()
 
     def receive_event(self, event: pygame.event.Event) -> None:
-        # todo esacpe for debugging purposes
-        if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-            self.controller.to_main_menu()
-
         # make sure button clicks on the HUD are not handled in the playing field screen
         if event.type == pygame.MOUSEBUTTONUP and self.hud_view.filter_event(event):
             self.hud_view.receive_event(event)
