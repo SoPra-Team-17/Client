@@ -14,14 +14,14 @@ set -e
 
 # Dependencies from LibCommon
 # libuuid
-sudo apt install uuid-dev
+sudo apt -y install uuid-dev
 # nlohmann json
 dpkg -s nlohmann-json-dev > /dev/null 2>&1 && {
   echo "nlohmann-json-dev already installed"
 } || {
   echo "nlohmann-json-dev not installed. Installing now..."
   cd /tmp
-  git clone --depth 1 https://github.com/nlohmann/json.git
+  git clone --depth 1 -b v3.7.3 https://github.com/nlohmann/json.git
   cd json
   mkdir build && cd build
   cmake -DJSON_BuildTests=false ..
@@ -33,7 +33,7 @@ dpkg -s nlohmann-json-dev > /dev/null 2>&1 && {
 
 # Dependencies from WebsocketCPP
 # Libwebsockets
-sudo apt install libssl-dev
+sudo apt -y install libssl-dev
 if [ ! -f /usr/local/lib/libwebsockets.so ]; then
     echo "Libwebsockets not installed. Installing now"
     cd /tmp
