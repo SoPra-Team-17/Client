@@ -11,6 +11,8 @@ from view.GameView.Visuals.VisualProperty import PROPERTY_NAME_LIST, PROPERTY_PA
 from view.GameView.Visuals.VisualCharacter import CHAR_PATH_DICT
 from view.GameView.HUDScreenElements.CharacterInfoBox import CharacterInfoBox
 from view.GameView.HUDScreenElements.SelectionInfoBox import SelectionInfoBox
+from view.GameView.HUDScreenElements.OperationStatusBox import OperationStatusBox
+from view.GameView.HUDScreenElements.OperationLogBox import OperationLogBox
 from controller.ControllerView import ControllerGameView
 from network.NetworkEvent import NETWORK_EVENT
 
@@ -61,6 +63,8 @@ class HUDScreen(BasicView):
 
         self.character_info_box = CharacterInfoBox(self, self.container, self.manager)
         self.selection_info_box = SelectionInfoBox(self, self.container, self.manager, self.settings)
+        self.operation_status_box = OperationStatusBox(self, self.container, self.manager, self.settings)
+        self.operation_log_box = OperationLogBox(self, self.container, self.manager, self.settings)
 
         # padding to set responsive size of character buttons
         self.__padding = (self.container.rect.width / 2 - 5 * self.__distance) / 7
@@ -107,7 +111,8 @@ class HUDScreen(BasicView):
             elif event.message_type == "RequestGameOperation":
                 self._update_active_char(active=True)
             elif event.message_type == "GamePause":
-                self.selection_info_box.update_textbox()
+                self.selection_info_box.update_textbox(self.gadget_icon_list, self.property_icon_list,
+                                                       self.__selected_gad_prop_idx)
         elif event.type == pygame.MOUSEBUTTONUP:
             # check if on one of the gadget / properties imgs
             for idx, icon in enumerate(self.gadget_icon_list + self.property_icon_list):
@@ -166,6 +171,9 @@ class HUDScreen(BasicView):
         if ret:
             self._update_active_char(active=False)
 
+        # update op. status box
+        self.operation_status_box.update_valid_op(was_valid=ret)
+
         return ret
 
     def _check_character_hover(self) -> None:
@@ -186,6 +194,8 @@ class HUDScreen(BasicView):
         """
         self._create_character_images()
         self._update_icons()
+        self.operation_status_box.update_successfull_op()
+        self.operation_log_box.update_textbox()
 
     def _update_icons(self) -> None:
         """
