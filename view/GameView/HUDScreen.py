@@ -184,15 +184,13 @@ class HUDScreen(BasicView):
             target_id = cppyy.gbl.spy.util.GameLogicUtils.findInCharacterSetByCoordinates(state.getCharacters(),
                                                                                           target_cpp).getCharacterId()
             print(f"TargetId: {target_id}")
-            """
-            am_i_p1 = self.controller.lib_client_handler.lib_client.amIPlayer1()
-            enemy = cppyy.gbl.spy.character.FactionEnum.PLAYER2 if am_i_p1 else cppyy.gbl.spy.character.FactionEnum.PLAYER1
+            am_i_p1_opt = self.controller.lib_client_handler.lib_client.amIPlayer1()
+            enemy = cppyy.gbl.spy.character.FactionEnum.PLAYER2 if am_i_p1_opt.value() else cppyy.gbl.spy.character.FactionEnum.PLAYER1
             faction = cppyy.gbl.spy.character.FactionEnum.NEUTRAL if selected == "NPC" else enemy
+            print(f"Faction: {faction}")
 
             ret = self.controller.lib_client_handler.lib_client.setFaction(target_id, faction)
-            """
-
-        # todo update op. box based on value
+            logging.info(f"Successfully set faction of target: {ret}")
 
     def _check_character_hover(self) -> None:
         """
