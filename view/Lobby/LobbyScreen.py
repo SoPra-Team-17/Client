@@ -81,7 +81,8 @@ class LobbyScreen(BasicView):
         Return button pressed, send game leave to server
         :return:    None
         """
-        self.controller.send_game_leave()
+        ret = self.controller.send_game_leave()
+        logging.info(f"Successfully send game leave to server: {ret}")
         self.controller.to_main_menu()
 
     def _extract_info(self) -> dict:
