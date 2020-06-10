@@ -64,6 +64,8 @@ class GameView(BasicView):
         self.hud_view.hudScreen.network_update()
         # init strike counter
         self.hud_view.received_strike()
+        # init name display
+        self.hud_view.hudScreen.name_display_box.init_textbox()
 
     def to_item_choice(self) -> None:
         """

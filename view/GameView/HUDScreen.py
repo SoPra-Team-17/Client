@@ -68,7 +68,7 @@ class HUDScreen(BasicView):
         self.selection_info_box = SelectionInfoBox(self, self.container, self.manager, self.settings)
         self.operation_status_box = OperationStatusBox(self, self.container, self.manager, self.settings)
         self.operation_log_box = OperationLogBox(self, self.container, self.manager, self.settings)
-        self.round_coutner_box = RoundCounterBox(self, self.manager, self.settings)
+        self.round_coutner_box = RoundCounterBox(self, self.manager)
         self.name_display_box = NameDisplayBox(self, self.manager)
         self.strike_display_box = StrikeCounterBox(self, self.manager)
 
@@ -203,7 +203,6 @@ class HUDScreen(BasicView):
         self.operation_status_box.update_successfull_op()
         self.operation_log_box.update_textbox()
         self.round_coutner_box.update_textbox()
-        self.name_display_box.update_textbox()
 
     def _update_icons(self) -> None:
         """

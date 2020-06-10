@@ -18,10 +18,9 @@ class NameDisplayBox:
 
         self.textbox = None
 
-    def update_textbox(self) -> None:
+    def init_textbox(self) -> None:
         p1_name = self.parent_screen.controller.lib_client_handler.lib_client.getPlayerOneName()
         p2_name = self.parent_screen.controller.lib_client_handler.lib_client.getPlayerTwoName()
-        # todo only show util amount of character
         html_str = f"<b>{p1_name[:15]}</b> (P1)<br><b>{p2_name[:15]}</b> (P2)"
 
         self.textbox = pygame_gui.elements.UITextBox(

@@ -16,21 +16,14 @@ class RoundCounterBox:
     __round_counter_position = (0, 0)
     __round_counter_size = (100, 75)
 
-    def __init__(self, parent, manager: pygame_gui.UIManager, settings: ViewSettings) -> None:
+    def __init__(self, parent, manager: pygame_gui.UIManager) -> None:
         self.parent_screen = parent
         self.manager = manager
-        self.settings = settings
-
-        self.container = pygame_gui.core.UIContainer(
-            relative_rect=pygame.Rect(self.__round_counter_position, self.__round_counter_size),
-            manager=self.manager,
-        )
 
         self.textbox = pygame_gui.elements.UITextBox(
             html_text="",
-            relative_rect=self.container.rect,
+            relative_rect=pygame.Rect(self.__round_counter_position, self.__round_counter_size),
             manager=self.manager,
-            container=self.container,
             object_id="#round_counter_tb"
         )
 
