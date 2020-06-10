@@ -8,6 +8,7 @@ import pygame
 from view.BasicView import BasicView
 from view.ViewSettings import ViewSettings
 from controller.ControllerView import ControllerGameView
+from network.NetworkEvent import NETWORK_EVENT
 
 __author__ = "Marco Deuscher"
 __date__ = "02.06.2020 (creation)"
@@ -78,6 +79,10 @@ class SettingsScreen(BasicView):
 
         if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
             self._return_pressed()
+
+        if event.type == pygame.USEREVENT and event.user_type == NETWORK_EVENT:
+            if event.message_type == "GamePause":
+                self._update_label()
 
     def _pause_pressed(self) -> None:
         """
