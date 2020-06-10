@@ -130,7 +130,7 @@ class PlayingFieldScreen(BasicView):
 
             type = "invalid"
 
-            chosen_chars = self.controller.lib_client_handler.lib_client.getChosenCharacters()
+            chosen_chars = self.controller.lib_client_handler.lib_client.getMyFactionList()
             for chosen_chard_id in chosen_chars:
                 if chosen_chard_id == char.getCharacterId():
                     type = "my"
