@@ -95,6 +95,7 @@ class HUDScreen(BasicView):
 
     def receive_event(self, event: pygame.event.Event) -> None:
         self.manager.process_events(event)
+        self.handle_shortcuts(event)
 
         if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_PRESSED:
             switcher = {
@@ -494,3 +495,24 @@ class HUDScreen(BasicView):
     def prop_idx_to_string(prop_idx) -> str:
         return "Observation" if prop_idx == cppyy.gbl.spy.character.PropertyEnum.OBSERVATION \
             else "Bang and Burn"
+
+    def handle_shortcuts(self, event) -> None:
+        if event.type != pygame.KEYUP:
+            return
+
+        if event.key == pygame.K_g:
+            self.action_bar.selected_option = self.__actionbar_options[0]
+        elif event.key == pygame.K_b:
+            self.action_bar.selected_option = self.__actionbar_options[1]
+        elif event.key == pygame.K_s:
+            self.action_bar.selected_option = self.__actionbar_options[2]
+        elif event.key == pygame.K_m:
+            self.action_bar.selected_option = self.__actionbar_options[3]
+        elif event.key == pygame.K_r:
+            self.action_bar.selected_option = self.__actionbar_options[4]
+        elif event.key == pygame.K_p:
+            self.action_bar.selected_option = self.__actionbar_options[5]
+        elif event.key == pygame.K_RETURN:
+            self.send_action_pressed()
+
+        self.action_bar.rebuild()
