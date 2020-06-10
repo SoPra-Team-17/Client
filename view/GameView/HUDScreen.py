@@ -11,6 +11,8 @@ from view.GameView.Visuals.VisualProperty import PROPERTY_NAME_LIST, PROPERTY_PA
 from view.GameView.Visuals.VisualCharacter import CHAR_PATH_DICT
 from view.GameView.HUDScreenElements.CharacterInfoBox import CharacterInfoBox
 from view.GameView.HUDScreenElements.SelectionInfoBox import SelectionInfoBox
+from view.GameView.HUDScreenElements.OperationStatusBox import OperationStatusBox
+from view.GameView.HUDScreenElements.OperationLogBox import OperationLogBox
 from controller.ControllerView import ControllerGameView
 from network.NetworkEvent import NETWORK_EVENT
 
@@ -21,6 +23,7 @@ cppyy.add_include_path("/usr/local/include/SopraCommon")
 cppyy.add_include_path("/usr/local/include/SopraNetwork")
 
 cppyy.include("util/Point.hpp")
+cppyy.include("datatypes/character/PropertyEnum.hpp")
 cppyy.include("datatypes/gadgets/GadgetEnum.hpp")
 cppyy.include("datatypes/character/CharacterInformation.hpp")
 cppyy.include("network/messages/MetaInformationKey.hpp")
@@ -60,6 +63,8 @@ class HUDScreen(BasicView):
 
         self.character_info_box = CharacterInfoBox(self, self.container, self.manager)
         self.selection_info_box = SelectionInfoBox(self, self.container, self.manager, self.settings)
+        self.operation_status_box = OperationStatusBox(self, self.container, self.manager, self.settings)
+        self.operation_log_box = OperationLogBox(self, self.container, self.manager, self.settings)
 
         # padding to set responsive size of character buttons
         self.__padding = (self.container.rect.width / 2 - 5 * self.__distance) / 7
@@ -147,7 +152,7 @@ class HUDScreen(BasicView):
             logging.info(f"Stake={stake}. Send Gamble Action successfull {ret}")
         elif type == "Property":
             # Observation = 0, BangAndBurn = 1
-            prop = self.__selected_gad_prop_idx - len(self.gadget_icon_list)
+            prop = self.idx_to_property_idx(self.__selected_gad_prop_idx)
             logging.info(f"Property: {prop}")
             target = self.parent.parent.get_selected_field()
             ret = self.controller.send_game_operation(target=target, op_type=type, property=prop)
@@ -166,6 +171,9 @@ class HUDScreen(BasicView):
 
         if ret:
             self._update_active_char(active=False)
+
+        # update op. status box
+        self.operation_status_box.update_valid_op(was_valid=ret)
 
         return ret
 
@@ -187,6 +195,8 @@ class HUDScreen(BasicView):
         """
         self._create_character_images()
         self._update_icons()
+        self.operation_status_box.update_successfull_op()
+        self.operation_log_box.update_textbox()
 
     def _update_icons(self) -> None:
         """
@@ -451,6 +461,40 @@ class HUDScreen(BasicView):
                 return current_char.getGadgets()[idx - count].getType()
             else:
                 count += current_char.getGadgets().size()
+
+    def idx_to_property_idx(self, idx) -> int:
+        """
+        Transforms between idx for UI-elements list and state property idx
+        :param idx:     UI property idx
+        :return:        State property idx
+        """
+        idx -= len(self.gadget_icon_list)
+
+        character_ids = self.controller.lib_client_handler.lib_client.getChosenCharacters()
+        count = 0
+
+        for char_id in character_ids:
+            current_char = self.controller.lib_client_handler.lib_client.getState().getCharacters().findByUUID(
+                char_id)
+
+            hasObservation = current_char.hasProperty(cppyy.gbl.spy.character.PropertyEnum.OBSERVATION)
+            hasBnB = current_char.hasProperty(cppyy.gbl.spy.character.PropertyEnum.BANG_AND_BURN)
+
+            count += int(hasObservation) + int(hasBnB)
+
+            if count > idx:
+                # found char
+                if hasObservation and hasBnB:
+                    return cppyy.gbl.spy.character.PropertyEnum.OBSERVATION if (count - 2) == idx \
+                        else cppyy.gbl.spy.character.PropertyEnum.BANG_AND_BURN
+                else:
+                    return cppyy.gbl.spy.character.PropertyEnum.OBSERVATION if hasObservation \
+                        else cppyy.gbl.spy.character.PropertyEnum.BANG_AND_BURN
+
+    @staticmethod
+    def prop_idx_to_string(prop_idx) -> str:
+        return "Observation" if prop_idx == cppyy.gbl.spy.character.PropertyEnum.OBSERVATION \
+            else "Bang and Burn"
 
     def handle_shortcuts(self, event) -> None:
         if event.type != pygame.KEYUP:
