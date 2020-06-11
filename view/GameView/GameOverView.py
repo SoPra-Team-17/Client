@@ -31,4 +31,4 @@ class GameOverView(BasicView):
 
     def receive_event(self, event: pygame.event.Event) -> None:
         for screen in self.active_screens:
-            screen.draw()
+            screen.receive_event(event)

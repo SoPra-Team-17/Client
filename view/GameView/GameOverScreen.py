@@ -25,21 +25,11 @@ class GameOverScreen(BasicView):
         self.parent_view = parent
         self.manager = pygame_gui.UIManager((self.settings.window_width, self.settings.window_height),
                                             "assets/GUI/GUITheme.json")
-        self.container = pygame_gui.core.UIContainer(
-            relative_rect=pygame.Rect((self.settings.window_width * .45, self.settings.window_height * .15),
-                                      (self.settings.window_width / 4, self.settings.window_height / 2)),
-            manager=self.manager
-        )
-
         self.tb_container = pygame_gui.core.UIContainer(
             relative_rect=pygame.Rect((self.settings.window_width * .1, self.settings.window_height * .05),
-                                      (self.settings.window_width * .75, self.settings.window_height * .75)),
+                                      (self.settings.window_width * .75, self.settings.window_height * .85)),
             manager=self.manager
         )
-
-        self.__padding = self.container.rect.width / 15
-        self.__buttonSize = (self.container.rect.width / 2, self.container.rect.width / 12)
-        self.__labelSize = (self.container.rect.width / 3, self.container.rect.width / 15)
 
         self.background = pygame.Surface((self.settings.window_width, self.settings.window_height))
         self.background.fill(self.manager.ui_theme.get_colour(None, None, 'dark_bg'))
@@ -93,7 +83,7 @@ class GameOverScreen(BasicView):
 
         hasReplay = self.controller.lib_client_handler.lib_client.hasReplay()
         html_str += f"<br><br>Has replay: {hasReplay}<br><br>"
-        html_str += f"Return to Main Menu by pressing <b>Escape</b><br<br>"
+        html_str += f"Return to Main Menu by pressing <b>Escape</b><br>"
 
         self.stats_textbox.html_text = html_str
         self.stats_textbox.rebuild()
