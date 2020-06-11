@@ -1,6 +1,7 @@
 """
 Implements wiki screen displaying helpful information to the player
 """
+import logging
 import pygame
 import pygame_gui
 
@@ -15,6 +16,21 @@ __date__ = "10.06.2020"
 
 
 class WikiScreen(BasicView):
+    with open("assets/Wiki/Gadget.html") as f:
+        _gadget_html = f.read()
+        _gadget_html = _gadget_html.replace("\n", "")
+
+    with open("assets/Wiki/Property.html") as f:
+        _property_html = f.read()
+        _property_html = _property_html.replace("\n", "")
+
+    with open("assets/Wiki/character.html") as f:
+        _character_html = f.read()
+        _character_html = _character_html.replace("\n", "")
+
+    with open("assets/Wiki/scenario.html") as f:
+        _scenario_html = f.read()
+        _scenario_html = _scenario_html.replace("\n", "")
 
     def __init__(self, window: pygame.display, controller: ControllerGameView, parent, settings: ViewSettings) -> None:
         super(WikiScreen, self).__init__(window, controller, settings)
@@ -53,12 +69,37 @@ class WikiScreen(BasicView):
         self.manager.process_events(event)
 
         if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_PRESSED:
-            print(
-                f"CurrentGadgetstate: {self.gadget_dropdown.current_state}\nCurrentPropState: {self.property_dropdown.current_state}")
+            switcher = {
+                self.gadget_button: self._gadget_pressed,
+                self.property_button: self._properties_pressed,
+                self.character_button: self._character_pressed,
+                self.scenario_button: self._scenario_pressed
+            }
+
+            try:
+                switcher.get(event.ui_element)()
+            except TypeError:
+                logging.warning("Could not find UI-Element in dict")
+
+    def _gadget_pressed(self) -> None:
+        self.info_tb.html_text = self._gadget_html
+        self.info_tb.rebuild()
+
+    def _properties_pressed(self) -> None:
+        self.info_tb.html_text = self._property_html
+        self.info_tb.rebuild()
+
+    def _character_pressed(self) -> None:
+        self.info_tb.html_text = self._character_html
+        self.info_tb.rebuild()
+
+    def _scenario_pressed(self) -> None:
+        self.info_tb.html_text = self._scenario_html
+        self.info_tb.rebuild()
 
     def _init_ui_elements(self) -> None:
         self.info_tb = pygame_gui.elements.UITextBox(
-            html_text="Test html <b>Test</b>",
+            html_text="Select any of the buttons on the left to display helpful information",
             relative_rect=pygame.Rect((0, 0),
                                       (self.tb_container.rect.width, self.tb_container.rect.height)),
             manager=self.manager,
@@ -66,44 +107,30 @@ class WikiScreen(BasicView):
             object_id="#info_textbox"
         )
 
-        self.gadget_label = pygame_gui.elements.UILabel(
-            relative_rect=pygame.Rect((0,
-                                       self.__padding * len(
-                                           self.selection_container.elements)),
-                                      self.__buttonSize),
+        self.gadget_button = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect((0, self.__padding * len(self.selection_container.elements)), self.__buttonSize),
             text="Gadgets",
             manager=self.manager,
             container=self.selection_container
         )
 
-        self.gadget_dropdown = pygame_gui.elements.UIDropDownMenu(
-            options_list=GADGET_NAME_LIST,
-            starting_option="Select Gadget",
-            relative_rect=pygame.Rect((0,
-                                       self.__padding * len(
-                                           self.selection_container.elements)),
-                                      self.__buttonSize),
-            manager=self.manager,
-            container=self.selection_container
-        )
-
-        self.property_label = pygame_gui.elements.UILabel(
-            relative_rect=pygame.Rect((0,
-                                       self.__padding * len(
-                                           self.selection_container.elements)),
-                                      self.__buttonSize),
+        self.property_button = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect((0, self.__padding * len(self.selection_container.elements)), self.__buttonSize),
             text="Properties",
             manager=self.manager,
             container=self.selection_container
         )
 
-        self.property_dropdown = pygame_gui.elements.UIDropDownMenu(
-            options_list=PROPERTY_NAME_LIST,
-            starting_option="Select Property",
-            relative_rect=pygame.Rect((0,
-                                       self.__padding * len(
-                                           self.selection_container.elements)),
-                                      self.__buttonSize),
+        self.scenario_button = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect((0, self.__padding * len(self.selection_container.elements)), self.__buttonSize),
+            text="Scenario",
+            manager=self.manager,
+            container=self.selection_container
+        )
+
+        self.character_button = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect((0, self.__padding * len(self.selection_container.elements)), self.__buttonSize),
+            text="Characters",
             manager=self.manager,
             container=self.selection_container
         )
