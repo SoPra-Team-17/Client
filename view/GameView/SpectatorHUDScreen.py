@@ -19,6 +19,9 @@ from network.NetworkEvent import NETWORK_EVENT
 
 from cppyy.gbl.std import map, pair, set, vector
 
+__author__ = "Marco Deuscher"
+__date__ = "11.06.2020 (doc. creation)"
+
 cppyy.add_include_path("/usr/local/include/SopraClient")
 cppyy.add_include_path("/usr/local/include/SopraCommon")
 cppyy.add_include_path("/usr/local/include/SopraNetwork")
@@ -99,7 +102,7 @@ class SpectatorHUDScreen(BasicView):
                 self.network_update()
 
     def menu_button_pressed(self) -> None:
-        self.controller.to_main_menu()
+        self.parent.to_settings()
 
     def _check_character_hover(self) -> None:
         """
@@ -141,7 +144,8 @@ class SpectatorHUDScreen(BasicView):
         char_surface_normal = pygame.image.load(CHAR_PATH_DICT.get("normal")).convert_alpha()
         char_surface_normal = pygame.transform.scale(char_surface_normal, (int(self.__padding), int(self.__padding)))
 
-        for idx, char_id in enumerate(self.parent.player_one_id):
+        player_one_id = self.controller.lib_client_handler.lib_client.getMyFactionList()
+        for idx, char_id in enumerate(player_one_id):
             self.char_image_list_p1.append(
                 pygame_gui.elements.UIButton(
                     relative_rect=pygame.Rect((idx * (self.__padding + self.__distance), 2 * self.__icon_size),
@@ -176,7 +180,8 @@ class SpectatorHUDScreen(BasicView):
             self.health_bar_list_p1[idx].health_percentag = current_char_hp / 100
             self.health_bar_list_p1[idx].rebuild()
 
-        for idx, char_id in enumerate(self.parent.player_two_id):
+        player_two_id = self.controller.lib_client_handler.lib_client.getEnemyFactionList()
+        for idx, char_id in enumerate(player_two_id):
             self.char_image_list_p2.append(
                 pygame_gui.elements.UIButton(
                     relative_rect=pygame.Rect(
@@ -231,7 +236,8 @@ class SpectatorHUDScreen(BasicView):
         self.property_icon_list_p2.clear()
 
         count = 0
-        for idx_char, char_id in enumerate(self.parent.player_one_id):
+        player_one_id = self.controller.lib_client_handler.lib_client.getMyFactionList()
+        for idx_char, char_id in enumerate(player_one_id):
             char_gadgets = self.controller.lib_client_handler.lib_client.getState().getCharacters().findByUUID(
                 char_id).getGadgets()
 
@@ -255,7 +261,7 @@ class SpectatorHUDScreen(BasicView):
                 count += 1
 
         count = 0
-        for idx_char, char_id in enumerate(self.parent.player_one_id):
+        for idx_char, char_id in enumerate(player_one_id):
             current_char = self.controller.lib_client_handler.lib_client.getState().getCharacters().findByUUID(
                 char_id)
             # two executable properties
@@ -304,7 +310,8 @@ class SpectatorHUDScreen(BasicView):
                 count += 1
 
         count = 0
-        for idx_char, char_id in enumerate(self.parent.player_two_id):
+        player_two_id = self.controller.lib_client_handler.lib_client.getEnemyFactionList()
+        for idx_char, char_id in enumerate(player_two_id):
             char_gadgets = self.controller.lib_client_handler.lib_client.getState().getCharacters().findByUUID(
                 char_id).getGadgets()
 
@@ -331,7 +338,7 @@ class SpectatorHUDScreen(BasicView):
                 count += 1
 
         count = 0
-        for idx_char, char_id in enumerate(self.parent.player_two_id):
+        for idx_char, char_id in enumerate(player_two_id):
             current_char = self.controller.lib_client_handler.lib_client.getState().getCharacters().findByUUID(
                 char_id)
             # two executable properties
@@ -414,23 +421,6 @@ class SpectatorHUDScreen(BasicView):
             container=self.container,
             object_id="#selected_info_box"
         )
-
-    def idx_to_gadget_idx(self, idx) -> int:
-        """
-        Transforms between idx for UI-elements list and State Gadget idx
-        todo modify for both lists!
-        :param idx:     UI gadget idx
-        :return:        State gadget idx
-        """
-        character_ids = self.controller.lib_client_handler.lib_client.getChosenCharacters()
-        count = 0
-        for char_id in character_ids:
-            current_char = self.controller.lib_client_handler.lib_client.getState().getCharacters().findByUUID(
-                char_id)
-            if idx - count < current_char.getGadgets().size():
-                return current_char.getGadgets()[idx - count].getType()
-            else:
-                count += current_char.getGadgets().size()
 
     def _update_text_box(self) -> None:
         update = False
