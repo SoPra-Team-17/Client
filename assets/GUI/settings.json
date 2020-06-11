@@ -1,1 +1,10 @@
-{"window_name": "No Time to Spy", "resolution": "1920x1080", "frame_rate": 60, "audio_effects": 50.0, "audio_music": 50.0, "address": "127.0.0.1", "port": 7007, "max_reconnects": 25}
+{
+  "window_name": "No Time to Spy",
+  "resolution": "1920x1080",
+  "frame_rate": 60,
+  "audio_effects": 50.0,
+  "audio_music": 50.0,
+  "address": "127.0.0.1",
+  "port": 7007,
+  "max_reconnects": 25
+}

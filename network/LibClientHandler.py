@@ -70,7 +70,7 @@ class LibClientHandler:
             raise TypeError("Invalid operation type")
 
     def sendGameLeave(self) -> bool:
-        return self.lib_client.network.sendGameLeave
+        return self.lib_client.network.sendGameLeave()
 
     def sendRequestGamePause(self, gamePause: bool) -> bool:
         if isinstance(gamePause, bool):

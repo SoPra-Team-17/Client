@@ -132,7 +132,7 @@ class HUDScreen(BasicView):
                     self.__selected_gad_prop_idx = idx
 
     def menu_button_pressed(self) -> None:
-        self.controller.to_main_menu()
+        self.parent.parent.to_settings()
 
     def send_action_pressed(self) -> bool:
         """
