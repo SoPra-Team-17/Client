@@ -20,7 +20,8 @@ class SettingsScreen(BasicView):
         "unpause_game": "Unpause Game",
         "leave_game": "Leave Game",
         "return": "Return to Game",
-        "shortcuts": "Shortcuts"
+        "shortcuts": "Shortcuts",
+        "wiki": "Wiki"
     }
 
     _shortcuts_help_str = "<b>Shortcuts</b><br><br>" \
@@ -70,7 +71,8 @@ class SettingsScreen(BasicView):
                 self.pause_game_button: self._pause_pressed,
                 self.leave_game_button: self._leave_pressed,
                 self.return_to_game_button: self._return_pressed,
-                self.shortcuts_help_button: self._update_shortcuts_textbox
+                self.shortcuts_help_button: self._update_shortcuts_textbox,
+                self.wiki_button: self._wiki_pressed
             }
             try:
                 switcher.get(event.ui_element)()
@@ -110,6 +112,13 @@ class SettingsScreen(BasicView):
         :return:    None
         """
         self.parent_view.parent.to_playing_field()
+
+    def _wiki_pressed(self) -> None:
+        """
+        Function called when wiki button is pressed
+        :return:    None
+        """
+        self.parent_view.parent.to_wiki()
 
     def _update_label(self) -> None:
         """
@@ -174,6 +183,17 @@ class SettingsScreen(BasicView):
             manager=self.manager,
             container=self.container,
             object_id="#shortcuts_button"
+        )
+
+        self.wiki_button = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect((0,
+                                       self.__padding * len(
+                                           self.container.elements)),
+                                      self.__buttonSize),
+            text=self._text_buttons["wiki"],
+            manager=self.manager,
+            container=self.container,
+            object_id="#wiki_button"
         )
 
         self.leave_game_button = pygame_gui.elements.UIButton(
