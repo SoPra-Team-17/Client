@@ -52,8 +52,10 @@ class OperationLogBox:
         if operation_vec.empty():
             return
 
-        for operation in operation_vec:
+        while not operation_vec.empty():
+            operation = operation_vec[0]
             info_str += f"<b>Operation:</b>{self.parent_screen.controller.lib_client_handler.lib_client.operationToString(operation)}<br><br>"
+            operation_vec.erase(operation_vec.begin())
 
         self.__info_str = info_str + self.__info_str
 
