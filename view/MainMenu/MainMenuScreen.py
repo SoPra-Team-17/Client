@@ -20,12 +20,11 @@ cppyy.add_include_path("/usr/local/include/SopraCommon")
 cppyy.add_include_path("/usr/local/include/SopraNetwork")
 
 cppyy.include("util/UUID.hpp")
-cppyy.include("datatypes/character/PropertyEnum.hpp")
-cppyy.include("datatypes/gadgets/GadgetEnum.hpp")
 cppyy.include("datatypes/character/CharacterInformation.hpp")
 cppyy.include("network/messages/MetaInformationKey.hpp")
 cppyy.include("datatypes/character/FactionEnum.hpp")
-cppyy.include("util/GameLogicUtils.hpp")
+
+from cppyy.gbl.std import map, pair, set, vector
 
 
 class MainMenuScreen(BasicView):
@@ -54,6 +53,7 @@ class MainMenuScreen(BasicView):
         self._init_ui_elements()
 
         self.__waiting_for_reconnect = False
+        self.__reconnect_target_view = None
 
         # load title image
         self.titleImage = pygame.image.load("assets/MainMenu/TitleImage.png")
@@ -84,6 +84,12 @@ class MainMenuScreen(BasicView):
         if event.type == pygame.USEREVENT and event.user_type == NETWORK_EVENT:
             if event.message_type == "GameStatus":
                 self._reconnect_game_status()
+            elif event.message_type == "RequestItemChoice":
+                self._reconnect_item_choice()
+            elif event.message_type == "RequestEquipmentChoice":
+                self._reconnect_equipment()
+            elif event.message_type == "MetaInformation":
+                self._reconnect_meta()
 
     def start_game_pressed(self) -> None:
         """
@@ -190,4 +196,48 @@ class MainMenuScreen(BasicView):
         )
 
     def _reconnect_game_status(self) -> None:
-        pass
+        key_list = [cppyy.gbl.spy.network.messages.MetaInformationKey.CONFIGURATION_CHARACTER_INFORMATION]
+
+        faction = None
+        if self.controller.lib_client_handler.lib_client.amIPlayerOne():
+            faction = cppyy.gbl.spy.network.messages.MetaInformationKey.FACTION_PLAYER1
+        else:
+            faction = cppyy.gbl.spy.network.messages.MetaInformationKey.FACTION_PLAYER2
+
+        key_list.append(faction)
+
+        ret = self.controller.send_request_meta_information(key_list)
+        logging.info(f"Send request metainformation successful: {ret}")
+        self.__reconnect_target_view = "game"
+
+    def _reconnect_item_choice(self) -> None:
+        key_list = [cppyy.gbl.spy.network.messages.MetaInformationKey.CONFIGURATION_CHARACTER_INFORMATION]
+        ret = self.controller.send_request_meta_information(key_list)
+        logging.info(f"Send request metainformation successful: {ret}")
+        self.__reconnect_target_view = "item"
+
+    def _reconnect_equipment(self) -> None:
+        key_list = [cppyy.gbl.spy.network.messages.MetaInformationKey.CONFIGURATION_CHARACTER_INFORMATION]
+        ret = self.controller.send_request_meta_information(key_list)
+        logging.info(f"Send request metainformation successful: {ret}")
+        self.__reconnect_target_view = "equip"
+
+    def _reconnect_meta(self) -> None:
+        if self.__reconnect_target_view == "game":
+            i_am_p1 = self.controller.lib_client_handler.lib_client.amIPlayerOne()
+            meta_info = self.controller.lib_client_handler.lib_client.getInformation()
+
+            key = cppyy.gbl.spy.network.messages.MetaInformationKey.FACTION_PLAYER1 if i_am_p1 \
+                else cppyy.gbl.spy.network.messages.MetaInformationKey.FACTION_PLAYER2
+
+            variant = meta_info.at(key)
+            player_ids = cppyy.gbl.std.get[vector[cppyy.gbl.spy.util.UUID]](variant)
+
+            for id in player_ids:
+                ret = self.controller.lib_client_handler.lib_client.setFaction(id, key)
+                logging.info(f"Set faction for own character successful: {ret}")
+
+        # todo setter needed for character info
+
+        # todo game view shortcuts to correct screen!
+        self.controller.to_game_view()

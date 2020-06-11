@@ -137,6 +137,14 @@ class Controller(ControllerGameView, ControllerMainMenu, ControllerLobby):
         ret = self.send_request_meta_information(key_list)
         logging.info(f"Send Request Metainformation successfull: {ret}")
 
+    def to_game_view_reconnect(self, target_screen) -> None:
+        """
+        Implements transition game view when trying to reconnect from the main menu
+        :return:    None
+        """
+        # todo impleement gameview transition
+        pass
+
     def exit_game(self) -> None:
         """
         Exit game button in main menu pressed. Closes window and term. process
