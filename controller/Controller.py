@@ -209,27 +209,31 @@ class Controller(ControllerGameView, ControllerMainMenu, ControllerLobby):
 
         match_config = self.lib_client_handler.lib_client.getSettings()
 
-        active_char = self.lib_client_handler.lib_client.getActiveCharacter()
-        active_char_coords = self.lib_client_handler.lib_client.getState().getCharacters().findByUUID(
-            active_char).getCoordinates().value()
+        active_char_id = self.lib_client_handler.lib_client.getActiveCharacter()
+        active_char = self.lib_client_handler.lib_client.getState().getCharacters().findByUUID(
+            active_char_id)
+        if not active_char.getCoordinates().has_value():
+            return False
+
+        active_char_coords = active_char.getCoordinates().value()
 
         if op_type == "Movement":
-            operation = cppyy.gbl.spy.gameplay.Movement(False, target, active_char, active_char_coords)
+            operation = cppyy.gbl.spy.gameplay.Movement(False, target, active_char_id, active_char_coords)
         elif op_type == "Retire":
-            operation = cppyy.gbl.spy.gameplay.RetireAction(active_char)
+            operation = cppyy.gbl.spy.gameplay.RetireAction(active_char_id)
         elif op_type == "Spy":
-            operation = cppyy.gbl.spy.gameplay.SpyAction(active_char, target)
+            operation = cppyy.gbl.spy.gameplay.SpyAction(active_char_id, target)
         elif op_type == "Gamble":
             stake = kwargs["stake"]
-            operation = cppyy.gbl.spy.gameplay.GambleAction(False, target, active_char, stake)
+            operation = cppyy.gbl.spy.gameplay.GambleAction(False, target, active_char_id, stake)
         elif op_type == "Property":
             property = kwargs["property"]
-            operation = cppyy.gbl.spy.gameplay.PropertyAction(False, target, active_char,
+            operation = cppyy.gbl.spy.gameplay.PropertyAction(False, target, active_char_id,
                                                               cppyy.gbl.spy.character.PropertyEnum(property))
         elif op_type == "Gadget":
             gadget = kwargs["gadget"]
             gadget_cpp = cppyy.gbl.spy.gadget.GadgetEnum(gadget)
-            operation = cppyy.gbl.spy.gameplay.GadgetAction(False, target, active_char, gadget_cpp)
+            operation = cppyy.gbl.spy.gameplay.GadgetAction(False, target, active_char_id, gadget_cpp)
 
         operation = cppyy.gbl.std.make_shared(operation)
         return self.lib_client_handler.sendGameOperation(operation, match_config)
