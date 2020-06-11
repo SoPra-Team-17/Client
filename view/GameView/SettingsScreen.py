@@ -26,7 +26,7 @@ class SettingsScreen(BasicView):
 
     _shortcuts_help_str = "<b>Shortcuts</b><br><br>" \
                           "<b>Actions</b><br>" \
-                          "m: Movement<br>g: Gadget<br>b: Gamble<br>s: Spy<br>p: Property<br>r: Retire<br>" \
+                          "m: Movement<br>g: Gadget<br>b: Gamble<br>e: Spy<br>p: Property<br>r: Retire<br>" \
                           "<br><b>Execution</b><br>" \
                           "enter: send action<br>"
 
