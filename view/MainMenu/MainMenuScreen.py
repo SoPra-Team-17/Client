@@ -38,7 +38,7 @@ class MainMenuScreen(BasicView):
         self._init_ui_elements()
 
         # load title image
-        self.titleImage = pygame.image.load("assets/MainMenu/TitleImage.png")
+        self.titleImage = pygame.image.load("assets/MainMenu/logo.png")
         logging.info("MainMenuScreen init done")
 
     def draw(self) -> None:
@@ -47,7 +47,7 @@ class MainMenuScreen(BasicView):
         self.window.blit(self.background, (0, 0))
         self.window.blit(self.titleImage,
                          (self.settings.window_width / 2 - self.titleImage.get_rect().width / 2,
-                          self.settings.window_height * .25))
+                          self.settings.window_height * .2))
         self.manager.draw_ui(self.window)
 
     def receive_event(self, event: pygame.event.Event) -> None:
