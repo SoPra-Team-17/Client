@@ -56,9 +56,18 @@ class GameOverScreen(BasicView):
         self.controller.to_main_menu()
 
     def network_update(self) -> None:
+        """
+        Interface to game view, called when a network update was received
+        :return:    None
+        """
         self._update_textbox()
 
     def _update_textbox(self) -> None:
+        """
+        Internal update method
+        Gets information from LibClient and formats it to a html-string, which is then displayed in a textbox
+        :return:    None
+        """
         html_str = ""
 
         winner = self.controller.lib_client_handler.lib_client.getWinner()
