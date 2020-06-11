@@ -15,6 +15,8 @@ set -e
 # Dependencies from LibCommon
 # libuuid
 sudo apt -y install uuid-dev
+# xsel for pasting to textentry field
+sudo apt -y install xsel
 # nlohmann json
 dpkg -s nlohmann-json-dev > /dev/null 2>&1 && {
   echo "nlohmann-json-dev already installed"

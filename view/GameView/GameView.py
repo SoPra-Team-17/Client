@@ -10,6 +10,7 @@ from view.GameView.ItemChoiceScreen import ItemChoiceScreen
 from view.GameView.EquipmentScreen import EquipmentScreen
 from view.GameView.SettingsView import SettingsView
 from view.GameView.Wiki.WikiView import WikiView
+from view.GameView.GameOverView import GameOverView
 from view.ViewSettings import ViewSettings
 from controller.ControllerView import ControllerGameView
 from util.Coordinates import WorldPoint
@@ -34,6 +35,7 @@ class GameView(BasicView):
         self.equipment_screen = EquipmentScreen(self.window, self.controller, self, self.settings)
         self.settings_view = SettingsView(self.window, self.controller, self, self.settings)
         self.wiki_view = WikiView(self.window, self.controller, self, self.settings)
+        self.game_over_view = GameOverView(self.window, self.controller, self, self.settings)
 
         self.active_views = [self.item_choice_screen]
 
@@ -54,6 +56,9 @@ class GameView(BasicView):
         if event.type == pygame.USEREVENT and event.user_type == NETWORK_EVENT:
             if event.message_type == "Strike":
                 self.hud_view.received_strike()
+            if event.message_type == "Statistics":
+                self.to_game_over()
+
 
         for view in self.active_views:
             view.receive_event(event)
@@ -103,6 +108,14 @@ class GameView(BasicView):
         :return:    None
         """
         self.active_views = [self.wiki_view]
+
+    def to_game_over(self) -> None:
+        """
+        This method implements the transition to the game over screen, on which statistics are displayed
+        :return:    None
+        """
+        self.active_views = [self.game_over_view]
+        self.game_over_view.game_over_screen.network_update()
 
     def get_selected_field(self) -> WorldPoint:
         """

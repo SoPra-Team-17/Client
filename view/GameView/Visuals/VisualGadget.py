@@ -31,6 +31,6 @@ GADGET_PATH_LIST = [
     "assets/GameView/Gadgets2D/Nugget.png",  # 17
     "assets/GameView/Gadgets2D/MirrorOfWilderness.png",  # 18
     "assets/GameView/Gadgets2D/PocketLitter.png",  # 19
-    "assets/GameView/Cocktail.png",  # 20
+    "assets/GameView/Gadgets2D/Cocktail.png",  # 20
     "assets/GameView/Gadgets2D/AntiPlagueMask.png"  # 21
 ]
