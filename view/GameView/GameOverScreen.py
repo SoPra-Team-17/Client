@@ -26,14 +26,14 @@ class GameOverScreen(BasicView):
         self.manager = pygame_gui.UIManager((self.settings.window_width, self.settings.window_height),
                                             "assets/GUI/GUITheme.json")
         self.container = pygame_gui.core.UIContainer(
-            relative_rect=pygame.Rect((self.settings.window_width * .45, self.settings.window_height * .75),
+            relative_rect=pygame.Rect((self.settings.window_width * .45, self.settings.window_height * .15),
                                       (self.settings.window_width / 4, self.settings.window_height / 2)),
             manager=self.manager
         )
 
         self.tb_container = pygame_gui.core.UIContainer(
-            relative_rect=pygame.Rect((self.settings.window_width * .05, self.settings.window_height * .05),
-                                      (self.settings.window_width * .95, self.settings.window_height * .75)),
+            relative_rect=pygame.Rect((self.settings.window_width * .1, self.settings.window_height * .05),
+                                      (self.settings.window_width * .75, self.settings.window_height * .75)),
             manager=self.manager
         )
 
@@ -57,14 +57,8 @@ class GameOverScreen(BasicView):
     def receive_event(self, event: pygame.event.Event) -> None:
         self.manager.process_events(event)
 
-        if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_PRESSED:
-            switcher = {
-                self.return_button: self._return_pressed
-            }
-            try:
-                switcher.get(event.ui_element)()
-            except TypeError:
-                logging.warning("Could not find UI-Element in dict")
+        if event.type == pygame.KEYUP and event.key == pygame.K_ESCAPE:
+            self._return_pressed()
 
     def _return_pressed(self):
         ret = self.controller.send_game_leave()
@@ -80,18 +74,26 @@ class GameOverScreen(BasicView):
         winner = self.controller.lib_client_handler.lib_client.getWinner()
         reason = self.controller.lib_client_handler.lib_client.getWinningReason()
         if winner.has_value() and reason.has_value():
-            html_str += f"<b>{winner.value()}</b> won {self._victory_enum_str[reason]}<br><br>"
+            winner_name = ""
+            if winner.value == self.controller.lib_client_handler.lib_client.getPlayerOneId():
+                winner_name = self.controller.lib_client_handler.lib_client.getPlayerOneName()
+            else:
+                winner_name = self.controller.lib_client_handler.lib_client.getPlayerTwoName()
+
+            html_str += f"<b>{winner_name} won {self._victory_enum_str[reason.value()]}</b><br><br><br>"
 
         stats = self.controller.lib_client_handler.lib_client.getStatistics()
         if stats.has_value():
+            p1_name = self.controller.lib_client_handler.lib_client.getPlayerOneName()
+            p2_name = self.controller.lib_client_handler.lib_client.getPlayerTwoName()
             stats = stats.value()
             for stat in stats.getEntries():
-                html_str += f"Metric: <b>{stat.getTitle()}</b> Description: {stat.getDescription()}" \
-                            f"Player1={stat.getValuePlayerOne()} Player2={stat.getValuePlayerTwo()}<br>"
+                html_str += f"Metric: <b>{stat.getTitle()}</b><br>Description: {stat.getDescription()}<br>" \
+                            f"{p1_name}={stat.getValuePlayerOne()}<br>{p2_name}={stat.getValuePlayerTwo()}<br><br>"
 
         hasReplay = self.controller.lib_client_handler.lib_client.hasReplay()
-        if hasReplay.has_value():
-            html_str += f"<br><br>Has replay: {hasReplay.value()}"
+        html_str += f"<br><br>Has replay: {hasReplay}<br><br>"
+        html_str += f"Return to Main Menu by pressing <b>Escape</b><br<br>"
 
         self.stats_textbox.html_text = html_str
         self.stats_textbox.rebuild()
@@ -99,16 +101,8 @@ class GameOverScreen(BasicView):
     def _init_ui_elements(self) -> None:
         self.stats_textbox = pygame_gui.elements.UITextBox(
             html_text="",
-            relative_rect=self.tb_container.rect,
+            relative_rect=pygame.Rect((0, 0), (self.tb_container.rect.width, self.tb_container.rect.height)),
             manager=self.manager,
             container=self.tb_container,
             object_id="#stats_textbox"
-        )
-
-        self.return_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect((0, self.__padding * len(self.container.elements)), self.__buttonSize),
-            text="Return to Main Menu",
-            manager=self.manager,
-            container=self.container,
-            object_id="#return_button"
         )
