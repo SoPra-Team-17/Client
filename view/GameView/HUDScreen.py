@@ -13,6 +13,9 @@ from view.GameView.HUDScreenElements.CharacterInfoBox import CharacterInfoBox
 from view.GameView.HUDScreenElements.SelectionInfoBox import SelectionInfoBox
 from view.GameView.HUDScreenElements.OperationStatusBox import OperationStatusBox
 from view.GameView.HUDScreenElements.OperationLogBox import OperationLogBox
+from view.GameView.HUDScreenElements.RoundCounterBox import RoundCounterBox
+from view.GameView.HUDScreenElements.NameDisplayBox import NameDisplayBox
+from view.GameView.HUDScreenElements.StrikeCounterBox import StrikeCounterBox
 from controller.ControllerView import ControllerGameView
 from network.NetworkEvent import NETWORK_EVENT
 
@@ -65,6 +68,9 @@ class HUDScreen(BasicView):
         self.selection_info_box = SelectionInfoBox(self, self.container, self.manager, self.settings)
         self.operation_status_box = OperationStatusBox(self, self.container, self.manager, self.settings)
         self.operation_log_box = OperationLogBox(self, self.container, self.manager, self.settings)
+        self.round_coutner_box = RoundCounterBox(self, self.manager)
+        self.name_display_box = NameDisplayBox(self, self.manager)
+        self.strike_display_box = StrikeCounterBox(self, self.manager)
 
         # padding to set responsive size of character buttons
         self.__padding = (self.container.rect.width / 2 - 5 * self.__distance) / 7
@@ -197,6 +203,7 @@ class HUDScreen(BasicView):
         self._update_icons()
         self.operation_status_box.update_successfull_op()
         self.operation_log_box.update_textbox()
+        self.round_coutner_box.update_textbox()
 
     def _update_icons(self) -> None:
         """
