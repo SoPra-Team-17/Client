@@ -1,7 +1,11 @@
 {
-  "session_id": "55da949a-346b-4bd2-a12d-caabf8d9f82e",
-  "player_id": "e5c92bfa-a531-4fdc-b507-56215ff4d3a0",
-  "name": "wadaws",
+  "session_id": "b127ed21-a2e7-4d21-9c6c-dd7975f8c113",
+  "name": "wadwas",
+  "client_id": "19161d58-737e-4283-b146-1183cc8d27f9",
+  "player_one_id": "25a6fd41-ca2d-4fcb-aadd-6bff1035bf2d",
+  "player_two_id": "19161d58-737e-4283-b146-1183cc8d27f9",
+  "player_one_name": "ki017",
+  "player_two_name": "wadwas",
   "role": 2,
   "server": "127.0.0.1",
   "port": 7007
