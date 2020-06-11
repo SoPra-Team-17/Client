@@ -2,6 +2,8 @@
 Implements wiki screen displaying helpful information to the player
 """
 import logging
+import os
+
 import pygame
 import pygame_gui
 
@@ -16,21 +18,20 @@ __date__ = "10.06.2020"
 
 
 class WikiScreen(BasicView):
-    with open("assets/Wiki/Gadget.html") as f:
-        _gadget_html = f.read()
-        _gadget_html = _gadget_html.replace("\n", "")
-
-    with open("assets/Wiki/Property.html") as f:
-        _property_html = f.read()
-        _property_html = _property_html.replace("\n", "")
-
-    with open("assets/Wiki/character.html") as f:
-        _character_html = f.read()
-        _character_html = _character_html.replace("\n", "")
-
-    with open("assets/Wiki/scenario.html") as f:
-        _scenario_html = f.read()
-        _scenario_html = _scenario_html.replace("\n", "")
+    __path_list = [
+        "assets/Wiki/Characters.html",
+        "assets/Wiki/Draft.html",
+        "assets/Wiki/Gadget.html",
+        "assets/Wiki/Property.html",
+        "assets/Wiki/Round.html",
+        "assets/Wiki/Scenario.html",
+        "assets/Wiki/Victory.html"
+    ]
+    __html_dict = {}
+    for path in __path_list:
+        with open(path) as f:
+            key = os.path.basename(path).split('.')[0].lower()
+            __html_dict[key] = f.read().replace("\n", "")
 
     def __init__(self, window: pygame.display, controller: ControllerGameView, parent, settings: ViewSettings) -> None:
         super(WikiScreen, self).__init__(window, controller, settings)
@@ -74,6 +75,9 @@ class WikiScreen(BasicView):
                 self.property_button: self._properties_pressed,
                 self.character_button: self._character_pressed,
                 self.scenario_button: self._scenario_pressed,
+                self.victory_button: self._victory_pressed,
+                self.round_button: self._round_pressed,
+                self.draft_button: self._draft_pressed,
                 self.return_button: self._return_pressed
             }
 
@@ -83,19 +87,31 @@ class WikiScreen(BasicView):
                 logging.warning("Could not find UI-Element in dict")
 
     def _gadget_pressed(self) -> None:
-        self.info_tb.html_text = self._gadget_html
+        self.info_tb.html_text = self.__html_dict["gadget"]
         self.info_tb.rebuild()
 
     def _properties_pressed(self) -> None:
-        self.info_tb.html_text = self._property_html
+        self.info_tb.html_text = self.__html_dict["property"]
         self.info_tb.rebuild()
 
     def _character_pressed(self) -> None:
-        self.info_tb.html_text = self._character_html
+        self.info_tb.html_text = self.__html_dict["characters"]
         self.info_tb.rebuild()
 
     def _scenario_pressed(self) -> None:
-        self.info_tb.html_text = self._scenario_html
+        self.info_tb.html_text = self.__html_dict["scenario"]
+        self.info_tb.rebuild()
+
+    def _draft_pressed(self) -> None:
+        self.info_tb.html_text = self.__html_dict["draft"]
+        self.info_tb.rebuild()
+
+    def _round_pressed(self) -> None:
+        self.info_tb.html_text = self.__html_dict["round"]
+        self.info_tb.rebuild()
+
+    def _victory_pressed(self) -> None:
+        self.info_tb.html_text = self.__html_dict["victory"]
         self.info_tb.rebuild()
 
     def _return_pressed(self) -> None:
@@ -111,16 +127,16 @@ class WikiScreen(BasicView):
             object_id="#info_textbox"
         )
 
-        self.gadget_button = pygame_gui.elements.UIButton(
+        self.draft_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect((0, self.__padding * len(self.selection_container.elements)), self.__buttonSize),
-            text="Gadgets",
+            text="Draft",
             manager=self.manager,
             container=self.selection_container
         )
 
-        self.property_button = pygame_gui.elements.UIButton(
+        self.round_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect((0, self.__padding * len(self.selection_container.elements)), self.__buttonSize),
-            text="Properties",
+            text="Round",
             manager=self.manager,
             container=self.selection_container
         )
@@ -135,6 +151,27 @@ class WikiScreen(BasicView):
         self.character_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect((0, self.__padding * len(self.selection_container.elements)), self.__buttonSize),
             text="Characters",
+            manager=self.manager,
+            container=self.selection_container
+        )
+
+        self.property_button = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect((0, self.__padding * len(self.selection_container.elements)), self.__buttonSize),
+            text="Properties",
+            manager=self.manager,
+            container=self.selection_container
+        )
+
+        self.gadget_button = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect((0, self.__padding * len(self.selection_container.elements)), self.__buttonSize),
+            text="Gadgets",
+            manager=self.manager,
+            container=self.selection_container
+        )
+
+        self.victory_button = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect((0, self.__padding * len(self.selection_container.elements)), self.__buttonSize),
+            text="Victory",
             manager=self.manager,
             container=self.selection_container
         )
