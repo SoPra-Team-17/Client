@@ -73,7 +73,8 @@ class WikiScreen(BasicView):
                 self.gadget_button: self._gadget_pressed,
                 self.property_button: self._properties_pressed,
                 self.character_button: self._character_pressed,
-                self.scenario_button: self._scenario_pressed
+                self.scenario_button: self._scenario_pressed,
+                self.return_button: self._return_pressed
             }
 
             try:
@@ -96,6 +97,9 @@ class WikiScreen(BasicView):
     def _scenario_pressed(self) -> None:
         self.info_tb.html_text = self._scenario_html
         self.info_tb.rebuild()
+
+    def _return_pressed(self) -> None:
+        self.parent_view.parent.to_settings()
 
     def _init_ui_elements(self) -> None:
         self.info_tb = pygame_gui.elements.UITextBox(
@@ -131,6 +135,14 @@ class WikiScreen(BasicView):
         self.character_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect((0, self.__padding * len(self.selection_container.elements)), self.__buttonSize),
             text="Characters",
+            manager=self.manager,
+            container=self.selection_container
+        )
+
+        self.return_button = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect((0, self.__padding * (len(self.selection_container.elements) + 1)),
+                                      self.__buttonSize),
+            text="Return",
             manager=self.manager,
             container=self.selection_container
         )
