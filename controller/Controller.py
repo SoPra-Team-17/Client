@@ -32,7 +32,6 @@ cppyy.include("datatypes/gameplay/GambleAction.hpp")
 cppyy.include("datatypes/character/PropertyEnum.hpp")
 cppyy.include("datatypes/character/CharacterInformation.hpp")
 cppyy.include("network/messages/MetaInformationKey.hpp")
-cppyy.include("network/ErrorEnum.hpp")
 
 __author__ = "Marco Deuscher"
 __date__ = "25.04.2020 (date of doc. creation)"
@@ -114,26 +113,6 @@ class Controller(ControllerGameView, ControllerMainMenu, ControllerLobby):
                 self.lib_client_handler.lib_client.disconnect()
             elif event.message_type == "WrongDestination":
                 logging.warning("Received wrong destination event")
-            elif event.message_type == "Error":
-                self._handle_error()
-
-    def _handle_error(self) -> None:
-        error_op = self.lib_client_handler.lib_client.getErrorReason()
-        if not error_op.has_value():
-            return
-
-        if error_op.value() == cppyy.gbl.spy.network.ErrorTypeEnum.NAME_NOT_AVAILABLE:
-            logging.info("Received name not available error")
-        elif error_op.value() == cppyy.gbl.spy.network.ErrorTypeEnum.ALREADY_SERVING:
-            logging.warning("Received already serving error")
-        elif error_op.value() == cppyy.gbl.spy.network.ErrorTypeEnum.SESSION_DOES_NOT_EXIST:
-            logging.warning("Received session does not exist error")
-        elif error_op.value() == cppyy.gbl.spy.network.ErrorTypeEnum.ILLEGAL_MESSAGE:
-            logging.warning("Received sent illegal message error")
-        elif error_op.value() == cppyy.gbl.spy.network.ErrorTypeEnum.TOO_MANY_STRIKES:
-            logging.warning("Received too many strikes error")
-        elif error_op.value() == cppyy.gbl.spy.network.ErrorTypeEnum.GENERAL:
-            logging.warning("Received general error")
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~VIEW SWITCHES~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
