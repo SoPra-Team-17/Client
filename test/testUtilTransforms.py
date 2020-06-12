@@ -73,7 +73,3 @@ class testTrafoToWorldCoords(unittest.TestCase):
 
         xt, yt = transforms.trafo_window_to_world_coords(818, 479)
         self.assertEqual((3, 9), (xt, yt))
-
-
-if __name__ == '__main__':
-    unittest.main()
