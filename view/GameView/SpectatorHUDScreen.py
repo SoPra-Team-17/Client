@@ -366,26 +366,26 @@ class SpectatorHUDScreen(BasicView):
                 pos += 1
                 count += 1
 
-                if hasBnB:
-                    property_icon_surface = pygame.image.load(PROPERTY_PATH_LIST[1])
-                property_icon_surface = pygame.transform.scale(property_icon_surface, [self.__icon_size] * 2)
+            if hasBnB:
+                property_icon_surface = pygame.image.load(PROPERTY_PATH_LIST[1])
+            property_icon_surface = pygame.transform.scale(property_icon_surface, [self.__icon_size] * 2)
 
-                self.property_icon_list_p1.append(pygame_gui.elements.UIButton(
-                    relative_rect=pygame.Rect(
-                        (self.container.rect.width - idx_char * (
-                                self.__padding + self.__distance) + pos * self.__icon_size,
-                         self.__icon_size),
-                        property_icon_surface.get_size()),
-                    text="",
-                    manager=self.manager,
-                    container=self.container,
-                    object_id=f"#gadget_image0{idx_char}"
-                ))
+            self.property_icon_list_p1.append(pygame_gui.elements.UIButton(
+                relative_rect=pygame.Rect(
+                    (self.container.rect.width - idx_char * (
+                            self.__padding + self.__distance) + pos * self.__icon_size,
+                     self.__icon_size),
+                    property_icon_surface.get_size()),
+                text="",
+                manager=self.manager,
+                container=self.container,
+                object_id=f"#gadget_image0{idx_char}"
+            ))
 
-                self.property_icon_list_p1[count].normal_image = property_icon_surface
-                self.property_icon_list_p1[count].hovered_image = property_icon_surface
-                self.property_icon_list_p1[count].rebuild()
-                count += 1
+            self.property_icon_list_p1[count].normal_image = property_icon_surface
+            self.property_icon_list_p1[count].hovered_image = property_icon_surface
+            self.property_icon_list_p1[count].rebuild()
+            count += 1
 
     def _init_ui_elements(self):
         self.char_image_list_p1 = []
