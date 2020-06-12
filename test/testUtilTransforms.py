@@ -14,10 +14,6 @@ __date__ = "25.04.2020 (date of doc. creation)"
 
 class testTrafoToWorldCoords(unittest.TestCase):
     """
-    Test will have to be updated when proper gamefield is implemented, for now just checking
-    if any changes break the implemented transform on the basic board
-
-    :todo:  should check and depend on resolution of screen! Tests are written for 1920x1080
     :return: None
     """
 
