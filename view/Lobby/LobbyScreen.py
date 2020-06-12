@@ -2,12 +2,15 @@
 Implements the lobby screen
 """
 import logging
+
+import cppyy
 import pygame_gui
 import pygame
 
 from view.BasicView import BasicView
 from view.ViewSettings import ViewSettings
 from controller.ControllerView import ControllerLobby
+from network.NetworkEvent import NETWORK_EVENT
 
 __author__ = "Marco Deuscher"
 __date__ = "20.05.20 (doc creation)"
@@ -67,6 +70,10 @@ class LobbyScreen(BasicView):
         if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
             self.controller.to_main_menu()
 
+        if event.type == pygame.USEREVENT and event.user_type == NETWORK_EVENT:
+            if event.message_type == "Error":
+                self._handle_error()
+
     def connect_pressed(self) -> None:
         """
         Connect button pressed, extract entered info and send hello to server
@@ -95,6 +102,27 @@ class LobbyScreen(BasicView):
         d["role"] = self.role_dropdown.selected_option
 
         return d
+
+    def _handle_error(self) -> None:
+        error_op = self.controller.lib_client_handler.lib_client.getErrorReason()
+        if not error_op.has_value():
+            return
+
+        desc = None
+
+        if error_op.value() == cppyy.gbl.spy.network.ErrorTypeEnum.NAME_NOT_AVAILABLE:
+            desc = "Another Player is already using this name"
+        elif error_op.value() == cppyy.gbl.spy.network.ErrorTypeEnum.ALREADY_SERVING:
+            desc = "Server is already server. Maybe connect as a spectator"
+
+        pygame_gui.windows.UIConfirmationDialog(
+            rect=pygame.Rect((self.settings.window_width * .45, self.settings.window_height * .45),
+                             (250, 200)),
+            manager=self.manager,
+            action_short_name="OK",
+            action_long_desc=desc,
+            blocking=True
+        )
 
     def _init_ui_elements(self) -> None:
         self.connect_button = pygame_gui.elements.UIButton(
