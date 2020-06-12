@@ -64,7 +64,6 @@ class SelectionInfoBox:
     def _update_textbox(self, gadget_icon_list, property_icon_list, selected_gad_prop_idx) -> None:
         """
         Updates text inside textbox
-        todo improve performance of this method --> laggs when field on pf is selected
         :return:    None
         """
         # check if any button is hovered --> update

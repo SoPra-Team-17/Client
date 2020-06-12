@@ -171,7 +171,6 @@ class ItemChoiceScreen(BasicView):
             self.gadget_name_list[idx].rebuild()
 
         for idx, char_id in enumerate(offeredCharacters):
-            # todo: img and text has to be set for characters!
             for char in self.controller.lib_client_handler.lib_client.getCharacterSettings():
                 if char_id == char.getCharacterId():
                     # hier können jetzt eigenschaften aus characterdescription extrahiert werden
@@ -185,7 +184,6 @@ class ItemChoiceScreen(BasicView):
                     img = pygame.image.load(CHAR_PATH_DICT.get("normal"))
                     img = pygame.transform.scale(img, self.__img_size)
                     self.char_img_list[idx].normal_image = img
-                    # todo pygame does not support rendering of escape characters!
                     # self.char_img_list[idx].hovered_image = self.font.render(name, True,
                     #                                                         (255, 255, 255))
                     self.char_img_list[idx].rebuild()
