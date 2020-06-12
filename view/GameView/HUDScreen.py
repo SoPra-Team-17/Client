@@ -554,22 +554,38 @@ class HUDScreen(BasicView):
             else "Bang and Burn"
 
     def handle_shortcuts(self, event) -> None:
-        if event.type != pygame.KEYUP:
+        shortcut_keys = [pygame.K_g, pygame.K_b, pygame.K_e, pygame.K_p, pygame.K_r, pygame.K_m, pygame.K_RETURN]
+        if not (event.type == pygame.KEYUP and event.key in shortcut_keys):
             return
 
+        starting_opt = ""
+
         if event.key == pygame.K_g:
-            self.action_bar.selected_option = self.__actionbar_options[0]
+            starting_opt = self.__actionbar_options[0]
         elif event.key == pygame.K_b:
-            self.action_bar.selected_option = self.__actionbar_options[1]
-        elif event.key == pygame.K_s:
-            self.action_bar.selected_option = self.__actionbar_options[2]
+            starting_opt = self.__actionbar_options[1]
+        elif event.key == pygame.K_e:
+            starting_opt = self.__actionbar_options[2]
         elif event.key == pygame.K_m:
-            self.action_bar.selected_option = self.__actionbar_options[3]
+            starting_opt = self.__actionbar_options[3]
         elif event.key == pygame.K_r:
-            self.action_bar.selected_option = self.__actionbar_options[4]
+            starting_opt = self.__actionbar_options[4]
         elif event.key == pygame.K_p:
-            self.action_bar.selected_option = self.__actionbar_options[5]
+            starting_opt = self.__actionbar_options[5]
         elif event.key == pygame.K_RETURN:
             self.send_action_pressed()
+            return
 
-        self.action_bar.rebuild()
+        # redraw actionbar
+        self.action_bar.kill()
+        self.action_bar = pygame_gui.elements.UIDropDownMenu(
+            options_list=self.__actionbar_options,
+            starting_option=starting_opt,
+            relative_rect=pygame.Rect(
+                (self.container.rect.width - 2 * self.__distance - self.__button_size[0] - self.__status_textbox_width -
+                 self.__dropdown_size[0], self.container.rect.height - self.__dropdown_size[1]),
+                self.__dropdown_size),
+            manager=self.manager,
+            container=self.container,
+            object_id="#action_bar",
+        )
