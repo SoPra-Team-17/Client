@@ -32,23 +32,6 @@ dpkg -s nlohmann-json-dev > /dev/null 2>&1 && {
 }
 
 
-
-# Dependencies from WebsocketCPP
-# Libwebsockets
-sudo apt -y install libssl-dev
-if [ ! -f /usr/local/lib/libwebsockets.so ]; then
-    echo "Libwebsockets not installed. Installing now"
-    cd /tmp
-    git clone https://github.com/warmcat/libwebsockets.git
-    cd libwebsockets
-    mkdir build && cd build
-    cmake ..
-    make -j$(nproc)
-    sudo make install
-fi
-
-
-# Install LibCommon
 cd /tmp
 git clone https://github.com/SoPra-Team-17/LibCommon.git
 cd LibCommon
@@ -62,6 +45,7 @@ sudo make install
 cd /tmp
 git clone https://github.com/SoPra-Team-17/WebsocketCPP.git
 cd WebsocketCPP
+./installDependencies.sh
 mkdir build && cd build
 cmake ..
 make -j$(nproc)
