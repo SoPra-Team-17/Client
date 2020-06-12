@@ -360,9 +360,9 @@ class SpectatorHUDScreen(BasicView):
                     object_id=f"#gadget_image0{idx_char}"
                 ))
 
-                self.property_icon_list_p1[count].normal_image = property_icon_surface
-                self.property_icon_list_p1[count].hovered_image = property_icon_surface
-                self.property_icon_list_p1[count].rebuild()
+                self.property_icon_list_p2[count].normal_image = property_icon_surface
+                self.property_icon_list_p2[count].hovered_image = property_icon_surface
+                self.property_icon_list_p2[count].rebuild()
                 pos += 1
                 count += 1
 
@@ -382,9 +382,9 @@ class SpectatorHUDScreen(BasicView):
                 object_id=f"#gadget_image0{idx_char}"
             ))
 
-            self.property_icon_list_p1[count].normal_image = property_icon_surface
-            self.property_icon_list_p1[count].hovered_image = property_icon_surface
-            self.property_icon_list_p1[count].rebuild()
+            self.property_icon_list_p2[count].normal_image = property_icon_surface
+            self.property_icon_list_p2[count].hovered_image = property_icon_surface
+            self.property_icon_list_p2[count].rebuild()
             count += 1
 
     def _init_ui_elements(self):
