@@ -28,9 +28,6 @@ cppyy.include("network/messages/MetaInformationKey.hpp")
 cppyy.include("util/UUID.hpp")
 cppyy.include("datatypes/character/FactionEnum.hpp")
 
-__author__ = "Marco Deuscher"
-__date__ = "04.06.20 (creation)"
-
 
 class SpectatorView(BasicView):
     """
@@ -73,7 +70,7 @@ class SpectatorView(BasicView):
         Also updates playing field with the prev. received network update, same for hud screen
         :return: None
         """
-        # get metainformation, make sure message was alreafy received before updating
+        # get metainformation, make sure message was already received before updating
         if not self.__send_meta:
             key_list = [cppyy.gbl.spy.network.messages.MetaInformationKey.CONFIGURATION_CHARACTER_INFORMATION,
                         cppyy.gbl.spy.network.messages.MetaInformationKey.FACTION_PLAYER1,

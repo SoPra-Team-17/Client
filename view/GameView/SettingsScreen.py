@@ -69,26 +69,23 @@ class SettingsScreen(BasicView):
     def receive_event(self, event: pygame.event.Event) -> None:
         self.manager.process_events(event)
 
-        if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_PRESSED and not self.__spectator:
-            switcher = {
-                self.pause_game_button: self._pause_pressed,
-                self.leave_game_button: self._leave_pressed,
-                self.return_to_game_button: self._return_pressed,
-                self.shortcuts_help_button: self._update_shortcuts_textbox,
-                self.wiki_button: self._wiki_pressed
-            }
+        if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_PRESSED:
             try:
-                switcher.get(event.ui_element)()
-            except TypeError:
-                logging.warning("Did not find UI-Element in dict")
-
-        if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_PRESSED and self.__spectator:
-            switcher = {
-                self.leave_game_button: self._leave_pressed,
-                self.return_to_game_button: self._return_pressed
-            }
-            try:
-                switcher.get(event.ui_element)()
+                if self.__spectator:
+                    switcher_spectator = {
+                        self.leave_game_button: self._leave_pressed,
+                        self.return_to_game_button: self._return_pressed
+                    }
+                    switcher_spectator.get(event.ui_element)()
+                else:
+                    switcher = {
+                        self.pause_game_button: self._pause_pressed,
+                        self.leave_game_button: self._leave_pressed,
+                        self.return_to_game_button: self._return_pressed,
+                        self.shortcuts_help_button: self._update_shortcuts_textbox,
+                        self.wiki_button: self._wiki_pressed
+                    }
+                    switcher.get(event.ui_element)()
             except TypeError:
                 logging.warning("Did not find UI-Element in dict")
 
@@ -96,7 +93,7 @@ class SettingsScreen(BasicView):
             self._return_pressed()
 
         if event.type == pygame.USEREVENT and event.user_type == NETWORK_EVENT:
-            if event.message_type == "GamePause":
+            if event.message_type == "GamePause" and not self.__spectator:
                 self._update_label()
 
     def _pause_pressed(self) -> None:

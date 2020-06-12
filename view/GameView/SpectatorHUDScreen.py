@@ -413,7 +413,7 @@ class SpectatorHUDScreen(BasicView):
 
         self.selected_info_box = pygame_gui.elements.UITextBox(
             relative_rect=pygame.Rect(
-                (self.container.rect.width * .55,
+                (self.operation_log_box.textbox.rect.x - self.__button_size[0] - 25,
                  0),
                 (self.__button_size[0], self.container.rect.height - self.__button_size[1])),
             html_text="",
