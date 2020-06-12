@@ -247,7 +247,7 @@ class HUDScreen(BasicView):
         self.gadget_icon_list.clear()
         self.property_icon_list.clear()
 
-        my_chars = self.controller.lib_client_handler.lib_client.getChosenCharacters()
+        my_chars = self.controller.lib_client_handler.lib_client.getMyFactionList()
         count = 0
 
         for idx_char, char in enumerate(my_chars):
@@ -335,9 +335,7 @@ class HUDScreen(BasicView):
         char_surface = pygame.image.load(CHAR_PATH_DICT.get("normal")).convert_alpha()
         char_surface = pygame.transform.scale(char_surface, (int(self.__padding), int(self.__padding)))
 
-        my_chars = self.controller.lib_client_handler.lib_client.getChosenCharacters()
-        my_gadgets = self.controller.lib_client_handler.lib_client.getChosenGadgets()
-
+        my_chars = self.controller.lib_client_handler.lib_client.getMyFactionList()
         ip_sum = 0
 
         for idx, char in enumerate(my_chars):
@@ -403,7 +401,7 @@ class HUDScreen(BasicView):
         active_char_id = self.controller.lib_client_handler.lib_client.getActiveCharacter()
         active_gui_idx = 0
 
-        for idx, char_id in enumerate(self.controller.lib_client_handler.lib_client.getChosenCharacters()):
+        for idx, char_id in enumerate(self.controller.lib_client_handler.lib_client.getMyFactionList()):
             if char_id == active_char_id:
                 active_gui_idx = idx
 
@@ -509,7 +507,7 @@ class HUDScreen(BasicView):
         :param idx:     UI gadget idx
         :return:        State gadget idx
         """
-        character_ids = self.controller.lib_client_handler.lib_client.getChosenCharacters()
+        character_ids = self.controller.lib_client_handler.lib_client.getMyFactionList()
         count = 0
         for char_id in character_ids:
             current_char = self.controller.lib_client_handler.lib_client.getState().getCharacters().findByUUID(
@@ -527,7 +525,7 @@ class HUDScreen(BasicView):
         """
         idx -= len(self.gadget_icon_list)
 
-        character_ids = self.controller.lib_client_handler.lib_client.getChosenCharacters()
+        character_ids = self.controller.lib_client_handler.lib_client.getMyFactionList()
         count = 0
 
         for char_id in character_ids:
