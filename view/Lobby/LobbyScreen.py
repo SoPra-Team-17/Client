@@ -15,6 +15,12 @@ from network.NetworkEvent import NETWORK_EVENT
 __author__ = "Marco Deuscher"
 __date__ = "20.05.20 (doc creation)"
 
+cppyy.add_include_path("/usr/local/include/SopraClient")
+cppyy.add_include_path("/usr/local/include/SopraCommon")
+cppyy.add_include_path("/usr/local/include/SopraNetwork")
+
+cppyy.include("network/ErrorEnum.hpp")
+
 
 class LobbyScreen(BasicView):
     _valid_roles = ["Player", "Spectator"]
