@@ -11,7 +11,8 @@ from view.ViewSettings import ViewSettings
 from view.GameView.Visuals.VisualGadget import GADGET_PATH_LIST, GADGET_NAME_LIST
 from view.GameView.Visuals.VisualProperty import PROPERTY_PATH_LIST, PROPERTY_NAME_LIST
 from view.GameView.Visuals.VisualCharacter import CHAR_PATH_DICT
-from view.GameView.HUDScreenElements.CharacterInfoBox import CharacterInfoBox
+from view.GameView.HUDScreenElements.RoundCounterBox import RoundCounterBox
+from view.GameView.HUDScreenElements.NameDisplayBox import NameDisplayBox
 from view.GameView.HUDScreenElements.SelectionInfoBox import SelectionInfoBox
 from view.GameView.HUDScreenElements.OperationLogBox import OperationLogBox
 from controller.ControllerView import ControllerSpectatorView
@@ -59,6 +60,8 @@ class SpectatorHUDScreen(BasicView):
         )
 
         self.operation_log_box = OperationLogBox(self, self.container, self.manager, self.settings)
+        self.round_box = RoundCounterBox(self, self.manager)
+        self.name_box = NameDisplayBox(self, self.manager)
 
         # padding to set responsive size of character buttons
         self.__padding = (self.container.rect.width / 2 - 5 * self.__distance) / 7
