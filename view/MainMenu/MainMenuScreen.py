@@ -52,7 +52,6 @@ class MainMenuScreen(BasicView):
 
         self._init_ui_elements()
 
-        self.__waiting_for_reconnect = False
         self.__reconnect_target_view = None
 
         # load title image
@@ -124,17 +123,18 @@ class MainMenuScreen(BasicView):
             name = parsed_json["name"]
             player_one_name = parsed_json["player_one_name"]
             player_two_name = parsed_json["player_two_name"]
-            self.controller.lib_client_handler.lib_client.reconnectPlayerAfterCrash(server_str, port, name, client_id,
-                                                                                    session_cpp, player_one_id,
-                                                                                    player_two_id, player_one_name,
-                                                                                    player_two_name)
+            ret = self.controller.lib_client_handler.lib_client.reconnectPlayerAfterCrash(server_str, port, name,
+                                                                                          client_id,
+                                                                                          session_cpp, player_one_id,
+                                                                                          player_two_id,
+                                                                                          player_one_name,
+                                                                                          player_two_name)
         except KeyError:
             logging.warning("Json file did not contain needed keys")
 
         if not ret:
             return
 
-        self.__waiting_for_reconnect = True
         logging.info("Successfully reconnected")
 
     def help_button_pressed(self) -> None:
