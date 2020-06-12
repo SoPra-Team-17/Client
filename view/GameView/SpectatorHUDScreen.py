@@ -402,7 +402,7 @@ class SpectatorHUDScreen(BasicView):
 
         self.menu_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(
-                (self.container.rect.width * .55,
+                (self.operation_log_box.textbox.rect.x - self.__button_size[0] - 25,
                  self.container.rect.height - self.__button_size[1]),
                 (self.__button_size)),
             text=self.__element_names["menu"],
