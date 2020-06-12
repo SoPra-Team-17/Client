@@ -82,4 +82,4 @@ class LibClientHandler:
         return self.lib_client.network.sendRequestMetaInformation(keys)
 
     def sendRequestReplay(self) -> bool:
-        return self.lib_client.network.sendRequestReplay()
+        return self.lib_client.network.sendRequestReplayMessage()

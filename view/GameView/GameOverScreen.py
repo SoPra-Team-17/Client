@@ -49,11 +49,17 @@ class GameOverScreen(BasicView):
 
         if event.type == pygame.KEYUP and event.key == pygame.K_ESCAPE:
             self._return_pressed()
+        if event.type == pygame.KEYUP and event.key == pygame.K_r:
+            self._replay_pressed()
 
     def _return_pressed(self):
         ret = self.controller.send_game_leave()
         logging.info(f"Successfully send game leave: {ret}")
         self.controller.to_main_menu()
+
+    def _replay_pressed(self) -> None:
+        ret = self.controller.send_request_replay()
+        logging.info(f"Successfully requested replay: {ret}")
 
     def network_update(self) -> None:
         """
@@ -92,6 +98,7 @@ class GameOverScreen(BasicView):
 
         hasReplay = self.controller.lib_client_handler.lib_client.hasReplay()
         html_str += f"<br><br>Has replay: {hasReplay}<br><br>"
+        html_str += f"Request a replay by pressing <b>r</b><br>"
         html_str += f"Return to Main Menu by pressing <b>Escape</b><br>"
 
         self.stats_textbox.html_text = html_str
