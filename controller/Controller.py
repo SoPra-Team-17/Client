@@ -142,8 +142,7 @@ class Controller(ControllerGameView, ControllerMainMenu, ControllerLobby):
         Implements transition game view when trying to reconnect from the main menu
         :return:    None
         """
-        # todo impleement gameview transition
-        pass
+        self.gameView.from_reconnect(target_screen)
 
     def exit_game(self) -> None:
         """

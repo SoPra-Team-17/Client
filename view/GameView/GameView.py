@@ -14,7 +14,6 @@ from controller.ControllerView import ControllerGameView
 from util.Coordinates import WorldPoint
 from network.NetworkEvent import NETWORK_EVENT
 
-
 __author__ = "Marco Deuscher"
 __date__ = "20.05.20 (doc creation)"
 
@@ -94,6 +93,14 @@ class GameView(BasicView):
         :return:    None
         """
         self.active_views = [self.settings_view]
+
+    def from_reconnect(self, target_screen) -> None:
+        if target_screen == "game":
+            self.to_playing_field()
+        elif target_screen == "item":
+            self.to_item_choice()
+        elif target_screen == "equip":
+            self.to_equipment()
 
     def get_selected_field(self) -> WorldPoint:
         """

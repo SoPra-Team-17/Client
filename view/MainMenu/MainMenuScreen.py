@@ -223,9 +223,10 @@ class MainMenuScreen(BasicView):
         self.__reconnect_target_view = "equip"
 
     def _reconnect_meta(self) -> None:
+        meta_info = self.controller.lib_client_handler.lib_client.getInformation()
+
         if self.__reconnect_target_view == "game":
             i_am_p1 = self.controller.lib_client_handler.lib_client.amIPlayerOne()
-            meta_info = self.controller.lib_client_handler.lib_client.getInformation()
 
             key = cppyy.gbl.spy.network.messages.MetaInformationKey.FACTION_PLAYER1 if i_am_p1 \
                 else cppyy.gbl.spy.network.messages.MetaInformationKey.FACTION_PLAYER2
@@ -237,7 +238,9 @@ class MainMenuScreen(BasicView):
                 ret = self.controller.lib_client_handler.lib_client.setFaction(id, key)
                 logging.info(f"Set faction for own character successful: {ret}")
 
-        # todo setter needed for character info
+        key = cppyy.gbl.spy.network.messages.MetaInformationKey.CONFIGURATION_CHARACTER_INFORMATION
+        variant = meta_info.at(key)
+        char_info_vec = cppyy.gbl.std.get[vector[cppyy.gbl.spy.character.CharacterInformation]](variant)
+        self.controller.lib_client_handler.lib_client.setCharacterSettings(char_info_vec)
 
-        # todo game view shortcuts to correct screen!
-        self.controller.to_game_view()
+        self.controller.to_game_view_reconnect(self.__reconnect_target_view)
