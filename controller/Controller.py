@@ -109,7 +109,8 @@ class Controller(ControllerGameView, ControllerMainMenu, ControllerLobby):
                     if success:
                         logging.info("Sent reconnect message")
                         return
-                logging.error("Unable to reconnect")
+                logging.error("Unable to reconnect to server")
+                self.lib_client_handler.lib_client.disconnect()
             elif event.message_type == "WrongDestination":
                 logging.warning("Received wrong destination event")
 
