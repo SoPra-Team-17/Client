@@ -14,8 +14,6 @@ __date__ = "25.04.2020 (date of doc. creation)"
 
 class testTrafoToWorldCoords(unittest.TestCase):
     """
-    Test will have to be updated when proper gamefield is implemented, for now just checking
-    if any changes break the implemented transform on the basic board
     :return: None
     """
 
@@ -75,7 +73,3 @@ class testTrafoToWorldCoords(unittest.TestCase):
 
         xt, yt = transforms.trafo_window_to_world_coords(818, 479)
         self.assertEqual((3, 9), (xt, yt))
-
-
-if __name__ == '__main__':
-    unittest.main()
