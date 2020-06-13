@@ -58,7 +58,7 @@ class CharacterInfoBox:
         :param idx:     Idx of hovered character in UI-List
         :return:        None
         """
-        char_id = self.parent_screen.controller.lib_client_handler.lib_client.getChosenCharacters()[idx]
+        char_id = self.parent_screen.controller.lib_client_handler.lib_client.getMyFactionList()[idx]
         char = self.parent_screen.controller.lib_client_handler.lib_client.getState().getCharacters().findByUUID(
             char_id)
 
@@ -70,10 +70,9 @@ class CharacterInfoBox:
             cppyy.gbl.spy.network.messages.MetaInformationKey.CONFIGURATION_CHARACTER_INFORMATION]
         char_info_vector = cppyy.gbl.std.get[vector[cppyy.gbl.spy.character.CharacterInformation]](variant)
 
-        chosen_char_id = self.parent_screen.controller.lib_client_handler.lib_client.getChosenCharacters()[idx]
         name = ""
         for char_info in char_info_vector:
-            if chosen_char_id == char_info.getCharacterId():
+            if char_id == char_info.getCharacterId():
                 name = char_info.getName()
 
         self.private_textbox = pygame_gui.elements.UITextBox(
