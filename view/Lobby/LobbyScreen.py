@@ -119,7 +119,7 @@ class LobbyScreen(BasicView):
         if error_op.value() == cppyy.gbl.spy.network.ErrorTypeEnum.NAME_NOT_AVAILABLE:
             desc = "Another Player is already using this name"
         elif error_op.value() == cppyy.gbl.spy.network.ErrorTypeEnum.ALREADY_SERVING:
-            desc = "Server is already server. Maybe connect as a spectator"
+            desc = "Server is already serving. Maybe connect as a spectator"
 
         pygame_gui.windows.UIConfirmationDialog(
             rect=pygame.Rect((self.settings.window_width * .45, self.settings.window_height * .45),
