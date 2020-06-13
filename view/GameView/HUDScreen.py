@@ -162,6 +162,8 @@ class HUDScreen(BasicView):
             logging.info(f"Stake={stake}. Send Gamble Action successfull {ret}")
         elif type == "Property":
             # Observation = 0, BangAndBurn = 1
+            if self.__selected_gad_prop_idx is None:
+                return False
             prop = self.idx_to_property_idx(self.__selected_gad_prop_idx)
             logging.info(f"Property: {prop}")
             target = self.parent.parent.get_selected_field()
