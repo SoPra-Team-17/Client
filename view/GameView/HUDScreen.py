@@ -137,7 +137,6 @@ class HUDScreen(BasicView):
     def send_action_pressed(self) -> bool:
         """
         Extract for action relevant information from GUI-Elements and call controller, which then calls the network
-        todo: could return boolean if successfull
         :return:    None
         """
         ret = False
