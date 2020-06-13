@@ -85,6 +85,27 @@ class ControllerGameView(ABC):
         """
 
 
+class ControllerSpectatorView(ABC):
+    """
+    Specifies interface from spectator view to controller
+    """
+
+    @abstractmethod
+    def send_request_meta_information(self, keys) -> bool:
+        pass
+
+    @abstractmethod
+    def send_request_replay(self) -> bool:
+        pass
+
+    @abstractmethod
+    def to_main_menu(self) -> None:
+        """
+        Interface to GameView
+        :return:    None
+        """
+
+
 class ControllerLobby(ABC):
     """
     Specifies interface from lobby view to controller
@@ -130,6 +151,13 @@ class ControllerLobby(ABC):
 
     @abstractmethod
     def to_game_view(self) -> None:
+        """
+        Interface to Lobby
+        :return:    None
+        """
+
+    @abstractmethod
+    def selected_spectator_role(self) -> None:
         """
         Interface to Lobby
         :return:    None

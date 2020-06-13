@@ -15,6 +15,8 @@ set -e
 # Dependencies from LibCommon
 # libuuid
 sudo apt -y install uuid-dev
+# xsel for pasting to textentry field
+sudo apt -y install xsel
 # nlohmann json
 dpkg -s nlohmann-json-dev > /dev/null 2>&1 && {
   echo "nlohmann-json-dev already installed"
@@ -30,27 +32,10 @@ dpkg -s nlohmann-json-dev > /dev/null 2>&1 && {
 }
 
 
-
-# Dependencies from WebsocketCPP
-# Libwebsockets
-sudo apt -y install libssl-dev
-if [ ! -f /usr/local/lib/libwebsockets.so ]; then
-    echo "Libwebsockets not installed. Installing now"
-    cd /tmp
-    git clone https://github.com/warmcat/libwebsockets.git
-    cd libwebsockets
-    mkdir build && cd build
-    cmake ..
-    make -j$(nproc)
-    sudo make install
-fi
-
-
-# Install LibCommon
 cd /tmp
 git clone https://github.com/SoPra-Team-17/LibCommon.git
 cd LibCommon
-git checkout v0.1.1
+# git checkout v0.1.1
 mkdir build && cd build
 cmake ..
 make -j$(nproc)
@@ -60,6 +45,7 @@ sudo make install
 cd /tmp
 git clone https://github.com/SoPra-Team-17/WebsocketCPP.git
 cd WebsocketCPP
+./installDependencies.sh
 mkdir build && cd build
 cmake ..
 make -j$(nproc)
@@ -69,7 +55,7 @@ sudo make install
 cd /tmp
 git clone https://github.com/SoPra-Team-17/LibClient.git
 cd LibClient
-git checkout v0.1.2
+# git checkout v0.1.2
 git submodule update --init
 mkdir build && cd build
 cmake ..

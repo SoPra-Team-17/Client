@@ -20,21 +20,24 @@ class SettingsScreen(BasicView):
         "unpause_game": "Unpause Game",
         "leave_game": "Leave Game",
         "return": "Return to Game",
-        "shortcuts": "Shortcuts"
+        "shortcuts": "Shortcuts",
+        "wiki": "Wiki"
     }
 
     _shortcuts_help_str = "<b>Shortcuts</b><br><br>" \
                           "<b>Actions</b><br>" \
-                          "m: Movement<br>g: Gadget<br>b: Gamble<br>s: Spy<br>p: Property<br>r: Retire<br>" \
+                          "m: Movement<br>g: Gadget<br>b: Gamble<br>e: Spy<br>p: Property<br>r: Retire<br>" \
                           "<br><b>Execution</b><br>" \
                           "enter: send action<br>"
 
     __shortcuts_position = (200, 200)
     __shortcuts_size = (250, 280)
 
-    def __init__(self, window: pygame.display, controller: ControllerGameView, parent, settings: ViewSettings) -> None:
+    def __init__(self, window: pygame.display, controller: ControllerGameView, parent, settings: ViewSettings,
+                 spectator: bool = False) -> None:
         super(SettingsScreen, self).__init__(window, controller, settings)
         self.parent_view = parent
+        self.__spectator = spectator
 
         self.manager = pygame_gui.UIManager((self.settings.window_width, self.settings.window_height),
                                             "assets/GUI/GUITheme.json")
@@ -57,7 +60,8 @@ class SettingsScreen(BasicView):
 
     def draw(self) -> None:
         self.manager.update(1 / self.settings.frame_rate)
-        self._update_label()
+        if not self.__spectator:
+            self._update_label()
 
         self.window.blit(self.background, (0, 0))
         self.manager.draw_ui(self.window)
@@ -66,14 +70,22 @@ class SettingsScreen(BasicView):
         self.manager.process_events(event)
 
         if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_PRESSED:
-            switcher = {
-                self.pause_game_button: self._pause_pressed,
-                self.leave_game_button: self._leave_pressed,
-                self.return_to_game_button: self._return_pressed,
-                self.shortcuts_help_button: self._update_shortcuts_textbox
-            }
             try:
-                switcher.get(event.ui_element)()
+                if self.__spectator:
+                    switcher_spectator = {
+                        self.leave_game_button: self._leave_pressed,
+                        self.return_to_game_button: self._return_pressed
+                    }
+                    switcher_spectator.get(event.ui_element)()
+                else:
+                    switcher = {
+                        self.pause_game_button: self._pause_pressed,
+                        self.leave_game_button: self._leave_pressed,
+                        self.return_to_game_button: self._return_pressed,
+                        self.shortcuts_help_button: self._update_shortcuts_textbox,
+                        self.wiki_button: self._wiki_pressed
+                    }
+                    switcher.get(event.ui_element)()
             except TypeError:
                 logging.warning("Did not find UI-Element in dict")
 
@@ -81,7 +93,7 @@ class SettingsScreen(BasicView):
             self._return_pressed()
 
         if event.type == pygame.USEREVENT and event.user_type == NETWORK_EVENT:
-            if event.message_type == "GamePause":
+            if event.message_type == "GamePause" and not self.__spectator:
                 self._update_label()
 
     def _pause_pressed(self) -> None:
@@ -110,6 +122,13 @@ class SettingsScreen(BasicView):
         :return:    None
         """
         self.parent_view.parent.to_playing_field()
+
+    def _wiki_pressed(self) -> None:
+        """
+        Function called when wiki button is pressed
+        :return:    None
+        """
+        self.parent_view.parent.to_wiki()
 
     def _update_label(self) -> None:
         """
@@ -154,26 +173,38 @@ class SettingsScreen(BasicView):
             object_id="#pause_state_label"
         )
 
-        self.pause_game_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect((0,
-                                       self.__padding * len(
-                                           self.container.elements)),
-                                      self.__buttonSize),
-            text=self._text_buttons["pause_game"],
-            manager=self.manager,
-            container=self.container,
-            object_id="#pause_button"
-        )
+        if not self.__spectator:
+            self.pause_game_button = pygame_gui.elements.UIButton(
+                relative_rect=pygame.Rect((0,
+                                           self.__padding * len(
+                                               self.container.elements)),
+                                          self.__buttonSize),
+                text=self._text_buttons["pause_game"],
+                manager=self.manager,
+                container=self.container,
+                object_id="#pause_button"
+            )
 
-        self.shortcuts_help_button = pygame_gui.elements.UIButton(
+            self.shortcuts_help_button = pygame_gui.elements.UIButton(
+                relative_rect=pygame.Rect((0,
+                                           self.__padding * len(
+                                               self.container.elements)),
+                                          self.__buttonSize),
+                text=self._text_buttons["shortcuts"],
+                manager=self.manager,
+                container=self.container,
+                object_id="#shortcuts_button"
+            )
+
+        self.wiki_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect((0,
                                        self.__padding * len(
                                            self.container.elements)),
                                       self.__buttonSize),
-            text=self._text_buttons["shortcuts"],
+            text=self._text_buttons["wiki"],
             manager=self.manager,
             container=self.container,
-            object_id="#shortcuts_button"
+            object_id="#wiki_button"
         )
 
         self.leave_game_button = pygame_gui.elements.UIButton(

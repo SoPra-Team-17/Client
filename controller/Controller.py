@@ -3,6 +3,7 @@ Implements the Controller, which is the first object created. Handles all intera
 """
 import logging
 import sys
+import time
 
 import cppyy
 import pygame
@@ -12,6 +13,7 @@ from controller.ControllerView import ControllerGameView, ControllerMainMenu, Co
 from network.LibClientHandler import LibClientHandler
 from network.NetworkEvent import NETWORK_EVENT
 from view.GameView.GameView import GameView
+from view.GameView.SpectatorView import SpectatorView
 from view.Lobby.LobbyView import LobbyView
 from view.MainMenu.MainMenuView import MainMenuView
 from view.ViewSettings import ViewSettings
@@ -109,7 +111,9 @@ class Controller(ControllerGameView, ControllerMainMenu, ControllerLobby):
                     if success:
                         logging.info("Sent reconnect message")
                         return
-                logging.error("Unable to reconnect")
+                    time.sleep(0.05)
+                logging.error("Unable to reconnect to server")
+                self.lib_client_handler.lib_client.disconnect()
             elif event.message_type == "WrongDestination":
                 logging.warning("Received wrong destination event")
 
@@ -133,9 +137,10 @@ class Controller(ControllerGameView, ControllerMainMenu, ControllerLobby):
         self.gameView.to_item_choice()
 
         # on transition to game_view request meta information for character names from server
-        key_list = [cppyy.gbl.spy.network.messages.MetaInformationKey.CONFIGURATION_CHARACTER_INFORMATION]
-        ret = self.send_request_meta_information(key_list)
-        logging.info(f"Send Request Metainformation successfull: {ret}")
+        if isinstance(self.gameView, GameView):
+            key_list = [cppyy.gbl.spy.network.messages.MetaInformationKey.CONFIGURATION_CHARACTER_INFORMATION]
+            ret = self.send_request_meta_information(key_list)
+            logging.info(f"Send Request Metainformation successfull: {ret}")
 
     def to_game_view_reconnect(self, target_screen) -> None:
         """
@@ -159,6 +164,14 @@ class Controller(ControllerGameView, ControllerMainMenu, ControllerLobby):
         :return:
         """
         self.active_views = [self.main_menu]
+
+    def selected_spectator_role(self) -> None:
+        """
+        Implements transition to game view, when spectator role is selected
+        :return:
+        """
+        self.gameView = SpectatorView(self.screen, self, self.view_settings)
+        self.to_game_view()
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~SEND NETWORK MESSAGE~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # LobbyView Messages

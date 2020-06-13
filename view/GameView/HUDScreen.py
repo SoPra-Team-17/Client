@@ -137,7 +137,6 @@ class HUDScreen(BasicView):
     def send_action_pressed(self) -> bool:
         """
         Extract for action relevant information from GUI-Elements and call controller, which then calls the network
-        todo: could return boolean if successfull
         :return:    None
         """
         ret = False
@@ -163,6 +162,8 @@ class HUDScreen(BasicView):
             logging.info(f"Stake={stake}. Send Gamble Action successfull {ret}")
         elif type == "Property":
             # Observation = 0, BangAndBurn = 1
+            if self.__selected_gad_prop_idx is None:
+                return False
             prop = self.idx_to_property_idx(self.__selected_gad_prop_idx)
             logging.info(f"Property: {prop}")
             target = self.parent.parent.get_selected_field()
@@ -247,7 +248,7 @@ class HUDScreen(BasicView):
         self.gadget_icon_list.clear()
         self.property_icon_list.clear()
 
-        my_chars = self.controller.lib_client_handler.lib_client.getChosenCharacters()
+        my_chars = self.controller.lib_client_handler.lib_client.getMyFactionList()
         count = 0
 
         for idx_char, char in enumerate(my_chars):
@@ -335,9 +336,7 @@ class HUDScreen(BasicView):
         char_surface = pygame.image.load(CHAR_PATH_DICT.get("normal")).convert_alpha()
         char_surface = pygame.transform.scale(char_surface, (int(self.__padding), int(self.__padding)))
 
-        my_chars = self.controller.lib_client_handler.lib_client.getChosenCharacters()
-        my_gadgets = self.controller.lib_client_handler.lib_client.getChosenGadgets()
-
+        my_chars = self.controller.lib_client_handler.lib_client.getMyFactionList()
         ip_sum = 0
 
         for idx, char in enumerate(my_chars):
@@ -403,7 +402,7 @@ class HUDScreen(BasicView):
         active_char_id = self.controller.lib_client_handler.lib_client.getActiveCharacter()
         active_gui_idx = 0
 
-        for idx, char_id in enumerate(self.controller.lib_client_handler.lib_client.getChosenCharacters()):
+        for idx, char_id in enumerate(self.controller.lib_client_handler.lib_client.getMyFactionList()):
             if char_id == active_char_id:
                 active_gui_idx = idx
 
@@ -509,7 +508,7 @@ class HUDScreen(BasicView):
         :param idx:     UI gadget idx
         :return:        State gadget idx
         """
-        character_ids = self.controller.lib_client_handler.lib_client.getChosenCharacters()
+        character_ids = self.controller.lib_client_handler.lib_client.getMyFactionList()
         count = 0
         for char_id in character_ids:
             current_char = self.controller.lib_client_handler.lib_client.getState().getCharacters().findByUUID(
@@ -527,7 +526,7 @@ class HUDScreen(BasicView):
         """
         idx -= len(self.gadget_icon_list)
 
-        character_ids = self.controller.lib_client_handler.lib_client.getChosenCharacters()
+        character_ids = self.controller.lib_client_handler.lib_client.getMyFactionList()
         count = 0
 
         for char_id in character_ids:
@@ -554,22 +553,38 @@ class HUDScreen(BasicView):
             else "Bang and Burn"
 
     def handle_shortcuts(self, event) -> None:
-        if event.type != pygame.KEYUP:
+        shortcut_keys = [pygame.K_g, pygame.K_b, pygame.K_e, pygame.K_p, pygame.K_r, pygame.K_m, pygame.K_RETURN]
+        if not (event.type == pygame.KEYUP and event.key in shortcut_keys):
             return
 
+        starting_opt = ""
+
         if event.key == pygame.K_g:
-            self.action_bar.selected_option = self.__actionbar_options[0]
+            starting_opt = self.__actionbar_options[0]
         elif event.key == pygame.K_b:
-            self.action_bar.selected_option = self.__actionbar_options[1]
-        elif event.key == pygame.K_s:
-            self.action_bar.selected_option = self.__actionbar_options[2]
+            starting_opt = self.__actionbar_options[1]
+        elif event.key == pygame.K_e:
+            starting_opt = self.__actionbar_options[2]
         elif event.key == pygame.K_m:
-            self.action_bar.selected_option = self.__actionbar_options[3]
+            starting_opt = self.__actionbar_options[3]
         elif event.key == pygame.K_r:
-            self.action_bar.selected_option = self.__actionbar_options[4]
+            starting_opt = self.__actionbar_options[4]
         elif event.key == pygame.K_p:
-            self.action_bar.selected_option = self.__actionbar_options[5]
+            starting_opt = self.__actionbar_options[5]
         elif event.key == pygame.K_RETURN:
             self.send_action_pressed()
+            return
 
-        self.action_bar.rebuild()
+        # redraw actionbar
+        self.action_bar.kill()
+        self.action_bar = pygame_gui.elements.UIDropDownMenu(
+            options_list=self.__actionbar_options,
+            starting_option=starting_opt,
+            relative_rect=pygame.Rect(
+                (self.container.rect.width - 2 * self.__distance - self.__button_size[0] - self.__status_textbox_width -
+                 self.__dropdown_size[0], self.container.rect.height - self.__dropdown_size[1]),
+                self.__dropdown_size),
+            manager=self.manager,
+            container=self.container,
+            object_id="#action_bar",
+        )
