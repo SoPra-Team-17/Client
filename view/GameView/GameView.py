@@ -120,7 +120,6 @@ class GameView(BasicView):
     def get_selected_field(self) -> WorldPoint:
         """
         Getter for the currently selected playing field
-        todo return type for invalid selection!
         :return:
         """
         return self.playing_field_screen.map.get_selected_coords()
