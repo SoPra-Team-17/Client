@@ -108,7 +108,7 @@ class SelectionInfoBox:
             # only update string, when selected field has changed
             if field != self.parent_screen.selected_field:
                 self.parent_screen.selected_field = field
-                textbox_str += f"<br>{self.__create_field_info_string(field)}<br>"
+                textbox_str += f"<br>{self.create_field_info_string(self.parent_screen.controller, field)}<br>"
                 update = True
 
         if self.parent_screen.controller.lib_client_handler.lib_client.isGamePaused():
@@ -119,7 +119,8 @@ class SelectionInfoBox:
             self.info_textbox.rebuild()
             self.__hovered_count = 0
 
-    def __create_field_info_string(self, field) -> str:
+    @staticmethod
+    def create_field_info_string(controller, field) -> None:
         """
         Gets the selected field and creates a html string, to be displayed in the info box
         todo create state, so this is only done, when the selected field has changed
@@ -132,13 +133,13 @@ class SelectionInfoBox:
 
         point_cpp = cppyy.gbl.spy.util.Point()
         point_cpp.x, point_cpp.y = field.x, field.y
-        field_cpp = self.parent_screen.controller.lib_client_handler.lib_client.getState().getMap().getField(point_cpp)
+        field_cpp = controller.lib_client_handler.lib_client.getState().getMap().getField(point_cpp)
 
         # get potential character standing on field
-        characters = self.parent_screen.controller.lib_client_handler.lib_client.getState().getCharacters()
+        characters = controller.lib_client_handler.lib_client.getState().getCharacters()
         char = cppyy.gbl.spy.util.GameLogicUtils.findInCharacterSetByCoordinates(characters, point_cpp)
 
-        info = self.parent_screen.controller.lib_client_handler.lib_client.getInformation()
+        info = controller.lib_client_handler.lib_client.getInformation()
         variant = info[
             cppyy.gbl.spy.network.messages.MetaInformationKey.CONFIGURATION_CHARACTER_INFORMATION]
         char_info_vector = cppyy.gbl.std.get[vector[cppyy.gbl.spy.character.CharacterInformation]](variant)

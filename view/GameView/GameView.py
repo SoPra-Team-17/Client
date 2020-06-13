@@ -16,7 +16,6 @@ from controller.ControllerView import ControllerGameView
 from util.Coordinates import WorldPoint
 from network.NetworkEvent import NETWORK_EVENT
 
-
 __author__ = "Marco Deuscher"
 __date__ = "20.05.20 (doc creation)"
 
@@ -40,8 +39,6 @@ class GameView(BasicView):
         self.active_views = [self.item_choice_screen]
 
     def draw(self) -> None:
-        self.window.fill((50, 50, 50))
-
         for view in self.active_views:
             view.draw()
 
