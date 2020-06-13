@@ -57,12 +57,6 @@ class PlayingFieldScreen(BasicView):
                 self.camera.center()
 
         if event.type == pygame.MOUSEBUTTONUP:
-            # todo remove debug info
-            pos = pygame.mouse.get_pos()
-            offsetX, offsetY = self.camera.getTrans()
-            xTrans, yTrans = Transformations.trafo_window_to_world_coords(pos[0], pos[1], offsetX, offsetY)
-            print(f"PosX: {xTrans}\tPosY: {yTrans}")
-
             self.map.select_block(self.camera.getTrans())
 
         if event.type == pygame.USEREVENT and event.user_type == NETWORK_EVENT:
@@ -90,7 +84,6 @@ class PlayingFieldScreen(BasicView):
 
         for x in range(n_rows):
             for y in range(field_map.getRowLength(x)):
-                # add floor --> I don't think this has to be done on each update! todo
                 self.map.map[WorldPoint(x, y, z=0)] = Floor(WorldPoint(x, y, z=0), self.asset_storage)
 
                 field = field_map.getField(x, y)

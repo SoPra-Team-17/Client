@@ -64,7 +64,6 @@ class SelectionInfoBox:
     def _update_textbox(self, gadget_icon_list, property_icon_list, selected_gad_prop_idx) -> None:
         """
         Updates text inside textbox
-        todo improve performance of this method --> laggs when field on pf is selected
         :return:    None
         """
         # check if any button is hovered --> update
@@ -173,7 +172,7 @@ class SelectionInfoBox:
         :return:    formatted html-str
         """
         info_str = ""
-        chosen_chars = self.parent_screen.controller.lib_client_handler.lib_client.getChosenCharacters()
+        chosen_chars = self.parent_screen.controller.lib_client_handler.lib_client.getMyFactionList()
         state = self.parent_screen.controller.lib_client_handler.lib_client.getState()
 
         for char_id in chosen_chars:
