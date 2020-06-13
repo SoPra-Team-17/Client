@@ -23,6 +23,8 @@ cppyy.include("util/UUID.hpp")
 cppyy.include("datatypes/character/CharacterInformation.hpp")
 cppyy.include("network/messages/MetaInformationKey.hpp")
 cppyy.include("datatypes/character/FactionEnum.hpp")
+cppyy.include("datatypes/matchconfig/MatchConfig.hpp")
+cppyy.include("datatypes/character/FactionEnum.hpp")
 
 from cppyy.gbl.std import map, pair, set, vector
 
@@ -116,19 +118,21 @@ class MainMenuScreen(BasicView):
         try:
             session_cpp = cppyy.gbl.spy.util.UUID(parsed_json["session_id"])
             client_id = cppyy.gbl.spy.util.UUID(parsed_json["client_id"])
-            player_one_id = cppyy.gbl.spy.util.UUID(parsed_json["player_one_ide"])
+            player_one_id = cppyy.gbl.spy.util.UUID(parsed_json["player_one_id"])
             player_two_id = cppyy.gbl.spy.util.UUID(parsed_json["player_two_id"])
             server_str = parsed_json["server"]
             port = int(parsed_json["port"])
             name = parsed_json["name"]
             player_one_name = parsed_json["player_one_name"]
             player_two_name = parsed_json["player_two_name"]
-            ret = self.controller.lib_client_handler.lib_client.reconnectPlayerAfterCrash(server_str, port, name,
-                                                                                          client_id,
-                                                                                          session_cpp, player_one_id,
-                                                                                          player_two_id,
-                                                                                          player_one_name,
-                                                                                          player_two_name)
+            ret = self.controller.lib_client_handler.lib_client.network.reconnectPlayerAfterCrash(server_str, port,
+                                                                                                  name,
+                                                                                                  client_id,
+                                                                                                  session_cpp,
+                                                                                                  player_one_id,
+                                                                                                  player_two_id,
+                                                                                                  player_one_name,
+                                                                                                  player_two_name)
         except KeyError:
             logging.warning("Json file did not contain needed keys")
 
@@ -196,51 +200,63 @@ class MainMenuScreen(BasicView):
         )
 
     def _reconnect_game_status(self) -> None:
-        key_list = [cppyy.gbl.spy.network.messages.MetaInformationKey.CONFIGURATION_CHARACTER_INFORMATION]
+        key_list = [cppyy.gbl.spy.network.messages.MetaInformationKey.CONFIGURATION_CHARACTER_INFORMATION,
+                    cppyy.gbl.spy.network.messages.MetaInformationKey.CONFIGURATION_MATCH_CONFIG]
 
-        faction = None
-        if self.controller.lib_client_handler.lib_client.amIPlayerOne():
-            faction = cppyy.gbl.spy.network.messages.MetaInformationKey.FACTION_PLAYER1
+        if self.controller.lib_client_handler.lib_client.amIPlayer1().value():
+            key_list.append(cppyy.gbl.spy.network.messages.MetaInformationKey.FACTION_PLAYER1)
+            logging.info("Request chars for p1")
         else:
-            faction = cppyy.gbl.spy.network.messages.MetaInformationKey.FACTION_PLAYER2
-
-        key_list.append(faction)
+            key_list.append(cppyy.gbl.spy.network.messages.MetaInformationKey.FACTION_PLAYER2)
+            logging.info("Request chars for p2")
 
         ret = self.controller.send_request_meta_information(key_list)
         logging.info(f"Send request metainformation successful: {ret}")
         self.__reconnect_target_view = "game"
 
     def _reconnect_item_choice(self) -> None:
-        key_list = [cppyy.gbl.spy.network.messages.MetaInformationKey.CONFIGURATION_CHARACTER_INFORMATION]
+        key_list = [cppyy.gbl.spy.network.messages.MetaInformationKey.CONFIGURATION_CHARACTER_INFORMATION,
+                    cppyy.gbl.spy.network.messages.MetaInformationKey.CONFIGURATION_MATCH_CONFIG]
         ret = self.controller.send_request_meta_information(key_list)
         logging.info(f"Send request metainformation successful: {ret}")
         self.__reconnect_target_view = "item"
+        self.controller.to_game_view_reconnect(self.__reconnect_target_view)
 
     def _reconnect_equipment(self) -> None:
-        key_list = [cppyy.gbl.spy.network.messages.MetaInformationKey.CONFIGURATION_CHARACTER_INFORMATION]
+        key_list = [cppyy.gbl.spy.network.messages.MetaInformationKey.CONFIGURATION_CHARACTER_INFORMATION,
+                    cppyy.gbl.spy.network.messages.MetaInformationKey.CONFIGURATION_MATCH_CONFIG]
         ret = self.controller.send_request_meta_information(key_list)
         logging.info(f"Send request metainformation successful: {ret}")
         self.__reconnect_target_view = "equip"
+        self.controller.to_game_view_reconnect(self.__reconnect_target_view)
 
     def _reconnect_meta(self) -> None:
         meta_info = self.controller.lib_client_handler.lib_client.getInformation()
 
+        key = cppyy.gbl.spy.network.messages.MetaInformationKey.CONFIGURATION_CHARACTER_INFORMATION
+        variant = meta_info[key]
+        char_info_vec = cppyy.gbl.std.get[vector[cppyy.gbl.spy.character.CharacterInformation]](variant)
+
+        key = cppyy.gbl.spy.network.messages.MetaInformationKey.CONFIGURATION_MATCH_CONFIG
+        variant = meta_info[key]
+        match_config = cppyy.gbl.std.get[cppyy.gbl.spy.MatchConfig](variant)
+
+        self.controller.lib_client_handler.lib_client.setConfigs(char_info_vec, match_config)
+
         if self.__reconnect_target_view == "game":
-            i_am_p1 = self.controller.lib_client_handler.lib_client.amIPlayerOne()
+            i_am_p1 = self.controller.lib_client_handler.lib_client.amIPlayer1().value()
 
             key = cppyy.gbl.spy.network.messages.MetaInformationKey.FACTION_PLAYER1 if i_am_p1 \
                 else cppyy.gbl.spy.network.messages.MetaInformationKey.FACTION_PLAYER2
 
-            variant = meta_info.at(key)
+            variant = meta_info[key]
             player_ids = cppyy.gbl.std.get[vector[cppyy.gbl.spy.util.UUID]](variant)
 
             for id in player_ids:
-                ret = self.controller.lib_client_handler.lib_client.setFaction(id, key)
+                my_faction = cppyy.gbl.spy.character.FactionEnum.PLAYER1 if i_am_p1 \
+                    else cppyy.gbl.spy.character.FactionEnum.PLAYER2
+                ret = self.controller.lib_client_handler.lib_client.setFactionReconnect(id)
                 logging.info(f"Set faction for own character successful: {ret}")
 
-        key = cppyy.gbl.spy.network.messages.MetaInformationKey.CONFIGURATION_CHARACTER_INFORMATION
-        variant = meta_info.at(key)
-        char_info_vec = cppyy.gbl.std.get[vector[cppyy.gbl.spy.character.CharacterInformation]](variant)
-        self.controller.lib_client_handler.lib_client.setCharacterSettings(char_info_vec)
-
+        logging.info(f"Going to game view")
         self.controller.to_game_view_reconnect(self.__reconnect_target_view)

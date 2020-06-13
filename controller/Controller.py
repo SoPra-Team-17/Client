@@ -148,6 +148,7 @@ class Controller(ControllerGameView, ControllerMainMenu, ControllerLobby):
         :return:    None
         """
         self.gameView.from_reconnect(target_screen)
+        self.active_views = [self.gameView]
 
     def exit_game(self) -> None:
         """

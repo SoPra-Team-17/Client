@@ -1,12 +1,1 @@
-{
-  "session_id": "b127ed21-a2e7-4d21-9c6c-dd7975f8c113",
-  "name": "wadwas",
-  "client_id": "19161d58-737e-4283-b146-1183cc8d27f9",
-  "player_one_id": "25a6fd41-ca2d-4fcb-aadd-6bff1035bf2d",
-  "player_two_id": "19161d58-737e-4283-b146-1183cc8d27f9",
-  "player_one_name": "ki017",
-  "player_two_name": "wadwas",
-  "role": 2,
-  "server": "127.0.0.1",
-  "port": 7007
-}
+{"session_id": "f0d2c98b-d5d8-487d-bb26-c19ce12ef3f8", "name": "wadawwsa", "client_id": "950b2da1-41de-4f6b-ad21-c252a6f568a3", "player_one_id": "dad93ba4-0560-4b7e-8967-7b9a60260eab", "player_two_id": "950b2da1-41de-4f6b-ad21-c252a6f568a3", "player_one_name": "ki017", "player_two_name": "wadawwsa", "role": 2, "server": "127.0.0.1", "port": 7007}
