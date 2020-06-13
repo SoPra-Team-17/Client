@@ -171,7 +171,7 @@ class SelectionInfoBox:
         :return:    formatted html-str
         """
         info_str = ""
-        chosen_chars = self.parent_screen.controller.lib_client_handler.lib_client.getChosenCharacters()
+        chosen_chars = self.parent_screen.controller.lib_client_handler.lib_client.getMyFactionList()
         state = self.parent_screen.controller.lib_client_handler.lib_client.getState()
 
         for char_id in chosen_chars:
