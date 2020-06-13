@@ -3,6 +3,7 @@ Implements the Controller, which is the first object created. Handles all intera
 """
 import logging
 import sys
+import time
 
 import cppyy
 import pygame
@@ -110,6 +111,7 @@ class Controller(ControllerGameView, ControllerMainMenu, ControllerLobby):
                     if success:
                         logging.info("Sent reconnect message")
                         return
+                    time.sleep(0.05)
                 logging.error("Unable to reconnect to server")
                 self.lib_client_handler.lib_client.disconnect()
             elif event.message_type == "WrongDestination":
