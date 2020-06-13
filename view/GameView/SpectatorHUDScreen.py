@@ -60,8 +60,6 @@ class SpectatorHUDScreen(BasicView):
         )
 
         self.operation_log_box = OperationLogBox(self, self.container, self.manager, self.settings)
-        self.round_box = RoundCounterBox(self, self.manager)
-        self.name_box = NameDisplayBox(self, self.manager)
 
         # padding to set responsive size of character buttons
         self.__padding = (self.container.rect.width / 2 - 5 * self.__distance) / 7

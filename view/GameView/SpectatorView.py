@@ -42,7 +42,7 @@ class SpectatorView(BasicView):
         self.spectator_choice_screen = SpectatorChoiceScreen(self.window, self.controller, self, self.settings)
         self.spectator_HUD_screen = SpectatorHUDScreen(self.window, self.controller, self, self.settings)
         self.settings_view = SettingsView(self.window, self.controller, self, self.settings, spectator=True)
-        self.game_over_view = GameOverView(self.window, self.controller, self, self.settings)
+        self.game_over_view = GameOverView(self.window, self.controller, self, self.settings, spectator=True)
 
         self.active_views = [self.spectator_choice_screen]
 

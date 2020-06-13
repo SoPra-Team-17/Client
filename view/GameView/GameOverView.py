@@ -14,12 +14,14 @@ __date__ = "02.06.2020 (creation)"
 
 
 class GameOverView(BasicView):
-    def __init__(self, window: pygame.display, controller: ControllerGameView, parent, settings: ViewSettings):
+    def __init__(self, window: pygame.display, controller: ControllerGameView, parent, settings: ViewSettings,
+                 spectator: bool = False):
         super(GameOverView, self).__init__(window, controller, settings)
 
         self.parent = parent
+        self.spectator = spectator
 
-        self.game_over_screen = GameOverScreen(window, controller, self, settings)
+        self.game_over_screen = GameOverScreen(window, controller, self, settings, spectator)
 
         self.active_screens = [self.game_over_screen]
 

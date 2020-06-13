@@ -19,10 +19,12 @@ class GameOverScreen(BasicView):
                          "by spilling more cocktails", "by causing more damage", "by randomness",
                          "by being the last player ingame", "by being the only fair player"]
 
-    def __init__(self, window: pygame.display, controller: ControllerGameView, parent, settings: ViewSettings):
+    def __init__(self, window: pygame.display, controller: ControllerGameView, parent, settings: ViewSettings,
+                 spectator: bool = False):
         super(GameOverScreen, self).__init__(window, controller, settings)
 
         self.parent_view = parent
+        self.spectator = spectator
         self.manager = pygame_gui.UIManager((self.settings.window_width, self.settings.window_height),
                                             "assets/GUI/GUITheme.json")
         self.tb_container = pygame_gui.core.UIContainer(
@@ -75,16 +77,20 @@ class GameOverScreen(BasicView):
         if winner.has_value() and reason.has_value():
             winner_name = ""
             if winner.value == self.controller.lib_client_handler.lib_client.getPlayerOneId():
-                winner_name = self.controller.lib_client_handler.lib_client.getPlayerOneName()
+                winner_name = self.controller.lib_client_handler.lib_client.getPlayerOneName() if not self.spectator \
+                    else "Player 1"
             else:
-                winner_name = self.controller.lib_client_handler.lib_client.getPlayerTwoName()
+                winner_name = self.controller.lib_client_handler.lib_client.getPlayerTwoName() if not self.spectator \
+                    else "Player 2"
 
             html_str += f"<b>{winner_name} won {self._victory_enum_str[reason.value()]}</b><br><br><br>"
 
         stats = self.controller.lib_client_handler.lib_client.getStatistics()
         if stats.has_value():
-            p1_name = self.controller.lib_client_handler.lib_client.getPlayerOneName()
-            p2_name = self.controller.lib_client_handler.lib_client.getPlayerTwoName()
+            p1_name = self.controller.lib_client_handler.lib_client.getPlayerOneName() if not self.spectator \
+                else "Player 1"
+            p2_name = self.controller.lib_client_handler.lib_client.getPlayerTwoName() if not self.spectator \
+                else "Player 2"
             stats = stats.value()
             for stat in stats.getEntries():
                 html_str += f"Metric: <b>{stat.getTitle()}</b><br>Description: {stat.getDescription()}<br>" \
