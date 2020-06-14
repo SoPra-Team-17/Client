@@ -58,6 +58,7 @@ class OperationLogBox:
             operation_vec.erase(operation_vec.begin())
 
         self.__info_str = info_str + self.__info_str
+        self.__info_str = self.__info_str[:3000]
 
         self.textbox.html_text = self.__info_str
         self.textbox.rebuild()
