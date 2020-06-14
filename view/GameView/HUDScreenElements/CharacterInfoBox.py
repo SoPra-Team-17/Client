@@ -80,8 +80,8 @@ class CharacterInfoBox:
 
         self.private_textbox = pygame_gui.elements.UITextBox(
             html_text=f"<b>{name}</b><b>HP:</b>{hp}<br><b>IP:</b>{ip}<br><b>Chips:</b>{chips}<br>",
-            relative_rect=pygame.Rect((idx * (self.__padding + self.__distance), 2 * self.__icon_size),
-                                      (self.__padding, self.__padding)),
+            relative_rect=pygame.Rect((idx * (self.__padding + self.__distance), 0),
+                                      (self.__padding, 3 * self.__icon_size + self.__padding)),
             manager=self.manager,
             container=self.container,
             object_id="#private_textbox"
