@@ -14,6 +14,7 @@ class ViewSettings:
     The settings can be changed from the MainMenu or InGame
     """
     _settings_path = "assets/GUI/settings.json"
+    connection_dump_path = "assets/Connection/connection.json"
 
     def __init__(self):
         try:

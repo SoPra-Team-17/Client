@@ -16,7 +16,6 @@ __date__ = "20.05.20 (doc creation)"
 
 
 class LobbyView(BasicView):
-    __connection_dump_path = "assets/Connection/connection.json"
 
     def __init__(self, window: pygame.display, controller: ControllerLobby, settings: ViewSettings) -> None:
         super(LobbyView, self).__init__(window, controller, settings)
@@ -39,9 +38,9 @@ class LobbyView(BasicView):
         if event.type == pygame.USEREVENT and event.user_type == NETWORK_EVENT:
             if event.message_type == "RequestItemChoice":
                 logging.info("Go to Item Choice Phase")
-                self.dump_connection_info()
                 self.controller.to_game_view()
-
+            elif event.message_type == "GameStarted":
+                self.dump_connection_info()
         for screen in self.active_screens:
             screen.receive_event(event)
 
@@ -69,5 +68,5 @@ class LobbyView(BasicView):
         json_dict["server"] = servername
         json_dict["port"] = port
 
-        with open(self.__connection_dump_path, "w") as f:
+        with open(self.settings.connection_dump_path, "w") as f:
             f.write(json.dumps(json_dict))
