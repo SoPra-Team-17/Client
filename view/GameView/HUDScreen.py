@@ -259,9 +259,20 @@ class HUDScreen(BasicView):
                 gad_icon_surface = pygame.image.load(GADGET_PATH_LIST[gad_idx])
                 gad_icon_surface = pygame.transform.scale(gad_icon_surface, [self.__icon_size] * 2)
 
+                x_pos = idx * self.__icon_size
+                y_pos = 0
+
+                if idx >= 4:
+                    x_pos = (idx - 4) * self.__icon_size
+                    y_pos = self.__icon_size
+                if idx >= 8:
+                    # leave room for 2 props
+                    x_pos = (idx - 6) * self.__icon_size
+                    y_pos = 2 * self.__icon_size
+
                 self.gadget_icon_list.append(pygame_gui.elements.UIButton(
                     relative_rect=pygame.Rect(
-                        (idx_char * (self.__padding + self.__distance) + idx * self.__icon_size, 0),
+                        (idx_char * (self.__padding + self.__distance) + x_pos, y_pos),
                         gad_icon_surface.get_size()),
                     text="",
                     manager=self.manager,
@@ -289,7 +300,7 @@ class HUDScreen(BasicView):
 
                 self.property_icon_list.append(pygame_gui.elements.UIButton(
                     relative_rect=pygame.Rect(
-                        (idx_char * (self.__padding + self.__distance), self.__icon_size),
+                        (idx_char * (self.__padding + self.__distance), 2 * self.__icon_size),
                         property_icon_surface.get_size()),
                     text="",
                     manager=self.manager,
@@ -310,7 +321,7 @@ class HUDScreen(BasicView):
                 self.property_icon_list.append(pygame_gui.elements.UIButton(
                     relative_rect=pygame.Rect(
                         (idx_char * (self.__padding + self.__distance) + pos * self.__icon_size,
-                         self.__icon_size),
+                         2 * self.__icon_size),
                         property_icon_surface.get_size()),
                     text="",
                     manager=self.manager,
@@ -329,7 +340,6 @@ class HUDScreen(BasicView):
         :return:
         """
         self.char_image_list.clear()
-        self.health_bar_list.clear()
 
         # test_surface to display images on character buttons
         char_surface = pygame.image.load(CHAR_PATH_DICT.get("normal")).convert_alpha()
@@ -341,7 +351,7 @@ class HUDScreen(BasicView):
         for idx, char in enumerate(my_chars):
             self.char_image_list.append(
                 pygame_gui.elements.UIButton(
-                    relative_rect=pygame.Rect((idx * (self.__padding + self.__distance), 2 * self.__icon_size),
+                    relative_rect=pygame.Rect((idx * (self.__padding + self.__distance), 3 * self.__icon_size),
                                               char_surface.get_size()),
                     text="",
                     manager=self.manager,
@@ -349,27 +359,6 @@ class HUDScreen(BasicView):
                     object_id=f"#char_image0{idx}"
                 )
             )
-
-            self.health_bar_list.append(
-                pygame_gui.elements.UIScreenSpaceHealthBar(
-                    relative_rect=pygame.Rect(
-                        (idx * (self.__padding + self.__distance),
-                         self.__padding + self.__distance + 2 * self.__icon_size),
-                        (self.__padding, 25)),
-                    manager=self.manager,
-                    container=self.container,
-                    object_id=f"#health_bar0{idx}",
-                )
-            )
-            # get hp of char
-            current_char = self.controller.lib_client_handler.lib_client.getState().getCharacters().findByUUID(
-                char)
-            current_char_hp = current_char.getHealthPoints()
-            ip_sum += current_char.getIntelligencePoints()
-
-            self.health_bar_list[idx].current_health = current_char_hp
-            self.health_bar_list[idx].health_percentag = current_char_hp / 100
-            self.health_bar_list[idx].rebuild()
 
         # textbox has to be recreated, to reparse html text anyway..
         if self.status_textbox is not None:
@@ -415,7 +404,6 @@ class HUDScreen(BasicView):
 
     def _init_ui_elements(self) -> None:
         self.char_image_list = []
-        self.health_bar_list = []
         self.private_textbox = None
         self.status_textbox = None
 
