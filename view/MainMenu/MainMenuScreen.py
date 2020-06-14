@@ -257,8 +257,6 @@ class MainMenuScreen(BasicView):
             player_ids = cppyy.gbl.std.get[vector[cppyy.gbl.spy.util.UUID]](variant)
 
             for id in player_ids:
-                my_faction = cppyy.gbl.spy.character.FactionEnum.PLAYER1 if i_am_p1 \
-                    else cppyy.gbl.spy.character.FactionEnum.PLAYER2
                 ret = self.controller.lib_client_handler.lib_client.setFactionReconnect(id)
                 logging.info(f"Set faction for own character successful: {ret}")
 
