@@ -2,6 +2,7 @@
 Implements the actual MainMenu screen
 """
 import logging
+import os
 import json
 import pygame_gui.elements.ui_button
 import pygame
@@ -52,6 +53,8 @@ class MainMenuScreen(BasicView):
         self.background = pygame.Surface((self.settings.window_width, self.settings.window_height))
         self.background.fill(self.manager.ui_theme.get_colour(None, None, 'dark_bg'))
 
+        self.__reconnect_file = os.path.exists("assets/Connection/connection.json")
+
         self._init_ui_elements()
 
         self.__reconnect_target_view = None
@@ -73,13 +76,22 @@ class MainMenuScreen(BasicView):
         self.manager.process_events(event)
 
         if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_PRESSED:
-            switcher = {
-                self.start_game_button: self.start_game_pressed,
-                self.reconnect_button: self.reconnect_pressed,
-                self.help_button: self.help_button_pressed,
-                self.settings_button: self.settings_button_pressed,
-                self.end_game_button: self.controller.exit_game
-            }
+            switcher = {}
+            if self.__reconnect_file:
+                switcher = {
+                    self.start_game_button: self.start_game_pressed,
+                    self.reconnect_button: self.reconnect_pressed,
+                    self.help_button: self.help_button_pressed,
+                    self.settings_button: self.settings_button_pressed,
+                    self.end_game_button: self.controller.exit_game
+                }
+            else:
+                switcher = {
+                    self.start_game_button: self.start_game_pressed,
+                    self.help_button: self.help_button_pressed,
+                    self.settings_button: self.settings_button_pressed,
+                    self.end_game_button: self.controller.exit_game
+                }
             switcher.get(event.ui_element)()
 
         if event.type == pygame.USEREVENT and event.user_type == NETWORK_EVENT:
@@ -165,14 +177,15 @@ class MainMenuScreen(BasicView):
             container=self.container
         )
 
-        self.reconnect_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(
-                (self.container.get_size()[0] / 2.75, self.__padding * len(self.container.elements)),
-                self.__buttonSize),
-            text="Reconnect",
-            manager=self.manager,
-            container=self.container
-        )
+        if self.__reconnect_file:
+            self.reconnect_button = pygame_gui.elements.UIButton(
+                relative_rect=pygame.Rect(
+                    (self.container.get_size()[0] / 2.75, self.__padding * len(self.container.elements)),
+                    self.__buttonSize),
+                text="Reconnect",
+                manager=self.manager,
+                container=self.container
+            )
 
         self.help_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect((self.container.get_size()[0] / 2.75,
