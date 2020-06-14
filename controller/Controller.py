@@ -4,6 +4,7 @@ Implements the Controller, which is the first object created. Handles all intera
 import logging
 import sys
 import time
+import os
 
 import cppyy
 import pygame
@@ -156,6 +157,7 @@ class Controller(ControllerGameView, ControllerMainMenu, ControllerLobby):
         :return:    None
         """
         logging.info("Exit from MainMenu")
+        os.remove("assets/Connection/connection.json")
         pygame.quit()
         sys.exit(0)
 
