@@ -31,7 +31,6 @@ cppyy.include("datatypes/character/FactionEnum.hpp")
 
 
 class MainMenuScreen(BasicView):
-    __connection_dump_path = "assets/Connection/connection.json"
 
     def __init__(self, window: pygame.display, controller: ControllerMainMenu, parentView,
                  settings: ViewSettings) -> None:
@@ -53,7 +52,7 @@ class MainMenuScreen(BasicView):
         self.background = pygame.Surface((self.settings.window_width, self.settings.window_height))
         self.background.fill(self.manager.ui_theme.get_colour(None, None, 'dark_bg'))
 
-        self.__reconnect_file = os.path.exists("assets/Connection/connection.json")
+        self.__reconnect_file = os.path.exists(self.settings.connection_dump_path)
 
         self._init_ui_elements()
 
@@ -76,22 +75,15 @@ class MainMenuScreen(BasicView):
         self.manager.process_events(event)
 
         if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_PRESSED:
-            switcher = {}
+            switcher = {
+                self.start_game_button: self.start_game_pressed,
+                self.help_button: self.help_button_pressed,
+                self.settings_button: self.settings_button_pressed,
+                self.end_game_button: self.controller.exit_game
+            }
             if self.__reconnect_file:
-                switcher = {
-                    self.start_game_button: self.start_game_pressed,
-                    self.reconnect_button: self.reconnect_pressed,
-                    self.help_button: self.help_button_pressed,
-                    self.settings_button: self.settings_button_pressed,
-                    self.end_game_button: self.controller.exit_game
-                }
-            else:
-                switcher = {
-                    self.start_game_button: self.start_game_pressed,
-                    self.help_button: self.help_button_pressed,
-                    self.settings_button: self.settings_button_pressed,
-                    self.end_game_button: self.controller.exit_game
-                }
+                switcher[self.reconnect_button] = self.reconnect_pressed
+
             switcher.get(event.ui_element)()
 
         if event.type == pygame.USEREVENT and event.user_type == NETWORK_EVENT:
@@ -120,7 +112,7 @@ class MainMenuScreen(BasicView):
         """
         parsed_json = {}
         try:
-            with open(self.__connection_dump_path, "r") as f:
+            with open(self.settings.connection_dump_path, "r") as f:
                 parsed_json = json.load(f)
         except FileNotFoundError:
             logging.warning("Connection file does not exist")
@@ -149,6 +141,7 @@ class MainMenuScreen(BasicView):
             logging.warning("Json file did not contain needed keys")
 
         if not ret:
+            logging.info("Reconnect not successful")
             return
 
         logging.info("Successfully reconnected")
@@ -233,7 +226,6 @@ class MainMenuScreen(BasicView):
         ret = self.controller.send_request_meta_information(key_list)
         logging.info(f"Send request metainformation successful: {ret}")
         self.__reconnect_target_view = "item"
-        self.controller.to_game_view_reconnect(self.__reconnect_target_view)
 
     def _reconnect_equipment(self) -> None:
         key_list = [cppyy.gbl.spy.network.messages.MetaInformationKey.CONFIGURATION_CHARACTER_INFORMATION,
@@ -241,7 +233,6 @@ class MainMenuScreen(BasicView):
         ret = self.controller.send_request_meta_information(key_list)
         logging.info(f"Send request metainformation successful: {ret}")
         self.__reconnect_target_view = "equip"
-        self.controller.to_game_view_reconnect(self.__reconnect_target_view)
 
     def _reconnect_meta(self) -> None:
         meta_info = self.controller.lib_client_handler.lib_client.getInformation()
@@ -267,6 +258,7 @@ class MainMenuScreen(BasicView):
 
             for player_id in player_ids:
                 ret = self.controller.lib_client_handler.lib_client.setFactionReconnect(player_id)
+
                 logging.info(f"Set faction for own character successful: {ret}")
 
         logging.info(f"Going to game view")
