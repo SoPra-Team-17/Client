@@ -35,7 +35,7 @@ dpkg -s nlohmann-json-dev > /dev/null 2>&1 && {
 cd /tmp
 git clone https://github.com/SoPra-Team-17/LibCommon.git
 cd LibCommon
-# git checkout v0.1.1
+git checkout v0.1.2
 mkdir build && cd build
 cmake ..
 make -j$(nproc)
@@ -55,7 +55,7 @@ sudo make install
 cd /tmp
 git clone https://github.com/SoPra-Team-17/LibClient.git
 cd LibClient
-# git checkout v0.1.2
+git checkout v0.1.3
 git submodule update --init
 mkdir build && cd build
 cmake ..
