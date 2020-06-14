@@ -1,10 +1,8 @@
 """
 Implements infobox which displays past operations
 """
-import logging
 import pygame
 import pygame_gui
-import cppyy
 
 from view.ViewSettings import ViewSettings
 
@@ -54,7 +52,9 @@ class OperationLogBox:
 
         while not operation_vec.empty():
             operation = operation_vec[0]
-            info_str += f"<b>Operation:</b>{self.parent_screen.controller.lib_client_handler.lib_client.operationToString(operation)}<br><br>"
+            info_str += f"<b>Operation:</b>" \
+                        f"{self.parent_screen.controller.lib_client_handler.lib_client.operationToString(operation)}" \
+                        f"<br><br>"
             operation_vec.erase(operation_vec.begin())
 
         self.__info_str = info_str + self.__info_str

@@ -6,11 +6,11 @@ import pygame_gui
 import pygame
 import cppyy
 
-from view.GameView.Visuals.VisualGadget import GADGET_NAME_LIST, GADGET_PATH_LIST
+from cppyy.gbl.std import vector
+
+from view.GameView.Visuals.VisualGadget import GADGET_NAME_LIST
 from view.GameView.Visuals.VisualFieldState import FIELD_STATE_NAME_LIST
 from view.ViewSettings import ViewSettings
-
-from cppyy.gbl.std import map, pair, set, vector
 
 __author__ = "Marco Deuscher"
 __date__ = "02.06.20 (creation)"

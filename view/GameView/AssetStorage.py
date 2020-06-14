@@ -1,7 +1,7 @@
 """
 Implements a storage class for all assets, so they're only loaded once at runtime and not for each element individually
 """
-from abc import ABC, abstractmethod
+from abc import ABC
 import pygame
 
 from assets.GameView.CharacterIso.CharacterIsoPaths import CHARACTER_ISO_PATH_DICT
@@ -87,7 +87,7 @@ class CharacterImages:
 class CharacterAsset(DrawableAssets):
     def __init__(self):
         self.asset_dict = {}
-        for key, val in CHARACTER_ISO_PATH_DICT.items():
+        for key, _ in CHARACTER_ISO_PATH_DICT.items():
             top = pygame.image.load(f"{CHARACTER_ISO_PATH_DICT[key]}/{key}_top.png")
             top = pygame.transform.scale(top, (64, 64))
 

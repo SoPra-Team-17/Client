@@ -6,19 +6,17 @@ import pygame
 import pygame_gui
 import cppyy
 
+from cppyy.gbl.std import vector
+
 from view.BasicView import BasicView
 from view.ViewSettings import ViewSettings
-from view.GameView.Visuals.VisualGadget import GADGET_PATH_LIST, GADGET_NAME_LIST
-from view.GameView.Visuals.VisualProperty import PROPERTY_PATH_LIST, PROPERTY_NAME_LIST
+from view.GameView.Visuals.VisualGadget import GADGET_PATH_LIST
+from view.GameView.Visuals.VisualProperty import PROPERTY_PATH_LIST
 from view.GameView.Visuals.VisualCharacter import CHAR_PATH_DICT
-from view.GameView.HUDScreenElements.RoundCounterBox import RoundCounterBox
-from view.GameView.HUDScreenElements.NameDisplayBox import NameDisplayBox
 from view.GameView.HUDScreenElements.SelectionInfoBox import SelectionInfoBox
 from view.GameView.HUDScreenElements.OperationLogBox import OperationLogBox
 from controller.ControllerView import ControllerSpectatorView
 from network.NetworkEvent import NETWORK_EVENT
-
-from cppyy.gbl.std import map, pair, set, vector
 
 __author__ = "Marco Deuscher"
 __date__ = "11.06.2020 (doc. creation)"
@@ -226,9 +224,9 @@ class SpectatorHUDScreen(BasicView):
         :return:    None
         """
         # remove old gadgets
-        for gad in (self.gadget_icon_list_p1 + self.gadget_icon_list_p2):
+        for gad in self.gadget_icon_list_p1 + self.gadget_icon_list_p2:
             gad.kill()
-        for prop in (self.property_icon_list_p1 + self.property_icon_list_p2):
+        for prop in self.property_icon_list_p1 + self.property_icon_list_p2:
             prop.kill()
 
         self.gadget_icon_list_p1.clear()

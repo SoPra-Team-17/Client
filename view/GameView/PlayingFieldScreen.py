@@ -2,7 +2,6 @@
 Implements the actual playing field
 """
 import logging
-import pygame
 import cppyy
 
 from view.BasicView import BasicView
@@ -10,10 +9,9 @@ from view.GameView.Drawable import *
 from view.GameView.Camera import Camera
 from view.GameView.AssetStorage import AssetStorage
 from view.ViewSettings import ViewSettings
-from util.Transforms import Transformations
 from util.Coordinates import WorldPoint
 from util.Datastructures import DrawableMap
-from network.NetworkEvent import NETWORK_EVENT, NETWORK_EVENT_MESSAGE_TYPES
+from network.NetworkEvent import NETWORK_EVENT
 
 __author__ = "Marco Deuscher"
 __date__ = "25.04.2020 (date of doc. creation)"
@@ -140,12 +138,12 @@ class PlayingFieldScreen(BasicView):
 
             point = char.getCoordinates().value()
             self.map.map[WorldPoint(point.x, point.y, z=1)] = Character(WorldPoint(point.x, point.y, z=1),
-                                                                        self.asset_storage, type=type)
+                                                                        self.asset_storage, d_type=type)
         # check if janitor is on playing field
         if state.getJanitorCoordinates().has_value():
             pos_cpp = state.getJanitorCoordinates().value()
             self.map.map[WorldPoint(pos_cpp.x, pos_cpp.y, z=1)] = Character(WorldPoint(pos_cpp.x, pos_cpp.y, z=1),
-                                                                            self.asset_storage, type="janitor")
+                                                                            self.asset_storage, d_type="janitor")
 
         # check if cat is on playing field
         if state.getCatCoordinates().has_value():
@@ -162,4 +160,4 @@ class PlayingFieldScreen(BasicView):
         if active_char.getCoordinates().has_value():
             active_char_coords = active_char.getCoordinates().value()
             wp_coords = WorldPoint(active_char_coords.x, active_char_coords.y, z=1)
-            self.map.map[wp_coords] = Character(wp_coords, self.asset_storage, type="my", active=True)
+            self.map.map[wp_coords] = Character(wp_coords, self.asset_storage, d_type="my", active=True)

@@ -217,16 +217,16 @@ class BarTable(Drawable):
 
 
 class Character(Drawable):
-    def __init__(self, pos: WorldPoint, assets: AssetStorage, type="invalid", active=False) -> None:
+    def __init__(self, pos: WorldPoint, assets: AssetStorage, d_type="invalid", active=False) -> None:
         """
         Init of Character
         :param pos:         Position on drawable map
         :param assets:      asset storage
-        :param type:        character type in ["enemy", "invalid", "npc", "my", "janitor"]
+        :param d_type:        character type in ["enemy", "invalid", "npc", "my", "janitor"]
         """
         super(Character, self).__init__(pos, assets, (64, 64))
 
-        self.type = type
+        self.type = d_type
 
         self.asset_dict = self.asset_storage.character_assets.asset_dict
         if not active:

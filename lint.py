@@ -13,8 +13,8 @@ __date__ = "25.04.2020 (date of doc. creation)"
 
 logging.getLogger().setLevel(logging.INFO)
 
-path = ["view", "model", "controller", "test", "util", "network"]
-threshold = 5
+path = ["view", "controller", "test", "util", "network", "assets"]
+threshold = 9.5
 
 results = Run(path, do_exit=False)
 

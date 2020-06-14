@@ -8,6 +8,8 @@ import pygame_gui.elements.ui_button
 import pygame
 import cppyy
 
+from cppyy.gbl.std import vector
+
 from view.BasicView import BasicView
 from view.ViewSettings import ViewSettings
 from controller.ControllerView import ControllerMainMenu
@@ -26,8 +28,6 @@ cppyy.include("network/messages/MetaInformationKey.hpp")
 cppyy.include("datatypes/character/FactionEnum.hpp")
 cppyy.include("datatypes/matchconfig/MatchConfig.hpp")
 cppyy.include("datatypes/character/FactionEnum.hpp")
-
-from cppyy.gbl.std import map, pair, set, vector
 
 
 class MainMenuScreen(BasicView):
@@ -256,8 +256,9 @@ class MainMenuScreen(BasicView):
             variant = meta_info[key]
             player_ids = cppyy.gbl.std.get[vector[cppyy.gbl.spy.util.UUID]](variant)
 
-            for id in player_ids:
-                ret = self.controller.lib_client_handler.lib_client.setFactionReconnect(id)
+            for player_id in player_ids:
+                ret = self.controller.lib_client_handler.lib_client.setFactionReconnect(player_id)
+
                 logging.info(f"Set faction for own character successful: {ret}")
 
         logging.info(f"Going to game view")

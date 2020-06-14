@@ -1,13 +1,12 @@
 import logging
-import traceback
 import pygame_gui
 import pygame
 import cppyy
 
 from view.BasicView import BasicView
 from view.ViewSettings import ViewSettings
-from view.GameView.Visuals.VisualGadget import GADGET_NAME_LIST, GADGET_PATH_LIST
-from view.GameView.Visuals.VisualProperty import PROPERTY_NAME_LIST, PROPERTY_PATH_LIST
+from view.GameView.Visuals.VisualGadget import GADGET_PATH_LIST
+from view.GameView.Visuals.VisualProperty import PROPERTY_PATH_LIST
 from view.GameView.Visuals.VisualCharacter import CHAR_PATH_DICT
 from view.GameView.HUDScreenElements.CharacterInfoBox import CharacterInfoBox
 from view.GameView.HUDScreenElements.SelectionInfoBox import SelectionInfoBox
@@ -18,8 +17,6 @@ from view.GameView.HUDScreenElements.NameDisplayBox import NameDisplayBox
 from view.GameView.HUDScreenElements.StrikeCounterBox import StrikeCounterBox
 from controller.ControllerView import ControllerGameView
 from network.NetworkEvent import NETWORK_EVENT
-
-from cppyy.gbl.std import map, pair, set, vector
 
 cppyy.add_include_path("/usr/local/include/SopraClient")
 cppyy.add_include_path("/usr/local/include/SopraCommon")
@@ -174,7 +171,8 @@ class HUDScreen(BasicView):
         elif type == "Gadget":
             # if selection is None, send action to pick up cocktail!
             gad = self.idx_to_gadget_idx(
-                self.__selected_gad_prop_idx) if self.__selected_gad_prop_idx is not None else cppyy.gbl.spy.gadget.GadgetEnum.COCKTAIL
+                self.__selected_gad_prop_idx) if self.__selected_gad_prop_idx is not None \
+                else cppyy.gbl.spy.gadget.GadgetEnum.COCKTAIL
             target = self.parent.parent.get_selected_field()
             ret = self.controller.send_game_operation(target=target, op_type=type, gadget=gad)
             logging.info(f"Send Gadget Action successfull: {ret}")
@@ -207,7 +205,8 @@ class HUDScreen(BasicView):
             target_id = cppyy.gbl.spy.util.GameLogicUtils.findInCharacterSetByCoordinates(state.getCharacters(),
                                                                                           target_cpp).getCharacterId()
             am_i_p1_opt = self.controller.lib_client_handler.lib_client.amIPlayer1()
-            enemy = cppyy.gbl.spy.character.FactionEnum.PLAYER2 if am_i_p1_opt.value() else cppyy.gbl.spy.character.FactionEnum.PLAYER1
+            enemy = cppyy.gbl.spy.character.FactionEnum.PLAYER2 if am_i_p1_opt.value() \
+                else cppyy.gbl.spy.character.FactionEnum.PLAYER1
             faction = cppyy.gbl.spy.character.FactionEnum.NEUTRAL if selected == "NPC" else enemy
 
             ret = self.controller.lib_client_handler.lib_client.setFaction(target_id, faction)
@@ -383,7 +382,8 @@ class HUDScreen(BasicView):
             active_char).getActionPoints()
 
         self.status_textbox = pygame_gui.elements.UITextBox(
-            html_text=f"<strong>Intelligence Points:</strong>{ip_sum}<br><br><strong>Movement Points:</strong>{mp}<br><br>" \
+            html_text=f"<strong>Intelligence Points:</strong>{ip_sum}<br><br><strong>Movement Points:" \
+                      f"</strong>{mp}<br><br>" \
                       f"<strong>Action Points:</strong>{ap}<br>",
             relative_rect=pygame.Rect(
                 (len(self.char_image_list) * (self.__padding + self.__distance), 0),

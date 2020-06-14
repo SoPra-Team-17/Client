@@ -5,7 +5,7 @@ import pygame_gui
 import pygame
 import cppyy
 
-from cppyy.gbl.std import map, pair, set, vector
+from cppyy.gbl.std import vector
 
 __author__ = "Marco Deuscher"
 __date__ = "02.06.20 (creation)"
@@ -14,8 +14,6 @@ cppyy.add_include_path("/usr/local/include/SopraClient")
 cppyy.add_include_path("/usr/local/include/SopraCommon")
 cppyy.add_include_path("/usr/local/include/SopraNetwork")
 
-cppyy.include("util/Point.hpp")
-cppyy.include("datatypes/gadgets/GadgetEnum.hpp")
 cppyy.include("datatypes/character/CharacterInformation.hpp")
 cppyy.include("network/messages/MetaInformationKey.hpp")
 
@@ -58,7 +56,12 @@ class CharacterInfoBox:
         :param idx:     Idx of hovered character in UI-List
         :return:        None
         """
-        char_id = self.parent_screen.controller.lib_client_handler.lib_client.getMyFactionList()[idx]
+        # todo dirty hack, because libclient switched to set!
+        char_id = None
+        for it, c_id in enumerate(self.parent_screen.controller.lib_client_handler.lib_client.getMyFactionList()):
+            if idx == it:
+                char_id = c_id
+        # char_id = self.parent_screen.controller.lib_client_handler.lib_client.getMyFactionList()[idx]
         char = self.parent_screen.controller.lib_client_handler.lib_client.getState().getCharacters().findByUUID(
             char_id)
 
