@@ -157,7 +157,7 @@ class Controller(ControllerGameView, ControllerMainMenu, ControllerLobby):
         :return:    None
         """
         logging.info("Exit from MainMenu")
-        os.remove("assets/Connection/connection.json")
+        os.remove(self.view_settings.connection_dump_path)
         pygame.quit()
         sys.exit(0)
 
