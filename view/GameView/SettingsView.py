@@ -5,9 +5,9 @@ import logging
 import pygame
 
 from view.BasicView import BasicView
-from controller.ControllerView import ControllerGameView
 from view.ViewSettings import ViewSettings
 from view.GameView.SettingsScreen import SettingsScreen
+from controller.ControllerView import ControllerGameView
 
 __author__ = "Marco Deuscher"
 __date__ = "02.06.2020 (creation)"
@@ -15,7 +15,8 @@ __date__ = "02.06.2020 (creation)"
 
 class SettingsView(BasicView):
 
-    def __init__(self, window: pygame.display, controller: ControllerGameView, parent, settings: ViewSettings, spectator=False):
+    def __init__(self, window: pygame.display, controller: ControllerGameView, parent, settings: ViewSettings,
+                 spectator=False):
         super(SettingsView, self).__init__(window, controller, settings)
         self.parent = parent
         self.active_screens = []

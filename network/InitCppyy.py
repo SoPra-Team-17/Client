@@ -17,4 +17,3 @@ def init_cppyy() -> None:
     cppyy.load_library("SopraClient")
     cppyy.load_library("SopraCommon")
     cppyy.load_library("SopraNetwork")
-

@@ -4,9 +4,6 @@ Implements a small box displaying the current round number
 
 import pygame
 import pygame_gui
-import cppyy
-
-from view.ViewSettings import ViewSettings
 
 __author__ = "Marco Deuscher"
 __date__ = "09.06.2020"

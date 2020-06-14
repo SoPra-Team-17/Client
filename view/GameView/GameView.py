@@ -46,7 +46,7 @@ class GameView(BasicView):
 
     def receive_event(self, event: pygame.event.Event) -> None:
         # make sure button clicks on the HUD are not handled in the playing field screen
-        if event.type == pygame.MOUSEBUTTONUP and self.hud_view.filter_event(event):
+        if event.type == pygame.MOUSEBUTTONUP and self.hud_view.filter_event():
             self.hud_view.receive_event(event)
             return
 
@@ -55,7 +55,6 @@ class GameView(BasicView):
                 self.hud_view.received_strike()
             if event.message_type == "Statistics":
                 self.to_game_over()
-
 
         for view in self.active_views:
             view.receive_event(event)
@@ -76,7 +75,7 @@ class GameView(BasicView):
 
     def to_item_choice(self) -> None:
         """
-        This method implements the transistion to the item choice phase and updates the selection of characters and items
+        This method implements the transistion to  item choice phase and updates the selection of characters and items
         reiceved over the network
         :return:    None
         """
@@ -85,7 +84,7 @@ class GameView(BasicView):
 
     def to_equipment(self) -> None:
         """
-        This method implements the transisition to the equipment phase screen and updates the selection based on the prev.
+        This method implements the transisition to equipment phase screen and updates the selection based on the prev.
         received network update
         :return:
         """

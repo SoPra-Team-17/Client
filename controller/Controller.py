@@ -48,8 +48,6 @@ class Controller(ControllerGameView, ControllerMainMenu, ControllerLobby):
     def __init__(self) -> None:
         # call init of ControllerGameView
         super(Controller, self).__init__()
-        # call init of ControllerMainMenu
-        super(ControllerGameView, self).__init__()
 
         self.lib_client_handler = LibClientHandler()
 
@@ -250,9 +248,9 @@ class Controller(ControllerGameView, ControllerMainMenu, ControllerLobby):
             stake = kwargs["stake"]
             operation = cppyy.gbl.spy.gameplay.GambleAction(False, target, active_char_id, stake)
         elif op_type == "Property":
-            property = kwargs["property"]
+            prop = kwargs["property"]
             operation = cppyy.gbl.spy.gameplay.PropertyAction(False, target, active_char_id,
-                                                              cppyy.gbl.spy.character.PropertyEnum(property))
+                                                              cppyy.gbl.spy.character.PropertyEnum(prop))
         elif op_type == "Gadget":
             gadget = kwargs["gadget"]
             gadget_cpp = cppyy.gbl.spy.gadget.GadgetEnum(gadget)

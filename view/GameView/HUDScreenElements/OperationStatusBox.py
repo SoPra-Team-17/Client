@@ -2,14 +2,13 @@
 Implements infobox which displays the result of the last operation
 """
 
-import logging
 import pygame
 import pygame_gui
 import cppyy
 
-from view.ViewSettings import ViewSettings
+from cppyy.gbl.std import vector
 
-from cppyy.gbl.std import map, pair, set, vector
+from view.ViewSettings import ViewSettings
 
 __author__ = "Marco Deuscher"
 __date__ = "07.06.2020 (creation)"
@@ -18,13 +17,8 @@ cppyy.add_include_path("/usr/local/include/SopraClient")
 cppyy.add_include_path("/usr/local/include/SopraCommon")
 cppyy.add_include_path("/usr/local/include/SopraNetwork")
 
-cppyy.include("util/Point.hpp")
-cppyy.include("datatypes/gadgets/GadgetEnum.hpp")
 cppyy.include("datatypes/character/CharacterInformation.hpp")
 cppyy.include("network/messages/MetaInformationKey.hpp")
-cppyy.include("util/GameLogicUtils.hpp")
-cppyy.include("datatypes/gameplay/OperationEnum.hpp")
-cppyy.include("datatypes/gameplay/Movement.hpp")
 
 
 class OperationStatusBox:

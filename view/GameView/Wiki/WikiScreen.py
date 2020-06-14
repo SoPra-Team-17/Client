@@ -9,8 +9,6 @@ import pygame_gui
 
 from view.ViewSettings import ViewSettings
 from view.BasicView import BasicView
-from view.GameView.Visuals.VisualGadget import GADGET_NAME_LIST
-from view.GameView.Visuals.VisualProperty import PROPERTY_NAME_LIST
 from controller.ControllerView import ControllerGameView
 
 __author__ = "Marco Deuscher"

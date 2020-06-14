@@ -87,6 +87,7 @@ class EquipmentScreen(BasicView):
         self.__padding = self.bottom_container.rect.width / 10
 
         self._init_ui_elements()
+        self.__offset = None
 
         logging.info("Equipment screen init done")
 

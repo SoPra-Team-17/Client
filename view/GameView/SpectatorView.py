@@ -5,6 +5,8 @@ import logging
 import pygame
 import cppyy
 
+from cppyy.gbl.std import vector
+
 from view.BasicView import BasicView
 from view.GameView.PlayingFieldScreen import PlayingFieldScreen
 from view.GameView.SpectatorChoiceScreen import SpectatorChoiceScreen
@@ -15,8 +17,6 @@ from view.ViewSettings import ViewSettings
 from controller.ControllerView import ControllerSpectatorView
 from util.Coordinates import WorldPoint
 from network.NetworkEvent import NETWORK_EVENT
-
-from cppyy.gbl.std import map, pair, set, vector
 
 __author__ = "Marco Deuscher"
 __date__ = "11.06.2020 (doc. creation)"
