@@ -16,6 +16,7 @@ cppyy.add_include_path("/usr/local/include/SopraNetwork")
 
 cppyy.include("datatypes/character/CharacterInformation.hpp")
 cppyy.include("network/messages/MetaInformationKey.hpp")
+cppyy.include("datatypes/character/PropertyEnum.hpp")
 
 
 class CharacterInfoBox:
@@ -73,13 +74,20 @@ class CharacterInfoBox:
             cppyy.gbl.spy.network.messages.MetaInformationKey.CONFIGURATION_CHARACTER_INFORMATION]
         char_info_vector = cppyy.gbl.std.get[vector[cppyy.gbl.spy.character.CharacterInformation]](variant)
 
+        has_clammy_clothes = char.hasProperty(cppyy.gbl.spy.character.PropertyEnum.CLAMMY_CLOTHES)
+
         name = ""
         for char_info in char_info_vector:
             if char_id == char_info.getCharacterId():
                 name = char_info.getName()
 
+        html_str = f"<b>{name}</b><br><b>HP:</b>{hp}<br><b>IP:</b>{ip}<br><b>Chips:</b>{chips}<br>"
+
+        if has_clammy_clothes:
+            html_str += f"<br>Has clammy clothes"
+
         self.private_textbox = pygame_gui.elements.UITextBox(
-            html_text=f"<b>{name}</b><b>HP:</b>{hp}<br><b>IP:</b>{ip}<br><b>Chips:</b>{chips}<br>",
+            html_text=html_str,
             relative_rect=pygame.Rect((idx * (self.__padding + self.__distance), 0),
                                       (self.__padding, 3 * self.__icon_size + self.__padding)),
             manager=self.manager,
