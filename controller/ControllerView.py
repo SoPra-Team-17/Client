@@ -23,6 +23,13 @@ class ControllerMainMenu(ABC):
         """
 
     @abstractmethod
+    def to_game_view_reconnect(self, target_screen) -> None:
+        """
+        Interface to GameView when trying to reconnect
+        :return:    None
+        """
+
+    @abstractmethod
     def exit_game(self) -> None:
         """
         Interface to MainMenu View

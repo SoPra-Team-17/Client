@@ -4,6 +4,7 @@ Implements the Controller, which is the first object created. Handles all intera
 import logging
 import sys
 import time
+import os
 
 import cppyy
 import pygame
@@ -142,12 +143,21 @@ class Controller(ControllerGameView, ControllerMainMenu, ControllerLobby):
             ret = self.send_request_meta_information(key_list)
             logging.info(f"Send Request Metainformation successfull: {ret}")
 
+    def to_game_view_reconnect(self, target_screen) -> None:
+        """
+        Implements transition game view when trying to reconnect from the main menu
+        :return:    None
+        """
+        self.gameView.from_reconnect(target_screen)
+        self.active_views = [self.gameView]
+
     def exit_game(self) -> None:
         """
         Exit game button in main menu pressed. Closes window and term. process
         :return:    None
         """
         logging.info("Exit from MainMenu")
+        os.remove(self.view_settings.connection_dump_path)
         pygame.quit()
         sys.exit(0)
 

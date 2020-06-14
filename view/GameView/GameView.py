@@ -114,6 +114,14 @@ class GameView(BasicView):
         self.active_views = [self.game_over_view]
         self.game_over_view.game_over_screen.network_update()
 
+    def from_reconnect(self, target_screen) -> None:
+        if target_screen == "game":
+            self.to_playing_field()
+        elif target_screen == "item":
+            self.to_item_choice()
+        elif target_screen == "equip":
+            self.to_equipment()
+
     def get_selected_field(self) -> WorldPoint:
         """
         Getter for the currently selected playing field
