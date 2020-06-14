@@ -29,6 +29,7 @@ cppyy.include("util/Point.hpp")
 cppyy.include("datatypes/gadgets/GadgetEnum.hpp")
 cppyy.include("datatypes/character/CharacterInformation.hpp")
 cppyy.include("network/messages/MetaInformationKey.hpp")
+cppyy.include("datatypes/character/PropertyEnum.hpp")
 
 
 class SpectatorHUDScreen(BasicView):
@@ -147,7 +148,7 @@ class SpectatorHUDScreen(BasicView):
         for idx, char_id in enumerate(player_one_id):
             self.char_image_list_p1.append(
                 pygame_gui.elements.UIButton(
-                    relative_rect=pygame.Rect((idx * (self.__padding + self.__distance), 2 * self.__icon_size),
+                    relative_rect=pygame.Rect((idx * (self.__padding + self.__distance), 3 * self.__icon_size),
                                               char_surface_normal.get_size()),
                     text="",
                     manager=self.manager,
@@ -156,28 +157,8 @@ class SpectatorHUDScreen(BasicView):
                 )
             )
 
-            self.health_bar_list_p1.append(
-                pygame_gui.elements.UIScreenSpaceHealthBar(
-                    relative_rect=pygame.Rect(
-                        (idx * (self.__padding + self.__distance),
-                         self.__padding + self.__distance + 2 * self.__icon_size),
-                        (self.__padding, 25)),
-                    manager=self.manager,
-                    container=self.container,
-                    object_id=f"#health_bar0{idx}",
-                )
-            )
-
             self.char_image_list_p1[idx].normal_image = char_surface_normal
             self.char_image_list_p1[idx].rebuild()
-            # get hp of char
-            current_char = self.controller.lib_client_handler.lib_client.getState().getCharacters().findByUUID(
-                char_id)
-            current_char_hp = current_char.getHealthPoints()
-
-            self.health_bar_list_p1[idx].current_health = current_char_hp
-            self.health_bar_list_p1[idx].health_percentag = current_char_hp / 100
-            self.health_bar_list_p1[idx].rebuild()
 
         player_two_id = self.controller.lib_client_handler.lib_client.getEnemyFactionList()
         for idx, char_id in enumerate(player_two_id):
@@ -185,7 +166,7 @@ class SpectatorHUDScreen(BasicView):
                 pygame_gui.elements.UIButton(
                     relative_rect=pygame.Rect(
                         (self.container.rect.width - (idx + 1) * (self.__padding + self.__distance),
-                         2 * self.__icon_size),
+                         3 * self.__icon_size),
                         char_surface_normal.get_size()),
                     text="",
                     manager=self.manager,
@@ -194,29 +175,8 @@ class SpectatorHUDScreen(BasicView):
                 )
             )
 
-            self.health_bar_list_p2.append(
-                pygame_gui.elements.UIScreenSpaceHealthBar(
-                    relative_rect=pygame.Rect(
-                        (self.container.rect.width - (idx + 1) * (self.__padding + self.__distance),
-                         self.__padding + self.__distance + 2 * self.__icon_size),
-                        (self.__padding, 25)),
-                    manager=self.manager,
-                    container=self.container,
-                    object_id=f"#health_bar0{idx}",
-                )
-            )
-
             self.char_image_list_p2[idx].normal_image = char_surface_normal
             self.char_image_list_p2[idx].rebuild()
-
-            # get hp of char
-            current_char = self.controller.lib_client_handler.lib_client.getState().getCharacters().findByUUID(
-                char_id)
-            current_char_hp = current_char.getHealthPoints()
-
-            self.health_bar_list_p2[idx].current_health = current_char_hp
-            self.health_bar_list_p2[idx].health_percentag = current_char_hp / 100
-            self.health_bar_list_p2[idx].rebuild()
 
     def _update_icons(self) -> None:
         """
@@ -245,9 +205,19 @@ class SpectatorHUDScreen(BasicView):
                 gad_icon_surface = pygame.image.load(GADGET_PATH_LIST[gad_idx])
                 gad_icon_surface = pygame.transform.scale(gad_icon_surface, [self.__icon_size] * 2)
 
+                x_pos = idx * self.__icon_size
+                y_pos = 0
+                if idx >= 4:
+                    x_pos = (idx - 4) * self.__icon_size
+                    y_pos = self.__icon_size
+                if idx >= 8:
+                    # leave space for 2 props
+                    x_pos = (idx - 6) * self.__icon_size
+                    y_pos = 2 * self.__icon_size
+
                 self.gadget_icon_list_p1.append(pygame_gui.elements.UIButton(
                     relative_rect=pygame.Rect(
-                        (idx_char * (self.__padding + self.__distance) + idx * self.__icon_size, 0),
+                        (idx_char * (self.__padding + self.__distance) + x_pos, y_pos),
                         gad_icon_surface.get_size()),
                     text="",
                     manager=self.manager,
@@ -274,7 +244,7 @@ class SpectatorHUDScreen(BasicView):
 
                 self.property_icon_list_p1.append(pygame_gui.elements.UIButton(
                     relative_rect=pygame.Rect(
-                        (idx_char * (self.__padding + self.__distance), self.__icon_size),
+                        (idx_char * (self.__padding + self.__distance), 2 * self.__icon_size),
                         property_icon_surface.get_size()),
                     text="",
                     manager=self.manager,
@@ -295,7 +265,7 @@ class SpectatorHUDScreen(BasicView):
                 self.property_icon_list_p1.append(pygame_gui.elements.UIButton(
                     relative_rect=pygame.Rect(
                         (idx_char * (self.__padding + self.__distance) + pos * self.__icon_size,
-                         self.__icon_size),
+                         2 * self.__icon_size),
                         property_icon_surface.get_size()),
                     text="",
                     manager=self.manager,
@@ -319,11 +289,22 @@ class SpectatorHUDScreen(BasicView):
                 gad_icon_surface = pygame.image.load(GADGET_PATH_LIST[gad_idx])
                 gad_icon_surface = pygame.transform.scale(gad_icon_surface, [self.__icon_size] * 2)
 
+                x_pos = idx * self.__icon_size
+                y_pos = 0
+
+                if idx >= 4:
+                    x_pos = (idx - 4) * self.__icon_size
+                    y_pos = self.__icon_size
+                if idx >= 8:
+                    # leave space for two props
+                    x_pos = (idx - 6) * self.__icon_size
+                    y_pos = 2 * self.__icon_size
+
                 self.gadget_icon_list_p2.append(pygame_gui.elements.UIButton(
                     relative_rect=pygame.Rect(
                         (self.container.rect.width - (idx_char + 1) * (
-                                self.__padding + self.__distance) + idx * self.__icon_size,
-                         0),
+                                self.__padding + self.__distance) + x_pos,
+                         y_pos),
                         gad_icon_surface.get_size()),
                     text="",
                     manager=self.manager,
@@ -351,7 +332,8 @@ class SpectatorHUDScreen(BasicView):
 
                 self.property_icon_list_p2.append(pygame_gui.elements.UIButton(
                     relative_rect=pygame.Rect(
-                        (self.container.rect.width - idx_char * (self.__padding + self.__distance), self.__icon_size),
+                        (self.container.rect.width - idx_char * (self.__padding + self.__distance),
+                         2 * self.__icon_size),
                         property_icon_surface.get_size()),
                     text="",
                     manager=self.manager,
@@ -373,7 +355,7 @@ class SpectatorHUDScreen(BasicView):
                     relative_rect=pygame.Rect(
                         (self.container.rect.width - idx_char * (
                                 self.__padding + self.__distance) + pos * self.__icon_size,
-                         self.__icon_size),
+                         2 * self.__icon_size),
                         property_icon_surface.get_size()),
                     text="",
                     manager=self.manager,
@@ -388,8 +370,6 @@ class SpectatorHUDScreen(BasicView):
 
     def _init_ui_elements(self):
         self.char_image_list_p1 = []
-        self.health_bar_list_p1 = []
-        self.health_bar_list_p2 = []
         self.char_image_list_p2 = []
         self.private_textbox = None
         self.status_textbox = None
@@ -440,7 +420,14 @@ class SpectatorHUDScreen(BasicView):
             self.selected_info_box.rebuild()
 
     def _update_character_info_box(self, idx: int, player_one: bool) -> None:
-        char_id = self.parent.player_one_id[idx] if player_one else self.parent.player_two_id[idx]
+        # todo bc libclient switched from vector to set
+        char_id = None
+        char_list = self.controller.lib_client_handler.lib_client.getMyFactionList() if player_one \
+            else self.controller.lib_client_handler.lib_client.getEnemyFactionList()
+        for it, c_id in enumerate(char_list):
+            if it == idx:
+                char_id = c_id
+
         char = self.controller.lib_client_handler.lib_client.getState().getCharacters().findByUUID(char_id)
 
         hp = char.getHealthPoints()
@@ -456,21 +443,27 @@ class SpectatorHUDScreen(BasicView):
             if char_id == char_info.getCharacterId():
                 name = char_info.getName()
 
+        html_str = f"<b>{name}</b><br><b>HP:</b>{hp}<br><b>IP:</b>{ip}<br><b>Chips:</b>{chips}<br>"
+
+        has_clammy_clothes = char.hasProperty(cppyy.gbl.spy.character.PropertyEnum.CLAMMY_CLOTHES)
+        if has_clammy_clothes:
+            html_str += f"<br>Has clammy clothes"
+
         if player_one:
             self.private_textbox = pygame_gui.elements.UITextBox(
-                html_text=f"<b>{name}</b><b>HP:</b>{hp}<br><b>IP:</b>{ip}<br><b>Chips:</b>{chips}<br>",
-                relative_rect=pygame.Rect((idx * (self.__padding + self.__distance), 2 * self.__icon_size),
-                                          (self.__padding, self.__padding)),
+                html_text=html_str,
+                relative_rect=pygame.Rect((idx * (self.__padding + self.__distance), 0),
+                                          (self.__padding, self.__padding + 3 * self.__icon_size)),
                 manager=self.manager,
                 container=self.container,
                 object_id="#private_textbox"
             )
         else:
             self.private_textbox = pygame_gui.elements.UITextBox(
-                html_text=f"<b>{name}</b><b>HP:</b>{hp}<br><b>IP:</b>{ip}<br><b>Chips:</b>{chips}<br>",
+                html_text=html_str,
                 relative_rect=pygame.Rect((self.container.rect.width - (idx + 1) * (self.__padding + self.__distance),
-                                           2 * self.__icon_size),
-                                          (self.__padding, self.__padding)),
+                                           0),
+                                          (self.__padding, self.__padding + 3 * self.__icon_size)),
                 manager=self.manager,
                 container=self.container,
                 object_id="#private_textbox"
