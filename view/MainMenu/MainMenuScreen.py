@@ -226,7 +226,6 @@ class MainMenuScreen(BasicView):
         ret = self.controller.send_request_meta_information(key_list)
         logging.info(f"Send request metainformation successful: {ret}")
         self.__reconnect_target_view = "item"
-        self.controller.to_game_view_reconnect(self.__reconnect_target_view)
 
     def _reconnect_equipment(self) -> None:
         key_list = [cppyy.gbl.spy.network.messages.MetaInformationKey.CONFIGURATION_CHARACTER_INFORMATION,
@@ -234,7 +233,6 @@ class MainMenuScreen(BasicView):
         ret = self.controller.send_request_meta_information(key_list)
         logging.info(f"Send request metainformation successful: {ret}")
         self.__reconnect_target_view = "equip"
-        self.controller.to_game_view_reconnect(self.__reconnect_target_view)
 
     def _reconnect_meta(self) -> None:
         meta_info = self.controller.lib_client_handler.lib_client.getInformation()
