@@ -56,7 +56,12 @@ class CharacterInfoBox:
         :param idx:     Idx of hovered character in UI-List
         :return:        None
         """
-        char_id = self.parent_screen.controller.lib_client_handler.lib_client.getMyFactionList()[idx]
+        # todo dirty hack, because libclient switched to set!
+        char_id = None
+        for it, c_id in enumerate(self.parent_screen.controller.lib_client_handler.lib_client.getMyFactionList()):
+            if idx == it:
+                char_id = c_id
+        # char_id = self.parent_screen.controller.lib_client_handler.lib_client.getMyFactionList()[idx]
         char = self.parent_screen.controller.lib_client_handler.lib_client.getState().getCharacters().findByUUID(
             char_id)
 
