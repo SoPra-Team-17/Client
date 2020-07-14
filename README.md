@@ -45,6 +45,21 @@ To start the Client, execute
 ```
 python3 run.py
 ```
+## Visuals
+The game is using a classic isometric perspective  
+<img src="assets/ExampleImages/image01.png" width="300">
+
+This images shows the game, with its HUD and playingfield screen.  
+<img src="assets/ExampleImages/image02.png" width="300">
+
+The equipment screen is using drag-and-drop to equip the characters with their gadgets.  
+<img src="assets/ExampleImages/image03.png" width="300">
+
+
+The item choice screen where each player can select 8 items of his liking.  
+<img src="assets/ExampleImages/image04.png" width="300">
+                                           
+                                        
 
 ## Isometric View
 
