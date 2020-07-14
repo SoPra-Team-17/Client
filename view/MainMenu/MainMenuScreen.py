@@ -84,7 +84,10 @@ class MainMenuScreen(BasicView):
             if self.__reconnect_file:
                 switcher[self.reconnect_button] = self.reconnect_pressed
 
-            switcher.get(event.ui_element)()
+            try:
+                switcher.get(event.ui_element)()
+            except:
+                logging.warning("Element not found in dict")
 
         if event.type == pygame.USEREVENT and event.user_type == NETWORK_EVENT:
             if event.message_type == "GameStatus":
@@ -208,6 +211,18 @@ class MainMenuScreen(BasicView):
     def _reconnect_game_status(self) -> None:
         key_list = [cppyy.gbl.spy.network.messages.MetaInformationKey.CONFIGURATION_CHARACTER_INFORMATION,
                     cppyy.gbl.spy.network.messages.MetaInformationKey.CONFIGURATION_MATCH_CONFIG]
+
+        if not self.controller.lib_client_handler.lib_client.amIPlayer1().has_value():
+            pygame_gui.windows.UIConfirmationDialog(
+                rect=pygame.Rect((500, 500), (300, 250)),
+                manager=self.manager,
+                action_long_desc="Reconnect attempt not successfull, try again",
+                window_title="Confirm",
+                action_short_name="Ok",
+                blocking=True
+            )
+            logging.warning("AmIPlayer1 has no value")
+            return
 
         if self.controller.lib_client_handler.lib_client.amIPlayer1().value():
             key_list.append(cppyy.gbl.spy.network.messages.MetaInformationKey.FACTION_PLAYER1)
